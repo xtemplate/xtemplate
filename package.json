@@ -1,0 +1,13 @@
+{
+    "name": "xtemplate",
+    "version": "0.0.1",
+    "author": "yiminghe <yiminghe@gmail.com>",
+    "engines": {
+        "node": "~0.10"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/yiminghe/xtemplate.git"
+    }
+}
