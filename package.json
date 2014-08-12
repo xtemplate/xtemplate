@@ -1,6 +1,6 @@
 {
     "name": "xtemplate",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "yiminghe <yiminghe@gmail.com>",
     "engines": {
         "node": "~0.10"
@@ -8,6 +8,6 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "http://github.com/yiminghe/xtemplate.git"
+        "url": "http://github.com/kissyteam/xtemplate.git"
     }
 }
