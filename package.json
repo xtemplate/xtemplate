@@ -1,38 +1,39 @@
 {
-    "name": "xtemplate",
-    "version": "1.0.1",
-    "author": "yiminghe <yiminghe@gmail.com>",
-    "engines": {
-        "node": "~0.10"
-    },
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/kissyteam/xtemplate.git"
-    },
-    "testling": {
-        "server": "server.js",
-        "html": "tests/runner.html",
-        "browsers": [
-            "ie/6..latest",
-            "chrome/latest",
-            "firefox/latest",
-            "safari/latest",
-            "iphone/6..lastest",
-            "ipad/6..latest",
-            "android-browser/latest"
-        ]
-    },
-    "devDependencies": {
-        "chai": "^1.9.1",
-        "express": "^4.8.5",
-        "gulp": "^3.8.7",
-        "gulp-util": "^3.0.0",
-        "mocha": "^1.21.4",
-        "node-jscover": "^0.6.8",
-        "node-jscover-coveralls": "^1.0.10",
-        "node-jscover-handler": "^1.0.3",
-        "serve-index": "^1.1.6",
-        "serve-static": "^1.5.3"
-    }
+  "name": "xtemplate",
+  "version": "1.0.1",
+  "author": "yiminghe <yiminghe@gmail.com>",
+  "engines": {
+    "node": "~0.10"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/kissyteam/xtemplate.git"
+  },
+  "testling": {
+    "server": "server.js",
+    "html": "tests/runner.html",
+    "browsers": [
+      "ie/6..latest",
+      "chrome/latest",
+      "firefox/latest",
+      "safari/latest",
+      "iphone/6..lastest",
+      "ipad/6..latest",
+      "android-browser/latest"
+    ]
+  },
+  "devDependencies": {
+    "body-parser": "^1.6.5",
+    "chai": "^1.9.1",
+    "express": "^4.8.5",
+    "gulp": "^3.8.7",
+    "gulp-util": "^3.0.0",
+    "mocha": "^1.21.4",
+    "node-jscover": "^0.6.8",
+    "node-jscover-coveralls": "^1.0.10",
+    "node-jscover-handler": "^1.0.3",
+    "serve-index": "^1.1.6",
+    "serve-static": "^1.5.3"
+  }
 }

@@ -8,6 +8,7 @@ var serveIndex = require('serve-index');
 var fs = require('fs');
 var app = express();
 var cwd = process.cwd();
+var bodyParser = require('body-parser');
 
 function modularize(req, res, next) {
     var filePath = path.resolve(cwd, req.originalUrl.substring(1)).replace(/-coverage\.js/, '.js');
@@ -27,6 +28,8 @@ function modularize(req, res, next) {
     res.end(code);
 }
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/lib/', modularize);
 app.use('/tests/specs/', modularize);
 
