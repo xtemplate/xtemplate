@@ -10,6 +10,7 @@ require('./each');
 require('./if');
 require('./command');
 require('./expression');
+require('./relational');
 require('./macro');
 require('./sub-template');
 require('./extend');
