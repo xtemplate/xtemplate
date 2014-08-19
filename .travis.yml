@@ -7,6 +7,8 @@ node_js:
 before_script:
 - npm install gulp -g
 - gulp &
+- npm install bower -g
+- bower install
 - phantomjs --version
 - npm install mocha-phantomjs -g
 script:
