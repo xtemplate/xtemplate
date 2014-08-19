@@ -9,7 +9,7 @@ describe('each', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('0:');
+        expect(render).to.equal('0:');
     });
 
     it('support access parent scope', function () {
@@ -24,7 +24,7 @@ describe('each', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('!x:1!y:2');
+        expect(render).to.equal('!x:1!y:2');
     });
 
     it('support xindex name', function () {
@@ -33,7 +33,7 @@ describe('each', function () {
             data: [1, 2]
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('0: 11: 2');
+        expect(render).to.equal('0: 11: 2');
     });
 
     it('support value name', function () {
@@ -42,7 +42,7 @@ describe('each', function () {
             data: [1, 2]
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('0: 11: 2');
+        expect(render).to.equal('0: 11: 2');
     });
 
     it('support nest array', function () {
@@ -53,7 +53,7 @@ describe('each', function () {
             ]
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('121,2');
+        expect(render).to.equal('121,2');
     });
 
     it('support each object', function () {
@@ -67,7 +67,7 @@ describe('each', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('x:1y:2');
+        expect(render).to.equal('x:1y:2');
     });
 
     it('allow empty content', function () {
@@ -83,7 +83,7 @@ describe('each', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('');
+        expect(render).to.equal('');
 
         tpl = '{{#each( x)}}{{/each}}';
 
@@ -97,7 +97,7 @@ describe('each', function () {
 
         render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('');
+        expect(render).to.equal('');
     });
 
     it('support variable as index', function () {
@@ -109,7 +109,7 @@ describe('each', function () {
             d: 'my'
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('12');
+        expect(render).to.equal('12');
     });
 
     it('ignore if not found', function () {
@@ -122,14 +122,14 @@ describe('each', function () {
             ]
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('');
+        expect(render).to.equal('');
     });
 
     it('support array as render parameter', function () {
         var tpl = '!{{#each (this)}}{{this}}-{{/each}}!';
         var data = [1, 2];
         var render = new XTemplate(tpl, data).render(data);
-        expect(render).toBe('!1-2-!');
+        expect(render).to.equal('!1-2-!');
     });
 
     it('support object in array', function () {
@@ -145,7 +145,7 @@ describe('each', function () {
             ]
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('1-0/2|2-1/2|');
+        expect(render).to.equal('1-0/2|2-1/2|');
     });
 
     it('support simple array', function () {
@@ -154,7 +154,7 @@ describe('each', function () {
             data: [1, 2]
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('1-0/2|2-1/2|');
+        expect(render).to.equal('1-0/2|2-1/2|');
     });
 
     it('support nested each', function () {
@@ -172,32 +172,32 @@ describe('each', function () {
             ]
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('1111222122');
+        expect(render).to.equal('1111222122');
     });
 
     describe('range', function () {
         it('support ascending order', function () {
             var tpl = '{{#each(range(0,3))}}{{this}}{{/each}}';
             var render = new XTemplate(tpl).render({});
-            expect(render).toBe('012');
+            expect(render).to.equal('012');
         });
 
         it('support descending order', function () {
             var tpl = '{{#each(range(3,0))}}{{this}}{{/each}}';
             var render = new XTemplate(tpl).render({});
-            expect(render).toBe('321');
+            expect(render).to.equal('321');
         });
 
         it('can specify step', function () {
             var tpl = '{{#each(range(5,0,-2))}}{{this}}{{/each}}';
             var render = new XTemplate(tpl).render({});
-            expect(render).toBe('531');
+            expect(render).to.equal('531');
         });
 
         it('can specify step', function () {
             var tpl = '{{#each(range(0,5,2))}}{{this}}{{/each}}';
             var render = new XTemplate(tpl).render({});
-            expect(render).toBe('024');
+            expect(render).to.equal('024');
         });
     });
 });

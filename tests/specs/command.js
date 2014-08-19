@@ -4,7 +4,7 @@
  */
 
 var XTemplate = require('xtemplate');
-var util = require('util');
+var util = require('./util');
 
 describe('command', function () {
     it('../ or this can skip command finding', function () {
@@ -25,7 +25,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('11');
+        expect(render).to.equal('11');
     });
 
     it('skip command in expression', function () {
@@ -43,7 +43,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('13');
+        expect(render).to.equal('13');
     });
 
     it('can skip property finding', function () {
@@ -64,7 +64,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('22');
+        expect(render).to.equal('22');
     });
 
     it('will only find property for param', function () {
@@ -86,7 +86,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     it('support param function', function () {
@@ -108,7 +108,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('2');
+        expect(render).to.equal('2');
     });
 
     it('support global command for variable', function () {
@@ -124,7 +124,7 @@ describe('command', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('my global-1');
+        expect(render).to.equal('my global-1');
     });
 
     it('support namespace global command for variable', function () {
@@ -142,7 +142,7 @@ describe('command', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('global-1');
+        expect(render).to.equal('global-1');
     });
 
     it('support global command for block', function () {
@@ -159,7 +159,7 @@ describe('command', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('my global2-1');
+        expect(render).to.equal('my global2-1');
     });
 
     it('support local command for variable', function () {
@@ -177,7 +177,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('my global3-1');
+        expect(render).to.equal('my global3-1');
     });
 
     it('support namespace local command for variable', function () {
@@ -197,7 +197,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('my global3-1');
+        expect(render).to.equal('my global3-1');
     });
 
     it('support local command for block', function () {
@@ -216,7 +216,7 @@ describe('command', function () {
             }
         }).render(data);
 
-        expect(render).toBe('my global4-1');
+        expect(render).to.equal('my global4-1');
     });
 
     it('support filter command', function () {
@@ -243,7 +243,7 @@ describe('command', function () {
                 ]
             });
 
-        expect(render).toBe('1|2');
+        expect(render).to.equal('1|2');
     });
 
     it('support runtime commands', function () {
@@ -269,7 +269,7 @@ describe('command', function () {
             }
         });
 
-        expect(render).toBe('start runtime k instance q');
+        expect(render).to.equal('start runtime k instance q');
 
         render = xtpl.render({
             s: 'start'
@@ -281,6 +281,6 @@ describe('command', function () {
             }
         });
 
-        expect(render).toBe('start instance k runtime q');
+        expect(render).to.equal('start instance k runtime q');
     });
 });

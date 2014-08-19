@@ -4,7 +4,6 @@
  */
 
 var XTemplate = require('xtemplate');
-var util = require('util');
 
 describe('if', function () {
     it('support {{#if}} {{@', function () {
@@ -18,10 +17,9 @@ describe('if', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('has title\n' +
+        expect(render).to.equal('has title\n' +
             'not has title2');
     });
-
 
     it('support undefined null', function () {
         var tpl = '{{#if(t !== undefined)}}defined{{/if}} {{#if(t === null)}}null{{/if}} ' +
@@ -30,7 +28,7 @@ describe('if', function () {
             t: null
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('defined null undefined nonull');
+        expect(render).to.equal('defined null undefined nonull');
     });
 
     it('empty block works', function () {
@@ -39,7 +37,7 @@ describe('if', function () {
             t: true
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('true');
+        expect(render).to.equal('true');
     });
 
     it('{{{if}}} is same as {{if}}', function () {
@@ -48,7 +46,7 @@ describe('if', function () {
             t: true
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('true');
+        expect(render).to.equal('true');
     });
 
     it('support boolean', function () {
@@ -57,12 +55,12 @@ describe('if', function () {
             t: true
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('true');
+        expect(render).to.equal('true');
         data = {
             t: 1
         };
         render = new XTemplate(tpl).render(data);
-        expect(render).toBe('not true');
+        expect(render).to.equal('not true');
     });
 
     it('support access length attribute of array', function () {
@@ -71,11 +69,11 @@ describe('if', function () {
             arr: ['a', 'b']
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('2 have elements');
+        expect(render).to.equal('2 have elements');
         render = new XTemplate(tpl).render({
             arr: []
         });
-        expect(render).toBe('0 empty');
+        expect(render).to.equal('0 empty');
     });
 
     it('support nested properties', function () {
@@ -89,7 +87,7 @@ describe('if', function () {
             }
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('y');
+        expect(render).to.equal('y');
     });
 
     it('can not get sub property data from parent scope', function () {
@@ -105,7 +103,7 @@ describe('if', function () {
             }
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('y');
+        expect(render).to.equal('y');
     });
 
     it('can not get sub property data from null', function () {
@@ -114,7 +112,7 @@ describe('if', function () {
             data: null
         };
         var render = new XTemplate(tpl).render(data);
-        expect(render).toBe('y');
+        expect(render).to.equal('y');
     });
 
     it('support elseif', function () {
@@ -122,18 +120,18 @@ describe('if', function () {
         var render = new XTemplate(tpl).render({
             x: 1
         });
-        expect(render).toBe(' 1 ');
+        expect(render).to.equal(' 1 ');
         render = new XTemplate(tpl).render({
             x: 2
         });
-        expect(render).toBe(' 2 ');
+        expect(render).to.equal(' 2 ');
         render = new XTemplate(tpl).render({
             x: 3
         });
-        expect(render).toBe(' 3 ');
+        expect(render).to.equal(' 3 ');
         render = new XTemplate(tpl).render({
             x: 4
         });
-        expect(render).toBe(' ! ');
+        expect(render).to.equal(' ! ');
     });
 });

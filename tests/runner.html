@@ -1,0 +1,51 @@
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>xtemplate tests</title>
+    <link rel='stylesheet' href='/node_modules/mocha/mocha.css'/>
+</head>
+<body>
+<h1 style="text-align: center">modulex tests</h1>
+<div id='mocha'></div>
+<script src="/bower_components/modulex/build/modulex-debug.js"></script>
+<script src="/node_modules/node-jscover/lib/front-end/header.js"></script>
+<script src="/node_modules/node-jscover/lib/front-end/jscoverage-branch.js"></script>
+<script src='/node_modules/chai/chai.js'></script>
+<script src='/node_modules/mocha/mocha.js'></script>
+<script src='/node_modules/node-jscover/lib/reporters/mocha/console.js'></script>
+<script src='/node_modules/node-jscover-coveralls/lib/reports/mocha.js'></script>
+<script>
+    mocha.setup('bdd');
+    var expect = chai.expect;
+    var isCoverage = location.search.indexOf('coverage') !== -1;
+    if (location.href.indexOf('__testling') !== -1) {
+        mocha.reporter('tap');
+    }
+</script>
+<script>
+    (function () {
+        modulex.config({
+            packages: {
+                xtemplate: {
+                    filter: isCoverage ? '-coverage' : '',
+                    base: '/lib/xtemplate'
+                },
+                specs: {
+                    base: '/tests/specs'
+                }
+            }
+        });
+        modulex.use(['specs/'], function () {
+            if (window.mochaPhantomJS) {
+                var runner = mochaPhantomJS.run();
+                if (isCoverage) {
+                    window.nodeJsCoverCoveralls(runner);
+                }
+            } else {
+                mocha.run();
+            }
+        });
+    })();
+</script>
+</body>
+</html>

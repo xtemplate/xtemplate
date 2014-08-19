@@ -4,7 +4,7 @@
  */
 
 var XTemplate = require('xtemplate');
-var util = require('util');
+var util = require('./util');
 
 describe('feature', function () {
     it('support {{%%}}', function () {
@@ -14,7 +14,7 @@ describe('feature', function () {
             my: 1
         });
 
-        expect(render).toBe('{{my}}');
+        expect(render).to.equal('{{my}}');
 
         tpl = '{{%%}}';
 
@@ -22,7 +22,7 @@ describe('feature', function () {
             my: 1
         });
 
-        expect(render).toBe('');
+        expect(render).to.equal('');
     });
 
     it('not allow empty content', function () {
@@ -37,7 +37,7 @@ describe('feature', function () {
                 name: 'tpl-empty-content'
             }).render(data);
         } catch (e) {
-            expect(e.message.indexOf('syntax error') !== -1).toBeTruthy();
+            expect(e.message.indexOf('syntax error') !== -1).to.equals(true);
         }
     });
 
@@ -52,13 +52,13 @@ describe('feature', function () {
             name: 'tpl-variable'
         }).render(data);
 
-        expect(render).toBe('this is class="t" o!');
+        expect(render).to.equal('this is class="t" o!');
     });
 
     it('support double quote in content', function () {
         var tpl = '<a href="www.g.cn"></a>';
         var render = new XTemplate(tpl).render({});
-        expect(render).toBe('<a href="www.g.cn"></a>');
+        expect(render).to.equal('<a href="www.g.cn"></a>');
     });
 
     describe('property', function () {
@@ -73,7 +73,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('1');
+            expect(render).to.equal('1');
         });
 
         it('will render empty instead of undefined', function () {
@@ -87,7 +87,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('');
+            expect(render).to.equal('');
         });
 
         it('support array index', function () {
@@ -99,7 +99,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('2');
+            expect(render).to.equal('2');
         });
     });
 
@@ -115,7 +115,7 @@ describe('feature', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     it('support express as index', function () {
@@ -130,7 +130,7 @@ describe('feature', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     describe('negative number and minus', function () {
@@ -143,7 +143,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('-1');
+            expect(render).to.equal('-1');
 
             tpl = '{{#if (n===1)}}-1{{else}}1{{/if}}';
 
@@ -154,7 +154,7 @@ describe('feature', function () {
             try {
                 new XTemplate(tpl).render(data);
             } catch (e) {
-                expect(e.message.indexOf('Syntax error') > -1).toBeTruthy();
+                expect(e.message.indexOf('Syntax error') > -1).to.equalTruthy();
             }
         });
 
@@ -163,7 +163,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render();
 
-            expect(render).toBe('-1');
+            expect(render).to.equal('-1');
         });
 
         it('support -1', function () {
@@ -175,7 +175,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('-1');
+            expect(render).to.equal('-1');
         });
     });
 
@@ -192,7 +192,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('h-2');
+            expect(render).to.equal('h-2');
         });
     });
 
@@ -215,7 +215,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('x1xx2x');
+            expect(render).to.equal('x1xx2x');
         });
 
         // https://github.com/kissyteam/kissy/issues/517
@@ -229,7 +229,7 @@ describe('feature', function () {
                     {}
                 ]
             });
-            expect(ret).toBe('1^|2|$');
+            expect(ret).to.equal('1^|2|$');
         });
 
         it('support for with', function () {
@@ -257,7 +257,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('h-2-l2-l1');
+            expect(render).to.equal('h-2-l2-l1');
         });
 
         it('support for each', function () {
@@ -270,7 +270,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('1-3|2-3|');
+            expect(render).to.equal('1-3|2-3|');
         });
 
         //
@@ -287,7 +287,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('156');
+            expect(render).to.equal('156');
         });
     });
 
@@ -303,7 +303,7 @@ describe('feature', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('my  oo');
+        expect(render).to.equal('my  oo');
     });
 
     it('support set', function () {
@@ -316,7 +316,7 @@ describe('feature', function () {
             data: [1, 2]
         };
 
-        expect(new XTemplate(tpl).render(data)).toBe('2-3|4-6|');
+        expect(new XTemplate(tpl).render(data)).to.equal('2-3|4-6|');
     });
 
     it('support function as property value', function () {
@@ -336,7 +336,7 @@ describe('feature', function () {
             }
         });
 
-        expect(render).toBe('488');
+        expect(render).to.equal('488');
     });
 
     it('support model object with function', function () {
@@ -354,7 +354,7 @@ describe('feature', function () {
                 salt: 10
             })
         });
-        expect(render).toBe('13');
+        expect(render).to.equal('13');
     });
 
     describe('汉字', function () {
@@ -366,7 +366,7 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl).render(data);
 
-            expect(render).toBe('1出现了');
+            expect(render).to.equal('1出现了');
         });
 
         it('允许汉字参数', function () {
@@ -382,7 +382,7 @@ describe('feature', function () {
                 }
             }).render(data);
 
-            expect(render).toBe('出现了');
+            expect(render).to.equal('出现了');
         });
     });
 });

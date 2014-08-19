@@ -1,0 +1,12 @@
+{
+  "name": "xtemplate",
+  "author": "yiminghe <yiminghe@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/kissyteam/xtemplate.git"
+  },
+  "dependencies": {
+    "modulex": "modulex#master"
+  }
+}

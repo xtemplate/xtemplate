@@ -5,9 +5,8 @@
 var XTemplate = require('xtemplate');
 
 describe('async', function () {
-    it('can report error', function () {
+    it('can report error', function (done) {
         var tpl = '{{tms(1)}}3';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 'tms': function (scope, option, buffer) {
@@ -19,19 +18,13 @@ describe('async', function () {
                 }
             }
         }).render({}, function (error) {
-                ret = error;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('report error');
-        });
+                expect(error).to.equal('report error');
+                done();
+            })).to.equal('');
     });
 
-    it('works for inline command on sync mode', function () {
+    it('works for inline command on sync mode', function (done) {
         var tpl = '{{tms(1)}}3';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 'tms': function (scope, option, buffer) {
@@ -42,19 +35,13 @@ describe('async', function () {
                 }
             }
         }).render({}, function (error, content) {
-                ret = content;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('123');
-        });
+                expect(content).to.equal('123');
+                done();
+            })).to.equal('');
     });
 
-    it('works for inline command on async mode', function () {
+    it('works for inline command on async mode', function (done) {
         var tpl = '{{tms(1)}}3';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 'tms': function (scope, option, buffer) {
@@ -67,19 +54,13 @@ describe('async', function () {
                 }
             }
         }).render({}, function (error, content) {
-                ret = content;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('123');
-        });
+                expect(content).to.equal('123');
+                done();
+            })).to.equal('');
     });
 
-    it('works for each command on sync mode', function () {
+    it('works for each command on sync mode', function (done) {
         var tpl = 'x{{#each(x)}}{{this}}{{tms(1)}}3{{/each}}y';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 'tms': function (scope, option, buffer) {
@@ -92,19 +73,13 @@ describe('async', function () {
         }).render({
                 x: ['t', 'b']
             }, function (error, content) {
-                ret = content;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('xt123b123y');
-        });
+                expect(content).to.equal('xt123b123y');
+                done();
+            })).to.equal('');
     });
 
-    it('works for each command on async mode', function () {
+    it('works for each command on async mode', function (done) {
         var tpl = 'x{{#each(x)}}{{this}}{{tms(1)}}3{{/each}}y';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 'tms': function (scope, option, buffer) {
@@ -119,19 +94,13 @@ describe('async', function () {
         }).render({
                 x: ['t', 'b']
             }, function (error, content) {
-                ret = content;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('xt123b123y');
-        });
+                expect(content).to.equal('xt123b123y');
+                done();
+            })).to.equal('');
     });
 
-    it('works for async block command', function () {
+    it('works for async block command', function (done) {
         var tpl = 'x{{#ach()}}{{tms(1)}}3{{/ach}} y';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 ach: function (scope, option, buffer) {
@@ -152,19 +121,13 @@ describe('async', function () {
                 }
             }
         }).render({ }, function (error, content) {
-                ret = content;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('x arch 123 arch-end y');
-        });
+                expect(content).to.equal('x arch 123 arch-end y');
+                done();
+            })).to.equal('');
     });
 
-    it('works for sync block command', function () {
+    it('works for sync block command', function (done) {
         var tpl = 'x{{#ach()}}{{tms(1)}}3{{/ach}} y';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 ach: function (scope, option, buffer) {
@@ -181,19 +144,13 @@ describe('async', function () {
                 }
             }
         }).render({ }, function (error, content) {
-                ret = content;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('x arch 123 arch-end y');
-        });
+                expect(content).to.equal('x arch 123 arch-end y');
+                done();
+            })).to.equal('');
     });
 
-    it('can combine inline command and block async command', function () {
+    it('can combine inline command and block async command', function (done) {
         var tpl = '{{#async(1)}}{{upperCase(asyncContent)}}{{/async}}';
-        var ret = '';
         expect(new XTemplate(tpl, {
             commands: {
                 async: function (scope, option, buffer) {
@@ -213,18 +170,12 @@ describe('async', function () {
                 }
             }
         }).render({ }, function (error, content) {
-                ret = content;
-            })).toBe('');
-        waitsFor(function () {
-            return ret;
-        });
-        runs(function () {
-            expect(ret).toBe('1 OK');
-        });
+                expect(content).to.equal('1 OK');
+                done();
+            })).to.equal('');
     });
 
-    it('can be nested into each command', function () {
-        var finalRet;
+    it('can be nested into each command', function (done) {
         new XTemplate('{{#each(items)}}{{echo()}}{{/each}}', {
             commands: {
                 echo: function (scope, option, buffer) {
@@ -238,14 +189,8 @@ describe('async', function () {
         }).render({
                 items: [1, 2, 3]
             }, function (error, ret) {
-                finalRet = ret;
+                expect(ret).to.equal('123');
+                done();
             });
-        waitsFor(function () {
-            return finalRet;
-        });
-
-        runs(function () {
-            expect(finalRet).toBe('123');
-        });
     });
 });

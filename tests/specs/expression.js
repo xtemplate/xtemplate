@@ -11,7 +11,7 @@ describe('expression', function () {
 
         var render = new XTemplate(tpl).render();
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     it('support keyword prefix', function () {
@@ -22,7 +22,7 @@ describe('expression', function () {
             nullX: 3,
             undefinedX: 4
         });
-        expect(render).toBe('1 2 3 4');
+        expect(render).to.equal('1 2 3 4');
     });
 
     it('distinguish {{}} from {{}}}', function () {
@@ -30,7 +30,7 @@ describe('expression', function () {
 
         var render = new XTemplate(tpl).render();
 
-        expect(render).toBe('1}');
+        expect(render).to.equal('1}');
     });
 
     it('support (', function () {
@@ -38,7 +38,7 @@ describe('expression', function () {
 
         var render = new XTemplate(tpl).render();
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     it('support modulus', function () {
@@ -46,22 +46,22 @@ describe('expression', function () {
 
         var render = new XTemplate(tpl).render();
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     it('support unary expression', function () {
         var tpl = '{{#if (!n)}}1{{/if}}';
         expect(new XTemplate(tpl).render({
             n: 1
-        })).toBe('');
+        })).to.equal('');
         expect(new XTemplate(tpl).render({
             n: 0
-        })).toBe('1');
+        })).to.equal('1');
     });
 
     it('support escapeHtml', function () {
         var tpl = '{{{"2<\\\\"+1}}} {{{"2<\\\\"+1}}}';
-        expect(new XTemplate(tpl).render()).toBe('2<\\1 2<\\1');
+        expect(new XTemplate(tpl).render()).to.equal('2<\\1 2<\\1');
     });
 
     it('differentiate negative number and minus', function () {
@@ -71,7 +71,7 @@ describe('expression', function () {
             n: 10
         };
 
-        expect(new XTemplate(tpl).render(data)).toBe('9');
+        expect(new XTemplate(tpl).render(data)).to.equal('9');
     });
 
     it('support expression for variable', function () {
@@ -81,7 +81,7 @@ describe('expression', function () {
             n: 1
         };
 
-        expect(new XTemplate(tpl).render(data)).toBe('7');
+        expect(new XTemplate(tpl).render(data)).to.equal('7');
     });
 
     it('support expression for variable in string', function () {
@@ -91,7 +91,7 @@ describe('expression', function () {
             n: 'xtemplate'
         };
 
-        expect(new XTemplate(tpl).render(data)).toBe('xtemplate is good');
+        expect(new XTemplate(tpl).render(data)).to.equal('xtemplate is good');
     });
 
     it('support newline/quote for variable in string', function () {
@@ -104,7 +104,7 @@ describe('expression', function () {
         var content = new XTemplate(tpl).render(data);
 
         /*jshint quotmark: false*/
-        expect(content).toBe("\n ' \\' | \n \\' \\\\\\'");
+        expect(content).to.equal("\n ' \\' | \n \\' \\\\\\'");
     });
 
     describe('relational expression', function () {
@@ -146,19 +146,19 @@ describe('expression', function () {
                     n2: 2
                 };
 
-            expect(new XTemplate(tpl).render(data)).toBe('6');
+            expect(new XTemplate(tpl).render(data)).to.equal('6');
 
-            expect(new XTemplate(tpl).render(data2)).toBe('3');
+            expect(new XTemplate(tpl).render(data2)).to.equal('3');
 
-            expect(new XTemplate(tpl3).render(data3)).toBe('5');
+            expect(new XTemplate(tpl3).render(data3)).to.equal('5');
 
-            expect(new XTemplate(tpl4).render(data3)).toBe('3');
+            expect(new XTemplate(tpl4).render(data3)).to.equal('3');
 
-            expect(new XTemplate(tpl5).render({n: 5})).toBe('1');
+            expect(new XTemplate(tpl5).render({n: 5})).to.equal('1');
 
-            expect(new XTemplate(tpl6).render({n: 4})).toBe('1');
+            expect(new XTemplate(tpl6).render({n: 4})).to.equal('1');
 
-            expect(new XTemplate(tpl7).render({n: 4})).toBe('1');
+            expect(new XTemplate(tpl7).render({n: 4})).to.equal('1');
         });
 
         it('support relational expression in each', function () {
@@ -174,7 +174,7 @@ describe('expression', function () {
                 limit: 10
             };
 
-            expect(new XTemplate(tpl).render(data)).toBe('13-3-6|20-5-6|');
+            expect(new XTemplate(tpl).render(data)).to.equal('13-3-6|20-5-6|');
         });
 
         it('support relational expression in with', function () {
@@ -191,7 +191,7 @@ describe('expression', function () {
                 limit: 10
             };
 
-            expect(new XTemplate(tpl).render(data)).toBe('6');
+            expect(new XTemplate(tpl).render(data)).to.equal('6');
         });
 
         it('allows short circuit of &&', function () {
@@ -205,8 +205,8 @@ describe('expression', function () {
                         run = 1;
                     }
                 }
-            }).render(data)).toBe('not ok');
-            expect(run).toBe(0);
+            }).render(data)).to.equal('not ok');
+            expect(run).to.equal(0);
 
             tpl = '{{#if(arr && run())}}ok{{else}}not ok{{/if}}';
             run = 0;
@@ -219,8 +219,8 @@ describe('expression', function () {
                         run = 1;
                     }
                 }
-            }).render(data)).toBe('not ok');
-            expect(run).toBe(1);
+            }).render(data)).to.equal('not ok');
+            expect(run).to.equal(1);
         });
 
         it('allows short circuit of ||', function () {
@@ -234,8 +234,8 @@ describe('expression', function () {
                         run = 1;
                     }
                 }
-            }).render(data)).toBe('not ok');
-            expect(run).toBe(1);
+            }).render(data)).to.equal('not ok');
+            expect(run).to.equal(1);
         });
 
 
@@ -251,8 +251,8 @@ describe('expression', function () {
                         run = 1;
                     }
                 }
-            }).render(data)).toBe('ok');
-            expect(run).toBe(0);
+            }).render(data)).to.equal('ok');
+            expect(run).to.equal(0);
         });
     });
 
@@ -264,14 +264,14 @@ describe('expression', function () {
             name: 'conditional-expression'
         }).render({
                 x: 2
-            })).toBe('10');
+            })).to.equal('10');
 
         expect(new XTemplate(tpl).render({
             x: 21,
             q: {
                 x: 2
             }
-        })).toBe('01');
+        })).to.equal('01');
     });
 
     it('support transform data in if statement', function () {
@@ -286,7 +286,7 @@ describe('expression', function () {
         }).render({
                 x: 1
             });
-        expect(content).toBe('2');
+        expect(content).to.equal('2');
     });
 
     describe('array expression',function(){
@@ -295,7 +295,7 @@ describe('expression', function () {
             var content = new XTemplate(tpl, {
             }).render({
                 });
-            expect(content).toBe('1,2');
+            expect(content).to.equal('1,2');
         });
 
         it('support each',function(){
@@ -303,7 +303,7 @@ describe('expression', function () {
             var content = new XTemplate(tpl, {
             }).render({
                 });
-            expect(content).toBe('1+2');
+            expect(content).to.equal('1+2');
         });
     });
 
@@ -313,7 +313,7 @@ describe('expression', function () {
             var content = new XTemplate(tpl, {
             }).render({
                 });
-            expect(content).toBe('2');
+            expect(content).to.equal('2');
         });
 
         it('quote: support with',function(){
@@ -321,7 +321,7 @@ describe('expression', function () {
             var content = new XTemplate(tpl, {
             }).render({
                 });
-            expect(content).toBe('2');
+            expect(content).to.equal('2');
         });
 
         it('support each',function(){
@@ -329,7 +329,7 @@ describe('expression', function () {
             var content = new XTemplate(tpl, {
             }).render({
                 });
-            expect(content).toBe('x+2');
+            expect(content).to.equal('x+2');
         });
     });
 });

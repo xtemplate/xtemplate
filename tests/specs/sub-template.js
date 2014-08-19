@@ -2,7 +2,7 @@ var XTemplate = require('xtemplate');
 
 describe('sub template', function () {
     it('support parse', function () {
-        KISSY.add('xtemplate-test/sub-tpl-0', '{{title}}{{title2}}');
+        modulex.add('xtemplate-test/sub-tpl-0', '{{title}}{{title2}}');
 
         var tpl = '{{parse ("xtemplate-test/sub-tpl-0", title2="2")}}';
 
@@ -14,7 +14,7 @@ describe('sub template', function () {
             name: 'test-parse'
         }).render(data);
 
-        expect(render).toBe('2');
+        expect(render).to.equal('2');
     });
 
     it('support sub template as string', function () {
@@ -24,11 +24,11 @@ describe('sub template', function () {
             title: '1'
         };
 
-        KISSY.add('xtemplate-test/sub-tpl-1', '{{title}}');
+        modulex.add('xtemplate-test/sub-tpl-1', '{{title}}');
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     it('support sub template compile', function () {
@@ -37,7 +37,7 @@ describe('sub template', function () {
             content: tpl,
             isModule: true
         });
-        expect(code.indexOf('require("./x")')).not.toBe(-1);
+        expect(code.indexOf('require("./x")')).not.to.equal(-1);
     });
 
     it('support relative sub template name', function () {
@@ -47,13 +47,13 @@ describe('sub template', function () {
             title: '1'
         };
 
-        KISSY.add('xtemplate-test/sub-tpl-3', '{{title}}');
+        modulex.add('xtemplate-test/sub-tpl-3', '{{title}}');
 
         var render = new XTemplate(tpl, {
             name: 'xtemplate-test/main'
         }).render(data);
 
-        expect(render).toBe('1');
+        expect(render).to.equal('1');
     });
 
     it('support unescape sub template name', function () {
@@ -63,13 +63,13 @@ describe('sub template', function () {
             title: '1'
         };
 
-        KISSY.add('xtemplate-test/sub-tpl-3-1', '<>{{title}}');
+        modulex.add('xtemplate-test/sub-tpl-3-1', '<>{{title}}');
 
         var render = new XTemplate(tpl, {
             name: 'xtemplate-test/main'
         }).render(data);
 
-        expect(render).toBe('<>1');
+        expect(render).to.equal('<>1');
     });
 
     it('allow shadow parent data', function () {
@@ -79,11 +79,11 @@ describe('sub template', function () {
             title: '1'
         };
 
-        KISSY.add('xtemplate-test/sub-tpl-5', '{{title}}{{../title}}');
+        modulex.add('xtemplate-test/sub-tpl-5', '{{title}}{{../title}}');
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('21');
+        expect(render).to.equal('21');
     });
 
     it('throw error when relative sub template name', function () {
@@ -93,38 +93,12 @@ describe('sub template', function () {
             title: '1'
         };
 
-        KISSY.add('xtemplate-test/sub-tpl-6', '{{title}}');
+        modulex.add('xtemplate-test/sub-tpl-6', '{{title}}');
 
         expect(function () {
             new XTemplate(tpl).render(data);
-        }).toThrow('parent template does not have name ' +
+        }).to['throw']('parent template does not have name ' +
             'for relative sub tpl name:' +
             ' ./sub-tpl-6');
-    });
-
-    it('support compiled xtemplate module', function () {
-
-        KISSY.config('packages', {
-            'xtpls': {
-                base: '/kissy/src/xtemplate/-/tests/xtpls'
-            }
-        });
-
-        var ret;
-        KISSY.use('xtpls/a-xtpl', function (S, A) {
-            ret = new XTemplate(A).render({
-                a: 1,
-                d: 3,
-                b: {
-                    c: 2
-                }
-            });
-        });
-        waitsFor(function () {
-            return !!ret;
-        });
-        runs(function () {
-            expect(ret).toBe('123');
-        });
     });
 });

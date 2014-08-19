@@ -5,7 +5,7 @@
 
 /*jshint quotmark:false*/
 var XTemplate = require('xtemplate');
-var util = require('util');
+var util = require('./util');
 
 describe('error detection', function () {
     // https://github.com/kissyteam/kissy/issues/516
@@ -16,17 +16,17 @@ describe('error detection', function () {
         } catch (e) {
             ret = e.message;
         }
-        expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.toBe(-1);
+        expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
     });
 
     it('error when string include \\n', function () {
         var ret;
         try {
-            ret = new XTemplate("\n\n\n\n{{ x + '1\n222222' }}",{name:'string'}).render();
+            ret = new XTemplate("\n\n\n\n{{ x + '1\n222222' }}", {name: 'string'}).render();
         } catch (e) {
             ret = e.message;
         }
-        expect(ret.indexOf("\n    {{ x + '1 222222' }}\n-----------^")).not.toBe(-1);
+        expect(ret.indexOf("\n    {{ x + '1 222222' }}\n-----------^")).not.to.equal(-1);
     });
 
     it('detect lexer error', function () {
@@ -36,7 +36,7 @@ describe('error detection', function () {
         } catch (e) {
             ret = e.message;
         }
-        expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.toBe(-1);
+        expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
     });
 
     it('detect un-closed block tag', function () {
@@ -64,9 +64,6 @@ describe('error detection', function () {
     });
 
     it('detect unmatched', function () {
-        if (!KISSY.config('debug')) {
-            return;
-        }
         var tpl = '{{#if(n === n1)}}\n' +
             'n eq n1\n' +
             '{{/with}}';
@@ -83,14 +80,11 @@ describe('error detection', function () {
                 //S.log('!'+e.replace(/\n/g,'\\n').replace(/\r/g,'\\r')+'!');
                 throw e;
             }
-        }).toThrow('Syntax error at line 3:\n' +
+        }).to['throw']('Syntax error at line 3:\n' +
             'expect {{/if}} not {{/with}}');
     });
 
     it('detect unmatched custom command', function () {
-        if (!KISSY.config('debug')) {
-            return;
-        }
         var tpl = '{{#x.y()}}\n{{/x}}';
 
         expect(function () {
@@ -99,7 +93,7 @@ describe('error detection', function () {
             } catch (e) {
                 throw e;
             }
-        }).toThrow('Syntax error at line 2:\n' +
+        }).to['throw']('Syntax error at line 2:\n' +
             'expect {{/x,y}} not {{/x}}');
     });
 });

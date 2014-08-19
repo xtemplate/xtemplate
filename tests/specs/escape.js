@@ -6,22 +6,22 @@
 var XTemplate = require('xtemplate');
 
 describe('escape', function () {
-    it('can output {{',function(){
+    it('can output {{', function () {
         var tpl = '\\{{ {{x}}';
         var render = new XTemplate(tpl).render({x: 1});
-        expect(render).toBe('{{ 1');
+        expect(render).to.equal('{{ 1');
     });
 
     it('can escape {{{', function () {
         var tpl = '\\{{{x}}\\}';
         var render = new XTemplate(tpl).render({x: 1});
-        expect(render).toBe('{{{x}}\\}');
+        expect(render).to.equal('{{{x}}\\}');
     });
 
     it('can output {escape}', function () {
         var tpl = '{{"{"+x+"}"}}';
         var render = new XTemplate(tpl).render({x: '<'});
-        expect(render).toBe('{&lt;}');
+        expect(render).to.equal('{&lt;}');
     });
 
     it('support escape {{', function () {
@@ -35,11 +35,11 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('my  {{title}}');
+        expect(render).to.equal('my  {{title}}');
 
         render = new XTemplate('\\{{@').render({});
 
-        expect(render).toBe('{{@');
+        expect(render).to.equal('{{@');
     });
 
     it('support escape {{ more', function () {
@@ -53,7 +53,7 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('my  {{title}}oo');
+        expect(render).to.equal('my  {{title}}oo');
     });
 
     it('escapeHtml works', function () {
@@ -65,7 +65,7 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('my &lt;a&gt; is <a>');
+        expect(render).to.equal('my &lt;a&gt; is <a>');
     });
 
     it('escape in inline command', function () {
@@ -79,7 +79,7 @@ describe('escape', function () {
             }
         }).render();
 
-        expect(render).toBe('my &lt;a&gt; is <a>');
+        expect(render).to.equal('my &lt;a&gt; is <a>');
     });
 
     it('escape in inline command 2', function () {
@@ -93,7 +93,7 @@ describe('escape', function () {
             }
         }).render();
 
-        expect(render).toBe('my &lt;a&gt; is <a>');
+        expect(render).to.equal('my &lt;a&gt; is <a>');
     });
 
     it('support escape " in tpl', function () {
@@ -101,7 +101,7 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render({});
 
-        expect(render).toBe('haha "');
+        expect(render).to.equal('haha "');
     });
 
     it('support escape \' in tpl', function () {
@@ -109,7 +109,7 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render({});
 
-        expect(render).toBe('haha \'');
+        expect(render).to.equal('haha \'');
     });
 
     it('support escape \\\' in tpl', function () {
@@ -117,7 +117,7 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render({});
         /*jshint quotmark:false*/
-        expect(render).toBe("haha '");
+        expect(render).to.equal("haha '");
     });
 
     it('does support escape " in content', function () {
@@ -125,7 +125,7 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render({});
 
-        expect(render).toBe('"haha \\"');
+        expect(render).to.equal('"haha \\"');
     });
 
     it('support escape escape', function () {
@@ -136,7 +136,7 @@ describe('escape', function () {
 
         var render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('haha \\a');
+        expect(render).to.equal('haha \\a');
 
         tpl = 'haha \\\\\\{{title}}';
         data = {
@@ -145,7 +145,7 @@ describe('escape', function () {
 
         render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('haha \\{{title}}');
+        expect(render).to.equal('haha \\{{title}}');
 
         tpl = 'haha \\\\\\\\\\{{title}}';
         data = {
@@ -154,6 +154,6 @@ describe('escape', function () {
 
         render = new XTemplate(tpl).render(data);
 
-        expect(render).toBe('haha \\\\{{title}}');
+        expect(render).to.equal('haha \\\\{{title}}');
     });
 });
