@@ -35,5 +35,9 @@
     "node-jscover-handler": "^1.0.3",
     "serve-index": "^1.1.6",
     "serve-static": "^1.5.3"
+  },
+  "dependencies": {
+    "gulp-kclean": "0.0.3",
+    "gulp-kmc": "0.0.29"
   }
 }
