@@ -1,11 +1,12 @@
 var gulp = require('gulp'),
     kmc = require('gulp-kmc'),
+    gulpFilter = require('gulp-filter'),
     kclean = require('gulp-kclean');
 
 
 var src = './lib',
     build = './build',
-    buildFile = build+'/xtemplate-combo.js';
+    buildFile = build+'/xtemplate-standalone.js';
 
 kmc.config({
     packages:{
@@ -29,11 +30,12 @@ gulp.task('build', function () {
             files:[{
                   src:buildFile,
                   wrap:{
-                    start:"var xtemplate = (function(){",
+                    start:"var XTemplate = (function(){",
                     end:'\nreturn xtemplate;\n})()'
                   }
             }]
          }))
+        .pipe(gulpFilter(['xtemplate-standalone.js']))
         .pipe(gulp.dest(build));
 });
 
