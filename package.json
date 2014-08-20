@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "gulp-filter": "^1.0.0",
-    "gulp-kclean": "0.0.3",
+    "gulp-kclean": "0.0.5",
     "gulp-kmc": "0.0.29"
   }
 }
