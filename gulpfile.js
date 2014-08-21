@@ -39,6 +39,12 @@ gulp.task('build-xtemplate', ['lint'], function () {
             },
             excludeModules: ['xtemplate/runtime']
         }))
+        .pipe(kclean({
+            files:[{
+                src:'./lib/xtemplate-debug.js',
+                outputModule:'xtemplate'
+            }]
+        }))
         .pipe(gulp.dest(build))
         .pipe(gulpFilter('xtemplate-debug.js'))
         .pipe(uglify())
@@ -57,7 +63,14 @@ gulp.task('build-xtemplate/runtime', ['lint'], function () {
                 }
             }
         }))
+        .pipe(kclean({
+            files:[{
+                src:'./lib/xtemplate/runtime-debug.js',
+                outputModule:'xtemplate/runtime'
+            }]
+        }))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
+        .pipe(gulpFilter('runtime-debug.js'))
         .pipe(uglify())
         .pipe(gulpRename('runtime.js'))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
