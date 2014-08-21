@@ -150,9 +150,6 @@
 
                     var suite = new Benchmark.Suite;
 
-                    suite.add(files.xtpl[0], function () {
-                        compilers.xtpl.main.render(data);
-                    });
 
                     suite.add(files.dust[0], function () {
                         dust.render(files.dust[0], data, function (e) {
@@ -172,6 +169,10 @@
                         compilers.nunjucks.main.render(data);
                     });
 
+                    suite.add(files.xtpl[0], function () {
+                        compilers.xtpl.main.render(data);
+                    });
+
                     suite.add(files.handlebars[0], function () {
                         compilers.handlebars.main(data);
                     });
@@ -181,6 +182,7 @@
                             compilers.ejs.main(data);
                         });
                     }
+
                     suite.on('cycle', function (event) {
                         log(String(event.target));
                     }).on('complete', function () {

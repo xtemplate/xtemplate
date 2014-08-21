@@ -156,13 +156,6 @@ modulex.use('xtemplate', function (XTemplate) {
 
                 var suite = new Benchmark.Suite;
 
-                suite.add(files.xtpl[0], {
-                    fn: function (defer) {
-                        compilers.xtpl.main.render(data, notify(defer));
-                    },
-                    defer: true
-                });
-
                 suite.add(files.dust[0], {
                     defer: true,
                     fn: function (defer) {
@@ -180,6 +173,13 @@ modulex.use('xtemplate', function (XTemplate) {
                 suite.add(files.nunjucks[0], {fn: function (defer) {
                     compilers.nunjucks.main.render(data, notify(defer));
                 }, defer: true});
+
+                suite.add(files.xtpl[0], {
+                    fn: function (defer) {
+                        compilers.xtpl.main.render(data, notify(defer));
+                    },
+                    defer: true
+                });
 
                 suite.add(files.handlebars[0], {fn: function (defer) {
                     compilers.handlebars.main(data);
