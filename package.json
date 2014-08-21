@@ -32,7 +32,7 @@
     "gulp-filter": "^1.0.0",
     "gulp-jscs": "^1.1.0",
     "gulp-jshint": "^1.8.4",
-    "gulp-kclean": "^0.0.12",
+    "gulp-kclean": "^0.0.13",
     "gulp-modulex": "^1.0.0",
     "gulp-rename": "^1.2.0",
     "gulp-uglify": "^0.3.1",
