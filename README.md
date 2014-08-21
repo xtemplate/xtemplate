@@ -11,5 +11,25 @@ template engine lib on browser and nodejs
 
 [![browser support](https://ci.testling.com/kissyteam/xtemplate.png)](https://ci.testling.com/kissyteam/xtemplate)
 
-# docs
+## docs
 http://kissyteam.github.io/xtpl/
+
+## contribute
+
+### fork and clone
+
+### prepare environment
+```
+npm install bower -g
+npm install
+bower install
+node server
+``
+
+then open http://localhost:8002/tests/runner.html
+
+### open issue
+
+### modify code at lib
+
+### commit and pull request
