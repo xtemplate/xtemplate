@@ -112,7 +112,3 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
         .pipe(gulpRename('runtime-standalone.js'))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
-
-gulp.task('server', function () {
-    require('./server');
-});

@@ -5,12 +5,10 @@ notifications:
 node_js:
 - 0.1
 before_script:
-- npm install gulp -g
-- gulp server &
-- npm install bower -g
+- node server &
+- npm install gulp bower mocha-phantomjs -g
 - bower install
 - phantomjs --version
-- npm install mocha-phantomjs -g
 script:
 - npm test
 - mocha-phantomjs http://localhost:8002/tests/runner.html
