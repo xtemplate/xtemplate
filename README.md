@@ -24,7 +24,7 @@ npm install bower -g
 npm install
 bower install
 node server
-``
+```
 
 then open http://localhost:8002/tests/runner.html
 
