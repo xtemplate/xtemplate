@@ -28,17 +28,21 @@
     "chai": "^1.9.1",
     "express": "^4.8.5",
     "gulp": "^3.8.7",
+    "gulp-clean": "^0.3.1",
+    "gulp-filter": "^1.0.0",
+    "gulp-jscs": "^1.1.0",
+    "gulp-jshint": "^1.8.4",
+    "gulp-kclean": "0.0.5",
+    "gulp-modulex": "^1.0.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^0.3.1",
     "gulp-util": "^3.0.0",
+    "jshint-stylish": "^0.4.0",
     "mocha": "^1.21.4",
     "node-jscover": "^0.6.8",
     "node-jscover-coveralls": "^1.0.10",
     "node-jscover-handler": "^1.0.3",
     "serve-index": "^1.1.6",
     "serve-static": "^1.5.3"
-  },
-  "dependencies": {
-    "gulp-filter": "^1.0.0",
-    "gulp-kclean": "0.0.5",
-    "gulp-kmc": "0.0.29"
   }
 }

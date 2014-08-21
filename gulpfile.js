@@ -1,46 +1,107 @@
-var gulp = require('gulp'),
-    kmc = require('gulp-kmc'),
-    gulpFilter = require('gulp-filter'),
-    kclean = require('gulp-kclean');
+var gulp = require('gulp');
+var gulpFilter = require('gulp-filter');
+var kclean = require('gulp-kclean');
+var gulpModulex = require('gulp-modulex');
+var path = require('path');
+var gulpRename = require('gulp-rename');
 
+var src = path.resolve(process.cwd(), 'lib');
+var build = path.resolve(process.cwd(), 'build');
+var clean = require('gulp-clean');
+var uglify = require('gulp-uglify');
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
+var jscs = require('gulp-jscs');
 
-var src = './lib',
-    build = './build',
-    buildFile = build+'/xtemplate-standalone.js';
-
-kmc.config({
-    packages:{
-       "xtemplate":{
-           combine:true,
-           base: src
-        }
-    }
+gulp.task('lint', function () {
+    return gulp.src('./lib/**/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter(stylish))
+        .pipe(jshint.reporter('fail'))
+        .pipe(jscs());
 });
 
-gulp.task('build', function () {
-    gulp.src(src+'/**/*.js')
-        .pipe(kmc.convert())
-        .pipe(kmc.combo({
-             files:[{
-                 src: src+'/xtemplate.js',
-                 dest: buildFile
-             }]
+gulp.task('clean', function () {
+    gulp.src(build, {
+        read: false
+    }).pipe(clean());
+});
+
+gulp.task('build-xtemplate', ['lint'], function () {
+    return gulp.src('./lib/xtemplate.js')
+        .pipe(gulpModulex({
+            modulex: {
+                packages: {
+                    xtemplate: {
+                        base: path.resolve(src, 'xtemplate')
+                    }
+                }
+            },
+            excludeModules: ['xtemplate/runtime']
         }))
-        .pipe(kclean({
-            files:[{
-                  src:buildFile,
-                  wrap:{
-                    start:"var XTemplate = (function(){",
-                    end:'\nreturn xtemplate;\n})()'
-                  }
-            }]
-         }))
-        .pipe(gulpFilter(['xtemplate-standalone.js']))
+        .pipe(gulp.dest(build))
+        .pipe(gulpFilter('xtemplate-debug.js'))
+        .pipe(uglify())
+        .pipe(gulpRename('xtemplate.js'))
         .pipe(gulp.dest(build));
 });
 
-gulp.task('default', ['server'], function () {
-    gulp.watch('./lib/**/*.js', ['build']);
+gulp.task('build-xtemplate/runtime', ['lint'], function () {
+    return gulp.src('./lib/xtemplate/runtime.js')
+        .pipe(gulpModulex({
+            modulex: {
+                packages: {
+                    xtemplate: {
+                        base: path.resolve(src, 'xtemplate')
+                    }
+                }
+            }
+        }))
+        .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
+        .pipe(uglify())
+        .pipe(gulpRename('runtime.js'))
+        .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
+});
+
+gulp.task('default', ['build-xtemplate', 'build-xtemplate/runtime']);
+
+gulp.task('build-standalone', ['build-xtemplate', 'build-xtemplate/runtime'], function () {
+    gulp.src('./build/xtemplate-debug.js')
+        .pipe(kclean({
+            files: [
+                {
+                    src: path.resolve(build, 'xtemplate-debug.js'),
+                    wrap: {
+                        start: 'var XTemplate = (function(){',
+                        end: '\nreturn xtemplate;\n})()'
+                    }
+                }
+            ]
+        }))
+        .pipe(gulpRename('xtemplate-standalone-debug.js'))
+        .pipe(gulp.dest(build))
+        .pipe(uglify())
+        .pipe(gulpRename('xtemplate-standalone.js'))
+        .pipe(gulp.dest(build));
+
+
+    gulp.src('./build/xtemplate/runtime-debug.js')
+        .pipe(kclean({
+            files: [
+                {
+                    src: path.resolve(build, 'xtemplate/runtime-debug.js'),
+                    wrap: {
+                        start: 'var XTemplateRuntime = (function(){',
+                        end: '\nreturn xtemplateRuntime;\n})()'
+                    }
+                }
+            ]
+        }))
+        .pipe(gulpRename('runtime-standalone-debug.js'))
+        .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
+        .pipe(uglify())
+        .pipe(gulpRename('runtime-standalone.js'))
+        .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
 
 gulp.task('server', function () {

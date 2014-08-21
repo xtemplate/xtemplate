@@ -6,6 +6,7 @@
 </head>
 <body>
 <h1 style="text-align: center">modulex tests</h1>
+
 <div id='mocha'></div>
 <script src="/bower_components/modulex/build/modulex-debug.js"></script>
 <script src="/node_modules/node-jscover/lib/front-end/header.js"></script>
@@ -17,24 +18,67 @@
 <script>
     mocha.setup('bdd');
     var expect = chai.expect;
+    var isStandalone = location.href.indexOf('standalone') !== -1;
+    var isBuild = location.href.indexOf('build') !== -1;
     var isCoverage = location.search.indexOf('coverage') !== -1;
     if (location.href.indexOf('__testling') !== -1) {
         mocha.reporter('tap');
+    }
+    if (isStandalone) {
+        document.write('<script src="/build/xtemplate-standalone.js"><' + '/' + 'script>');
     }
 </script>
 <script>
     (function () {
         modulex.config({
             packages: {
-                xtemplate: {
-                    filter: isCoverage ? 'coverage' : '',
-                    base: '/lib/xtemplate'
-                },
                 specs: {
                     base: '/tests/specs'
                 }
             }
         });
+        if (isStandalone) {
+            modulex.add('xtemplate', function () {
+                return window.XTemplate;
+            });
+            XTemplate.loader = {
+                cache: {},
+                load: function (params, callback) {
+                    var name = params.name;
+                    var cache = this.cache;
+                    if (cache[name]) {
+                        return callback(undefined, cache[name]);
+                    }
+                    modulex.use([name], {
+                        success: function (tpl) {
+                            if (typeof tpl === 'string') {
+                                try {
+                                    tpl = XTemplate.compile(tpl, name);
+                                } catch (e) {
+                                    return callback(e);
+                                }
+                            }
+                            cache[name] = tpl;
+                            callback(undefined, tpl);
+                        },
+                        error: function () {
+                            var error = 'template "' + name + '" does not exist';
+                            util.log(error, 'error');
+                            callback(error);
+                        }
+                    });
+                }
+            };
+        } else {
+            modulex.config({
+                packages: {
+                    xtemplate: {
+                        filter: isCoverage ? 'coverage' : isBuild ? 'debug' : '',
+                        base: isBuild ? '/build/xtemplate' : '/lib/xtemplate'
+                    }
+                }
+            });
+        }
         modulex.use(['specs/'], function () {
             if (window.mochaPhantomJS) {
                 var runner = mochaPhantomJS.run();

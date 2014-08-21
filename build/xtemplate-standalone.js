@@ -1,4 +1,5 @@
 var XTemplate = (function(){
+    var module={};
 /*
 Tue Aug 19 2014 19:10:51 GMT+0800 (CST)
 combined files by KMD:
@@ -6908,7 +6909,7 @@ xtemplate = function (exports) {
   function XTemplate(tpl, config) {
     var self = this;
     config = self.config = config || {};
-    config.loader = config.loader || loader;
+    config.loader = config.loader || XTemplate.loader;
     if (typeof tpl === 'string') {
       tpl = Compiler.compile(tpl, config && config.name);
     }
