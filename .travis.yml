@@ -6,7 +6,7 @@ node_js:
 - 0.1
 before_script:
 - npm install gulp -g
-- gulp &
+- gulp server &
 - npm install bower -g
 - bower install
 - phantomjs --version

@@ -63,16 +63,26 @@ gulp.task('build-xtemplate/runtime', ['lint'], function () {
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
 
-gulp.task('default', ['build-xtemplate', 'build-xtemplate/runtime']);
+gulp.task('default', ['build-xtemplate', 'build-standalone']);
 
-gulp.task('build-standalone', ['build-xtemplate', 'build-xtemplate/runtime'], function () {
-    gulp.src('./build/xtemplate-debug.js')
+gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
+    gulp.src('./lib/xtemplate.js')
+        .pipe(gulpModulex({
+            modulex: {
+                packages: {
+                    xtemplate: {
+                        base: path.resolve(src, 'xtemplate')
+                    }
+                }
+            }
+        }))
+        .pipe(gulpFilter('xtemplate-debug.js'))
         .pipe(kclean({
             files: [
                 {
-                    src: path.resolve(build, 'xtemplate-debug.js'),
+                    src: path.resolve(src, 'xtemplate-debug.js'),
                     wrap: {
-                        start: 'var XTemplate = (function(){',
+                        start: 'var XTemplate = (function(){ var module = {};',
                         end: '\nreturn xtemplate;\n})()'
                     }
                 }
@@ -84,14 +94,13 @@ gulp.task('build-standalone', ['build-xtemplate', 'build-xtemplate/runtime'], fu
         .pipe(gulpRename('xtemplate-standalone.js'))
         .pipe(gulp.dest(build));
 
-
     gulp.src('./build/xtemplate/runtime-debug.js')
         .pipe(kclean({
             files: [
                 {
-                    src: path.resolve(build, 'xtemplate/runtime-debug.js'),
+                    src: './build/xtemplate/runtime-debug.js',
                     wrap: {
-                        start: 'var XTemplateRuntime = (function(){',
+                        start: 'var XTemplateRuntime = (function(){ var module = {};',
                         end: '\nreturn xtemplateRuntime;\n})()'
                     }
                 }
