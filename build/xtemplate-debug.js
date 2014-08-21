@@ -5907,14 +5907,16 @@ xtemplateCompiler = function (exports) {
   var util = xtemplateRuntime.util;
   var xtplAstToJs;
   var TOP_DECLARATION = [
-      'var tpl = this,',
-      'nativeCommands = tpl.root.nativeCommands,',
-      'utils = tpl.root.utils;'
+      'var tpl = this;',
+      'var nativeCommands = tpl.root.nativeCommands;',
+      'var utils = tpl.root.utils;'
     ].join('\n');
   var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer, {lineNumber});';
   var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber});';
-  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {depth},{lineNumber});';
-  var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}],{depth});';
+  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber});';
+  var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber}, {depth});';
+  var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}]);';
+  var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
   var REQUIRE_MODULE = 're' + 'quire("{name}");';
   var CHECK_BUFFER = [
       'if({name} && {name}.isBuffer){',
@@ -5931,9 +5933,10 @@ xtemplateCompiler = function (exports) {
       '',
       '//# sourceURL = {name}.js'
     ].join('\n');
-  var DECLARE_NATIVE_COMMANDS = '{name}Command = nativeCommands["{name}"]';
-  var DECLARE_UTILS = '{name}Util = utils["{name}"]';
-  var BUFFER_WRITE = 'buffer.write({value},{escape});';
+  var DECLARE_NATIVE_COMMANDS = 'var {name}Command = nativeCommands["{name}"];';
+  var DECLARE_UTILS = 'var {name}Util = utils["{name}"];';
+  var BUFFER_WRITE = 'buffer.write({value});';
+  var BUFFER_WRITE_ESCAPED = 'buffer.writeEscaped({value});';
   var RETURN_BUFFER = 'return buffer;';
   var XTemplateRuntime = xtemplateRuntime;
   var parser = xtemplateCompilerParser;
@@ -5951,7 +5954,7 @@ xtemplateCompiler = function (exports) {
   each(nativeCommands, function (v, name) {
     nativeCode.push(substitute(DECLARE_NATIVE_COMMANDS, { name: name }));
   });
-  nativeCode = 'var ' + nativeCode.join(',\n') + ';';
+  nativeCode = nativeCode.join('\n');
   var doubleReg = /\\*"/g, singleReg = /\\*'/g, arrayPush = [].push, uuid = 0;
   function isGlobalId(node) {
     if (globals[node.string]) {
@@ -6188,7 +6191,7 @@ xtemplateCompiler = function (exports) {
       }));
     } else {
       var newParts = getIdStringFromIdParts(source, idParts);
-      source.push(substitute(CALL_FUNCTION, {
+      source.push(substitute(id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION, {
         lhs: idName,
         option: optionName,
         idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
@@ -6272,7 +6275,7 @@ xtemplateCompiler = function (exports) {
       }
       var source = [], depth = idNode.depth, idParts = idNode.parts, idName = guid('id');
       var newParts = getIdStringFromIdParts(source, idParts);
-      source.push(substitute(SCOPE_RESOLVE, {
+      source.push(substitute(depth ? SCOPE_RESOLVE_DEPTH : SCOPE_RESOLVE, {
         lhs: idName,
         idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
         depth: depth
@@ -6293,10 +6296,7 @@ xtemplateCompiler = function (exports) {
       code = xtplAstToJs[type](expression, escape);
       pushToArray(source, code.source);
       expressionOrVariable = code.exp;
-      source.push(substitute(BUFFER_WRITE, {
-        value: expressionOrVariable,
-        escape: !!escape
-      }));
+      source.push(substitute(escape ? BUFFER_WRITE_ESCAPED : BUFFER_WRITE, { value: expressionOrVariable }));
       return {
         exp: '',
         source: source
@@ -6305,10 +6305,7 @@ xtemplateCompiler = function (exports) {
     contentStatement: function (contentStatement) {
       return {
         exp: '',
-        source: [substitute(BUFFER_WRITE, {
-            value: wrapBySingleQuote(escapeString(contentStatement.value, 0)),
-            escape: 0
-          })]
+        source: [substitute(BUFFER_WRITE, { value: wrapBySingleQuote(escapeString(contentStatement.value, 0)) })]
       };
     }
   };

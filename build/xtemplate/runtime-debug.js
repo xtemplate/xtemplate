@@ -192,7 +192,9 @@ xtemplateRuntimeScope = function (exports) {
           depth = 1;
         }
       }
-      var len = parts.length, scope = self, i;
+      var len = parts.length;
+      var scope = self;
+      var i;
       if (len && parts[0] === 'root') {
         parts.shift();
         scope = scope.root;
@@ -241,9 +243,15 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     append: function (data) {
       this.data += data;
     },
-    write: function (data, escape) {
+    write: function (data) {
       if (data || data === 0 || data === false) {
-        this.append(escape ? util.escapeHtml(data) : data);
+        this.append(data);
+      }
+      return this;
+    },
+    writeEscaped: function (data) {
+      if (data || data === 0 || data === false) {
+        this.append(util.escapeHtml(data));
       }
       return this;
     },
@@ -266,10 +274,9 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
         this.list.callback = null;
       }
     },
-    end: function (data, escape) {
+    end: function () {
       var self = this;
       if (self.list.callback) {
-        self.write(data, escape);
         self.ready = true;
         self.list.flush();
       }
@@ -590,7 +597,7 @@ xtemplateRuntime = function (exports) {
     return buffer;
   }
   var utils = {
-      callFn: function (tpl, scope, option, buffer, parts, depth, line) {
+      callFn: function (tpl, scope, option, buffer, parts, line, depth) {
         return callFn(tpl, scope, option, buffer, parts, depth, line, true);
       },
       callCommand: function (tpl, scope, option, buffer, parts, line) {
@@ -684,7 +691,12 @@ xtemplateRuntime = function (exports) {
           if (error) {
             newBuffer.error(error);
           } else if (typeof tplFn === 'string') {
-            newBuffer.write(tplFn, option && option.escape).end();
+            if (option && option.escaped) {
+              newBuffer.writeEscaped(tplFn);
+            } else {
+              newBuffer.write(tplFn);
+            }
+            newBuffer.end();
           } else {
             renderTpl({
               root: tpl.root,

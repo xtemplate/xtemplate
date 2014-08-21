@@ -195,7 +195,9 @@ xtemplateRuntimeScope = function (exports) {
           depth = 1;
         }
       }
-      var len = parts.length, scope = self, i;
+      var len = parts.length;
+      var scope = self;
+      var i;
       if (len && parts[0] === 'root') {
         parts.shift();
         scope = scope.root;
@@ -244,9 +246,15 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     append: function (data) {
       this.data += data;
     },
-    write: function (data, escape) {
+    write: function (data) {
       if (data || data === 0 || data === false) {
-        this.append(escape ? util.escapeHtml(data) : data);
+        this.append(data);
+      }
+      return this;
+    },
+    writeEscaped: function (data) {
+      if (data || data === 0 || data === false) {
+        this.append(util.escapeHtml(data));
       }
       return this;
     },
@@ -269,10 +277,9 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
         this.list.callback = null;
       }
     },
-    end: function (data, escape) {
+    end: function () {
       var self = this;
       if (self.list.callback) {
-        self.write(data, escape);
         self.ready = true;
         self.list.flush();
       }
@@ -6296,7 +6303,7 @@ xtemplateRuntime = function (exports) {
     return buffer;
   }
   var utils = {
-      callFn: function (tpl, scope, option, buffer, parts, depth, line) {
+      callFn: function (tpl, scope, option, buffer, parts, line, depth) {
         return callFn(tpl, scope, option, buffer, parts, depth, line, true);
       },
       callCommand: function (tpl, scope, option, buffer, parts, line) {
@@ -6390,7 +6397,12 @@ xtemplateRuntime = function (exports) {
           if (error) {
             newBuffer.error(error);
           } else if (typeof tplFn === 'string') {
-            newBuffer.write(tplFn, option && option.escape).end();
+            if (option && option.escaped) {
+              newBuffer.writeEscaped(tplFn);
+            } else {
+              newBuffer.write(tplFn);
+            }
+            newBuffer.end();
           } else {
             renderTpl({
               root: tpl.root,
@@ -6444,14 +6456,16 @@ xtemplateCompiler = function (exports) {
   var util = xtemplateRuntime.util;
   var xtplAstToJs;
   var TOP_DECLARATION = [
-      'var tpl = this,',
-      'nativeCommands = tpl.root.nativeCommands,',
-      'utils = tpl.root.utils;'
+      'var tpl = this;',
+      'var nativeCommands = tpl.root.nativeCommands;',
+      'var utils = tpl.root.utils;'
     ].join('\n');
   var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer, {lineNumber});';
   var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber});';
-  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {depth},{lineNumber});';
-  var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}],{depth});';
+  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber});';
+  var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber}, {depth});';
+  var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}]);';
+  var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
   var REQUIRE_MODULE = 're' + 'quire("{name}");';
   var CHECK_BUFFER = [
       'if({name} && {name}.isBuffer){',
@@ -6468,9 +6482,10 @@ xtemplateCompiler = function (exports) {
       '',
       '//# sourceURL = {name}.js'
     ].join('\n');
-  var DECLARE_NATIVE_COMMANDS = '{name}Command = nativeCommands["{name}"]';
-  var DECLARE_UTILS = '{name}Util = utils["{name}"]';
-  var BUFFER_WRITE = 'buffer.write({value},{escape});';
+  var DECLARE_NATIVE_COMMANDS = 'var {name}Command = nativeCommands["{name}"];';
+  var DECLARE_UTILS = 'var {name}Util = utils["{name}"];';
+  var BUFFER_WRITE = 'buffer.write({value});';
+  var BUFFER_WRITE_ESCAPED = 'buffer.writeEscaped({value});';
   var RETURN_BUFFER = 'return buffer;';
   var XTemplateRuntime = xtemplateRuntime;
   var parser = xtemplateCompilerParser;
@@ -6488,7 +6503,7 @@ xtemplateCompiler = function (exports) {
   each(nativeCommands, function (v, name) {
     nativeCode.push(substitute(DECLARE_NATIVE_COMMANDS, { name: name }));
   });
-  nativeCode = 'var ' + nativeCode.join(',\n') + ';';
+  nativeCode = nativeCode.join('\n');
   var doubleReg = /\\*"/g, singleReg = /\\*'/g, arrayPush = [].push, uuid = 0;
   function isGlobalId(node) {
     if (globals[node.string]) {
@@ -6725,7 +6740,7 @@ xtemplateCompiler = function (exports) {
       }));
     } else {
       var newParts = getIdStringFromIdParts(source, idParts);
-      source.push(substitute(CALL_FUNCTION, {
+      source.push(substitute(id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION, {
         lhs: idName,
         option: optionName,
         idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
@@ -6809,7 +6824,7 @@ xtemplateCompiler = function (exports) {
       }
       var source = [], depth = idNode.depth, idParts = idNode.parts, idName = guid('id');
       var newParts = getIdStringFromIdParts(source, idParts);
-      source.push(substitute(SCOPE_RESOLVE, {
+      source.push(substitute(depth ? SCOPE_RESOLVE_DEPTH : SCOPE_RESOLVE, {
         lhs: idName,
         idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
         depth: depth
@@ -6830,10 +6845,7 @@ xtemplateCompiler = function (exports) {
       code = xtplAstToJs[type](expression, escape);
       pushToArray(source, code.source);
       expressionOrVariable = code.exp;
-      source.push(substitute(BUFFER_WRITE, {
-        value: expressionOrVariable,
-        escape: !!escape
-      }));
+      source.push(substitute(escape ? BUFFER_WRITE_ESCAPED : BUFFER_WRITE, { value: expressionOrVariable }));
       return {
         exp: '',
         source: source
@@ -6842,10 +6854,7 @@ xtemplateCompiler = function (exports) {
     contentStatement: function (contentStatement) {
       return {
         exp: '',
-        source: [substitute(BUFFER_WRITE, {
-            value: wrapBySingleQuote(escapeString(contentStatement.value, 0)),
-            escape: 0
-          })]
+        source: [substitute(BUFFER_WRITE, { value: wrapBySingleQuote(escapeString(contentStatement.value, 0)) })]
       };
     }
   };
