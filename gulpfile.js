@@ -4,7 +4,7 @@ var kclean = require('gulp-kclean');
 var gulpModulex = require('gulp-modulex');
 var path = require('path');
 var gulpRename = require('gulp-rename');
-
+var packageInfo  = require('./package.json');
 var src = path.resolve(process.cwd(), 'lib');
 var build = path.resolve(process.cwd(), 'build');
 var clean = require('gulp-clean');
@@ -12,6 +12,7 @@ var uglify = require('gulp-uglify');
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 var jscs = require('gulp-jscs');
+var replace = require('gulp-replace');
 
 gulp.task('lint', function () {
     return gulp.src('./lib/**/*.js')
@@ -45,6 +46,7 @@ gulp.task('build-xtemplate', ['lint'], function () {
                 outputModule:'xtemplate'
             }]
         }))
+        .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulp.dest(build))
         .pipe(gulpFilter('xtemplate-debug.js'))
         .pipe(uglify())
@@ -69,6 +71,7 @@ gulp.task('build-xtemplate/runtime', ['lint'], function () {
                 outputModule:'xtemplate/runtime'
             }]
         }))
+        .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
         .pipe(gulpFilter('runtime-debug.js'))
         .pipe(uglify())
@@ -101,6 +104,7 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
                 }
             ]
         }))
+        .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulpRename('xtemplate-standalone-debug.js'))
         .pipe(gulp.dest(build))
         .pipe(uglify())
@@ -120,6 +124,7 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
             ]
         }))
         .pipe(gulpRename('runtime-standalone-debug.js'))
+        .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
         .pipe(uglify())
         .pipe(gulpRename('runtime-standalone.js'))
