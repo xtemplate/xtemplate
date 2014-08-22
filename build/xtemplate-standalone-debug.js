@@ -6340,7 +6340,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '1.1.0',
+    version: '1.1.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6937,7 +6937,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '1.1.0',
+    version: '1.1.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
