@@ -104,9 +104,6 @@ _xtemplateRuntime_ = function (exports) {
         });
       },
       escapeHtml: function (str) {
-        if (!str && str !== 0 && str !== false) {
-          return '';
-        }
         str = '' + str;
         if (!possibleEscapeHtmlReg.test(str)) {
           return str;
@@ -243,15 +240,16 @@ _xtemplateRuntime_ = function (exports) {
       },
       append: function (data) {
         this.data += data;
+        return this;
       },
       write: function (data) {
-        if (data || data === 0 || data === false) {
+        if (data != null) {
           this.append(data);
         }
         return this;
       },
       writeEscaped: function (data) {
-        if (data || data === 0 || data === false) {
+        if (data != null) {
           this.append(util.escapeHtml(data));
         }
         return this;
@@ -420,7 +418,9 @@ _xtemplateRuntime_ = function (exports) {
           return buffer;
         },
         include: function (scope, option, buffer) {
-          var params = option.params, i, newScope, l = params.length;
+          var params = option.params;
+          var i, newScope;
+          var l = params.length;
           newScope = scope;
           if (option.hash) {
             newScope = new Scope(option.hash);
@@ -482,7 +482,7 @@ _xtemplateRuntime_ = function (exports) {
           }
           return buffer;
         },
-        macro: function (scope, option, buffer, lineNumber) {
+        macro: function (scope, option, buffer) {
           var hash = option.hash;
           var params = option.params;
           var macroName = params[0];
@@ -513,7 +513,7 @@ _xtemplateRuntime_ = function (exports) {
               var newScope = new Scope(paramValues);
               buffer = macro.fn.call(self, newScope, buffer);
             } else {
-              var error = 'in file: ' + self.name + ' can not find macro: ' + name + '" at line ' + lineNumber;
+              var error = 'in file: ' + self.name + ' can not find macro: ' + name + '" at line ' + self.pos.line + ', col ' + self.pos.col;
               throw new Error(error);
             }
           }
@@ -568,29 +568,28 @@ _xtemplateRuntime_ = function (exports) {
     }
     function renderTpl(tpl, scope, buffer) {
       buffer = tpl.fn(scope, buffer);
-      var extendTplName = tpl.runtime.extendTplName;
+      var runtime = tpl.runtime;
+      var extendTplName = runtime.extendTplName;
       if (extendTplName) {
-        delete tpl.runtime.extendTplName;
+        delete runtime.extendTplName;
         buffer = tpl.root.include(extendTplName, tpl, scope, null, buffer);
       }
       return buffer.end();
     }
-    function callFn(tpl, scope, option, buffer, parts, depth, line, resolveInScope) {
+    function callFn(tpl, scope, option, buffer, parts, depth) {
       var error, caller, fn, command1;
       if (!depth) {
         command1 = findCommand(tpl.runtime.commands, tpl.root.config.commands, parts);
       }
       if (command1) {
-        return command1.call(tpl, scope, option, buffer, line);
+        return command1.call(tpl, scope, option, buffer);
       } else {
-        error = 'in file: ' + tpl.name + ' can not call: ' + parts.join('.') + '" at line ' + line;
+        error = 'in file: ' + tpl.name + ' can not call: ' + parts.join('.') + '" at line ' + tpl.pos.line + ', col ' + tpl.pos.col;
       }
-      if (resolveInScope) {
-        caller = scope.resolve(parts.slice(0, -1), depth);
-        fn = caller[parts[parts.length - 1]];
-        if (fn) {
-          return fn.apply(caller, option.params);
-        }
+      caller = scope.resolve(parts.slice(0, -1), depth);
+      fn = caller[parts[parts.length - 1]];
+      if (fn) {
+        return fn.apply(caller, option.params);
       }
       if (error) {
         throw new Error(error);
@@ -598,11 +597,9 @@ _xtemplateRuntime_ = function (exports) {
       return buffer;
     }
     var utils = {
-        callFn: function (tpl, scope, option, buffer, parts, line, depth) {
-          return callFn(tpl, scope, option, buffer, parts, depth, line, true);
-        },
-        callCommand: function (tpl, scope, option, buffer, parts, line) {
-          return callFn(tpl, scope, option, buffer, parts, 0, line, true);
+        callFn: callFn,
+        callCommand: function (tpl, scope, option, buffer, parts) {
+          return callFn(tpl, scope, option, buffer, parts);
         }
       };
     var loader = {
@@ -635,7 +632,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '1.1.1',
+      version: '1.2.1',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
@@ -696,7 +693,7 @@ _xtemplateRuntime_ = function (exports) {
               if (option && option.escaped) {
                 newBuffer.writeEscaped(tplFn);
               } else {
-                newBuffer.write(tplFn);
+                newBuffer.append(tplFn);
               }
               newBuffer.end();
             } else {

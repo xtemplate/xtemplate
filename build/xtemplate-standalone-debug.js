@@ -106,9 +106,6 @@ xtemplateRuntimeUtil = function (exports) {
       });
     },
     escapeHtml: function (str) {
-      if (!str && str !== 0 && str !== false) {
-        return '';
-      }
       str = '' + str;
       if (!possibleEscapeHtmlReg.test(str)) {
         return str;
@@ -245,15 +242,16 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     },
     append: function (data) {
       this.data += data;
+      return this;
     },
     write: function (data) {
-      if (data || data === 0 || data === false) {
+      if (data != null) {
         this.append(data);
       }
       return this;
     },
     writeEscaped: function (data) {
-      if (data || data === 0 || data === false) {
+      if (data != null) {
         this.append(util.escapeHtml(data));
       }
       return this;
@@ -325,7 +323,8 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
 }();
 xtemplateCompilerParser = function (exports) {
   var parser = function (undefined) {
-      var parser = {}, GrammarConst = {
+      var parser = {};
+      var GrammarConst = {
           'SHIFT_TYPE': 1,
           'REDUCE_TYPE': 2,
           'ACCEPT_TYPE': 0,
@@ -333,6 +332,10 @@ xtemplateCompilerParser = function (exports) {
           'PRODUCTION_INDEX': 1,
           'TO_INDEX': 2
         };
+      function peekStack(stack, n) {
+        n = n || 1;
+        return stack[stack.length - n];
+      }
       function mix(to, from) {
         for (var f in from) {
           to[f] = from[f];
@@ -458,7 +461,7 @@ xtemplateCompilerParser = function (exports) {
               }
               mix(self, {
                 firstLine: self.lastLine,
-                lastLine: self.lineNumber + 1,
+                lastLine: self.lineNumber,
                 firstColumn: self.lastColumn,
                 lastColumn: lines ? lines[lines.length - 1].length - 1 : self.lastColumn + m[0].length
               });
@@ -966,14 +969,20 @@ xtemplateCompilerParser = function (exports) {
             'ak'
           ],
           function () {
-            return new this.yy.ProgramNode(this.lexer.lineNumber, this.$1, this.$3);
+            return new this.yy.ProgramNode({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1, this.$3);
           }
         ],
         [
           'aj',
           ['ak'],
           function () {
-            return new this.yy.ProgramNode(this.lexer.lineNumber, this.$1);
+            return new this.yy.ProgramNode({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1);
           }
         ],
         [
@@ -1005,7 +1014,10 @@ xtemplateCompilerParser = function (exports) {
             'h'
           ],
           function () {
-            return new this.yy.BlockStatement(this.lexer.lineNumber, this.$2, this.$4, this.$6, this.$1.length !== 4);
+            return new this.yy.BlockStatement({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$2, this.$4, this.$6, this.$1.length !== 4);
           }
         ],
         [
@@ -1016,14 +1028,20 @@ xtemplateCompilerParser = function (exports) {
             'h'
           ],
           function () {
-            return new this.yy.ExpressionStatement(this.lexer.lineNumber, this.$2, this.$1.length !== 3);
+            return new this.yy.ExpressionStatement({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$2, this.$1.length !== 3);
           }
         ],
         [
           'al',
           ['b'],
           function () {
-            return new this.yy.ContentStatement(this.lexer.lineNumber, this.$1);
+            return new this.yy.ContentStatement({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1);
           }
         ],
         [
@@ -1037,7 +1055,10 @@ xtemplateCompilerParser = function (exports) {
             'j'
           ],
           function () {
-            return new this.yy.Function(this.lexer.lineNumber, this.$1, this.$3, this.$5);
+            return new this.yy.Function({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1, this.$3, this.$5);
           }
         ],
         [
@@ -1049,7 +1070,10 @@ xtemplateCompilerParser = function (exports) {
             'j'
           ],
           function () {
-            return new this.yy.Function(this.lexer.lineNumber, this.$1, this.$3);
+            return new this.yy.Function({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1, this.$3);
           }
         ],
         [
@@ -1061,7 +1085,10 @@ xtemplateCompilerParser = function (exports) {
             'j'
           ],
           function () {
-            return new this.yy.Function(this.lexer.lineNumber, this.$1, null, this.$3);
+            return new this.yy.Function({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1, null, this.$3);
           }
         ],
         [
@@ -1072,7 +1099,10 @@ xtemplateCompilerParser = function (exports) {
             'j'
           ],
           function () {
-            return new this.yy.Function(this.lexer.lineNumber, this.$1);
+            return new this.yy.Function({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1);
           }
         ],
         [
@@ -1386,14 +1416,20 @@ xtemplateCompilerParser = function (exports) {
           'bc',
           ['y'],
           function () {
-            return new this.yy.String(this.lexer.lineNumber, this.$1);
+            return new this.yy.String({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1);
           }
         ],
         [
           'bc',
           ['z'],
           function () {
-            return new this.yy.Number(this.lexer.lineNumber, this.$1);
+            return new this.yy.Number({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1);
           }
         ],
         [
@@ -1427,7 +1463,10 @@ xtemplateCompilerParser = function (exports) {
           'aq',
           ['bd'],
           function () {
-            var hash = new this.yy.Hash(this.lexer.lineNumber), $1 = this.$1;
+            var hash = new this.yy.Hash({
+                line: this.lexer.firstLine,
+                col: this.lexer.firstColumn
+              }), $1 = this.$1;
             hash.value[$1[0]] = $1[1];
             return hash;
           }
@@ -1450,7 +1489,10 @@ xtemplateCompilerParser = function (exports) {
           'an',
           ['be'],
           function () {
-            return new this.yy.Id(this.lexer.lineNumber, this.$1);
+            return new this.yy.Id({
+              line: this.lexer.firstLine,
+              col: this.lexer.firstColumn
+            }, this.$1);
           }
         ],
         [
@@ -5803,12 +5845,13 @@ xtemplateCompilerParser = function (exports) {
         var gotos = table.gotos;
         var tableAction = table.action;
         var productions = self.productions;
-        var valueStack = [null];
         var prefix = filename ? 'in file: ' + filename + ' ' : '';
-        var stack = [0];
+        var valueStack = [];
+        var stateStack = [0];
+        var symbolStack = [];
         lexer.resetInput(input);
         while (1) {
-          state = stack[stack.length - 1];
+          state = peekStack(stateStack);
           if (!symbol) {
             symbol = lexer.lex();
           }
@@ -5835,9 +5878,9 @@ xtemplateCompilerParser = function (exports) {
           }
           switch (action[GrammarConst.TYPE_INDEX]) {
           case GrammarConst.SHIFT_TYPE:
-            stack.push(symbol);
+            symbolStack.push(symbol);
             valueStack.push(lexer.text);
-            stack.push(action[GrammarConst.TO_INDEX]);
+            stateStack.push(action[GrammarConst.TO_INDEX]);
             symbol = null;
             break;
           case GrammarConst.REDUCE_TYPE:
@@ -5846,12 +5889,11 @@ xtemplateCompilerParser = function (exports) {
             var reducedAction = production.action || production[2];
             var reducedRhs = production.rhs || production[1];
             var len = reducedRhs.length;
-            var i = 0;
-            $$ = valueStack[valueStack.length - len];
+            $$ = peekStack(valueStack, len);
             ret = undefined;
             self.$$ = $$;
-            for (; i < len; i++) {
-              self['$' + (len - i)] = valueStack[valueStack.length - 1 - i];
+            for (var i = 0; i < len; i++) {
+              self['$' + (len - i)] = peekStack(valueStack, i + 1);
             }
             if (reducedAction) {
               ret = reducedAction.call(self);
@@ -5861,12 +5903,14 @@ xtemplateCompilerParser = function (exports) {
             } else {
               $$ = self.$$;
             }
-            stack = stack.slice(0, -1 * len * 2);
-            valueStack = valueStack.slice(0, -1 * len);
-            stack.push(reducedSymbol);
+            var reverseIndex = len * -1;
+            stateStack.splice(reverseIndex, len);
+            valueStack.splice(reverseIndex, len);
+            symbolStack.splice(reverseIndex, len);
+            symbolStack.push(reducedSymbol);
             valueStack.push($$);
-            var newState = gotos[stack[stack.length - 2]][stack[stack.length - 1]];
-            stack.push(newState);
+            var newState = gotos[peekStack(stateStack)][reducedSymbol];
+            stateStack.push(newState);
             break;
           case GrammarConst.ACCEPT_TYPE:
             return $$;
@@ -5894,35 +5938,35 @@ xtemplateCompilerAst = function (exports) {
     }
     return 1;
   }
-  ast.ProgramNode = function (lineNumber, statements, inverse) {
+  ast.ProgramNode = function (pos, statements, inverse) {
     var self = this;
-    self.lineNumber = lineNumber;
+    self.pos = pos;
     self.statements = statements;
     self.inverse = inverse;
   };
   ast.ProgramNode.prototype.type = 'program';
-  ast.BlockStatement = function (lineNumber, func, program, close, escape) {
+  ast.BlockStatement = function (pos, func, program, close, escape) {
     var closeParts = close.parts, self = this, e;
     if (!sameArray(func.id.parts, closeParts)) {
-      e = 'Syntax error at line ' + lineNumber + ':\n' + 'expect {{/' + func.id.parts + '}} not {{/' + closeParts + '}}';
+      e = 'Syntax error at line ' + pos.line + ', col ' + pos.col + ':\n' + 'expect {{/' + func.id.parts + '}} not {{/' + closeParts + '}}';
       throw new Error(e);
     }
     self.escape = escape;
-    self.lineNumber = lineNumber;
+    self.pos = pos;
     self.func = func;
     self.program = program;
   };
   ast.BlockStatement.prototype.type = 'blockStatement';
-  ast.ExpressionStatement = function (lineNumber, expression, escape) {
+  ast.ExpressionStatement = function (pos, expression, escape) {
     var self = this;
-    self.lineNumber = lineNumber;
+    self.pos = pos;
     self.value = expression;
     self.escape = escape;
   };
   ast.ExpressionStatement.prototype.type = 'expressionStatement';
-  ast.ContentStatement = function (lineNumber, value) {
+  ast.ContentStatement = function (pos, value) {
     var self = this;
-    self.lineNumber = lineNumber;
+    self.pos = pos;
     self.value = value;
   };
   ast.ContentStatement.prototype.type = 'contentStatement';
@@ -5930,9 +5974,9 @@ xtemplateCompilerAst = function (exports) {
     this.value = v;
     this.unaryType = unaryType;
   };
-  ast.Function = function (lineNumber, id, params, hash) {
+  ast.Function = function (pos, id, params, hash) {
     var self = this;
-    self.lineNumber = lineNumber;
+    self.pos = pos;
     self.id = id;
     self.params = params;
     self.hash = hash;
@@ -5981,21 +6025,22 @@ xtemplateCompilerAst = function (exports) {
     self.opType = '||';
   };
   ast.ConditionalOrExpression.prototype.type = 'conditionalOrExpression';
-  ast.String = function (lineNumber, value) {
+  ast.String = function (pos, value) {
     var self = this;
-    self.lineNumber = lineNumber;
+    self.pos = pos;
     self.value = value;
   };
   ast.String.prototype.type = 'string';
-  ast.Number = function (lineNumber, value) {
+  ast.Number = function (pos, value) {
     var self = this;
-    self.lineNumber = lineNumber;
+    self.pos = pos;
     self.value = value;
   };
   ast.Number.prototype.type = 'number';
-  ast.Hash = function (lineNumber) {
-    var self = this, value = {};
-    self.lineNumber = lineNumber;
+  ast.Hash = function (pos) {
+    var self = this;
+    var value = {};
+    self.pos = pos;
     self.value = value;
   };
   ast.Hash.prototype.type = 'hash';
@@ -6007,9 +6052,11 @@ xtemplateCompilerAst = function (exports) {
     this.json = json;
   };
   ast.JsonExpression.prototype.type = 'jsonExpression';
-  ast.Id = function (lineNumber, raw) {
-    var self = this, parts = [], depth = 0;
-    self.lineNumber = lineNumber;
+  ast.Id = function (pos, raw) {
+    var self = this;
+    var parts = [];
+    var depth = 0;
+    self.pos = pos;
     for (var i = 0, l = raw.length; i < l; i++) {
       var p = raw[i];
       if (p === '..') {
@@ -6125,7 +6172,9 @@ xtemplateRuntimeCommands = function (exports) {
         return buffer;
       },
       include: function (scope, option, buffer) {
-        var params = option.params, i, newScope, l = params.length;
+        var params = option.params;
+        var i, newScope;
+        var l = params.length;
         newScope = scope;
         if (option.hash) {
           newScope = new Scope(option.hash);
@@ -6187,7 +6236,7 @@ xtemplateRuntimeCommands = function (exports) {
         }
         return buffer;
       },
-      macro: function (scope, option, buffer, lineNumber) {
+      macro: function (scope, option, buffer) {
         var hash = option.hash;
         var params = option.params;
         var macroName = params[0];
@@ -6218,7 +6267,7 @@ xtemplateRuntimeCommands = function (exports) {
             var newScope = new Scope(paramValues);
             buffer = macro.fn.call(self, newScope, buffer);
           } else {
-            var error = 'in file: ' + self.name + ' can not find macro: ' + name + '" at line ' + lineNumber;
+            var error = 'in file: ' + self.name + ' can not find macro: ' + name + '" at line ' + self.pos.line + ', col ' + self.pos.col;
             throw new Error(error);
           }
         }
@@ -6273,29 +6322,28 @@ xtemplateRuntime = function (exports) {
   }
   function renderTpl(tpl, scope, buffer) {
     buffer = tpl.fn(scope, buffer);
-    var extendTplName = tpl.runtime.extendTplName;
+    var runtime = tpl.runtime;
+    var extendTplName = runtime.extendTplName;
     if (extendTplName) {
-      delete tpl.runtime.extendTplName;
+      delete runtime.extendTplName;
       buffer = tpl.root.include(extendTplName, tpl, scope, null, buffer);
     }
     return buffer.end();
   }
-  function callFn(tpl, scope, option, buffer, parts, depth, line, resolveInScope) {
+  function callFn(tpl, scope, option, buffer, parts, depth) {
     var error, caller, fn, command1;
     if (!depth) {
       command1 = findCommand(tpl.runtime.commands, tpl.root.config.commands, parts);
     }
     if (command1) {
-      return command1.call(tpl, scope, option, buffer, line);
+      return command1.call(tpl, scope, option, buffer);
     } else {
-      error = 'in file: ' + tpl.name + ' can not call: ' + parts.join('.') + '" at line ' + line;
+      error = 'in file: ' + tpl.name + ' can not call: ' + parts.join('.') + '" at line ' + tpl.pos.line + ', col ' + tpl.pos.col;
     }
-    if (resolveInScope) {
-      caller = scope.resolve(parts.slice(0, -1), depth);
-      fn = caller[parts[parts.length - 1]];
-      if (fn) {
-        return fn.apply(caller, option.params);
-      }
+    caller = scope.resolve(parts.slice(0, -1), depth);
+    fn = caller[parts[parts.length - 1]];
+    if (fn) {
+      return fn.apply(caller, option.params);
     }
     if (error) {
       throw new Error(error);
@@ -6303,11 +6351,9 @@ xtemplateRuntime = function (exports) {
     return buffer;
   }
   var utils = {
-      callFn: function (tpl, scope, option, buffer, parts, line, depth) {
-        return callFn(tpl, scope, option, buffer, parts, depth, line, true);
-      },
-      callCommand: function (tpl, scope, option, buffer, parts, line) {
-        return callFn(tpl, scope, option, buffer, parts, 0, line, true);
+      callFn: callFn,
+      callCommand: function (tpl, scope, option, buffer, parts) {
+        return callFn(tpl, scope, option, buffer, parts);
       }
     };
   var loader = {
@@ -6340,7 +6386,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '1.1.1',
+    version: '1.2.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6401,7 +6447,7 @@ xtemplateRuntime = function (exports) {
             if (option && option.escaped) {
               newBuffer.writeEscaped(tplFn);
             } else {
-              newBuffer.write(tplFn);
+              newBuffer.append(tplFn);
             }
             newBuffer.end();
           } else {
@@ -6457,14 +6503,14 @@ xtemplateCompiler = function (exports) {
   var util = xtemplateRuntime.util;
   var xtplAstToJs;
   var TOP_DECLARATION = [
-      'var tpl = this;',
+      'var tpl = this;' + 'var pos = tpl.pos = {line:1, col:1};',
       'var nativeCommands = tpl.root.nativeCommands;',
       'var utils = tpl.root.utils;'
     ].join('\n');
-  var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer, {lineNumber});';
-  var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber});';
-  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber});';
-  var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {lineNumber}, {depth});';
+  var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer);';
+  var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, [{idParts}]);';
+  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}]);';
+  var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {depth});';
   var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}]);';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
   var REQUIRE_MODULE = 're' + 'quire("{name}");';
@@ -6486,6 +6532,7 @@ xtemplateCompiler = function (exports) {
   var DECLARE_NATIVE_COMMANDS = 'var {name}Command = nativeCommands["{name}"];';
   var DECLARE_UTILS = 'var {name}Util = utils["{name}"];';
   var BUFFER_WRITE = 'buffer.write({value});';
+  var BUFFER_APPEND = 'buffer.append({value});';
   var BUFFER_WRITE_ESCAPED = 'buffer.writeEscaped({value});';
   var RETURN_BUFFER = 'return buffer;';
   var XTemplateRuntime = xtemplateRuntime;
@@ -6566,6 +6613,9 @@ xtemplateCompiler = function (exports) {
       exp: exp,
       source: source
     };
+  }
+  function markPos(pos) {
+    return 'pos.line = ' + pos.line + '; pos.col = ' + pos.col + ';';
   }
   function getIdStringFromIdParts(source, idParts) {
     if (idParts.length === 1) {
@@ -6657,7 +6707,6 @@ xtemplateCompiler = function (exports) {
     var id = func.id;
     var idString = id.string;
     var idParts = id.parts;
-    var lineNumber = id.lineNumber;
     var i;
     if (idString === 'elseif') {
       return {
@@ -6726,18 +6775,17 @@ xtemplateCompiler = function (exports) {
       idName = guid('callRet');
       source.push('var ' + idName);
     }
+    source.push(markPos(id.pos));
     if (idString in nativeCommands) {
       source.push(substitute(CALL_NATIVE_COMMAND, {
         lhs: block ? 'buffer' : idName,
         name: idString,
-        option: optionName,
-        lineNumber: lineNumber
+        option: optionName
       }));
     } else if (block) {
       source.push(substitute(CALL_CUSTOM_COMMAND, {
         option: optionName,
-        idParts: joinArrayOfString(idParts),
-        lineNumber: lineNumber
+        idParts: joinArrayOfString(idParts)
       }));
     } else {
       var newParts = getIdStringFromIdParts(source, idParts);
@@ -6745,8 +6793,7 @@ xtemplateCompiler = function (exports) {
         lhs: idName,
         option: optionName,
         idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
-        depth: id.depth,
-        lineNumber: lineNumber
+        depth: id.depth
       }));
     }
     if (idName) {
@@ -6855,7 +6902,7 @@ xtemplateCompiler = function (exports) {
     contentStatement: function (contentStatement) {
       return {
         exp: '',
-        source: [substitute(BUFFER_WRITE, { value: wrapBySingleQuote(escapeString(contentStatement.value, 0)) })]
+        source: [substitute(BUFFER_APPEND, { value: wrapBySingleQuote(escapeString(contentStatement.value, 0)) })]
       };
     }
   };
@@ -6937,7 +6984,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '1.1.1',
+    version: '1.2.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

@@ -15,14 +15,20 @@
                 symbol: 'program',
                 rhs: ['statements', 'INVERSE', 'statements'],
                 action: function () {
-                    return new this.yy.ProgramNode(this.lexer.lineNumber, this.$1, this.$3);
+                    return new this.yy.ProgramNode({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1, this.$3);
                 }
             },
             {
                 symbol: 'program',
                 rhs: ['statements'],
                 action: function () {
-                    return new this.yy.ProgramNode(this.lexer.lineNumber, this.$1);
+                    return new this.yy.ProgramNode({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1);
                 }
             },
             {
@@ -45,8 +51,10 @@
                 symbol: 'statement',
                 rhs: ['OPEN_BLOCK', 'function', 'CLOSE', 'program', 'OPEN_CLOSE_BLOCK', 'id', 'CLOSE'],
                 action: function () {
-                    return new this.yy.BlockStatement(this.lexer.lineNumber, this.$2,
-                        this.$4, this.$6, this.$1.length !== 4);
+                    return new this.yy.BlockStatement({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$2, this.$4, this.$6, this.$1.length !== 4);
                 }
             },
 
@@ -55,7 +63,10 @@
                 symbol: 'statement',
                 rhs: ['OPEN_TPL', 'expression', 'CLOSE'],
                 action: function () {
-                    return new this.yy.ExpressionStatement(this.lexer.lineNumber, this.$2, this.$1.length !== 3);
+                    return new this.yy.ExpressionStatement({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$2, this.$1.length !== 3);
                 }
             },
 
@@ -64,7 +75,10 @@
                 symbol: 'statement',
                 rhs: ['CONTENT'],
                 action: function () {
-                    return new this.yy.ContentStatement(this.lexer.lineNumber, this.$1);
+                    return new this.yy.ContentStatement({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1);
                 }
             },
 
@@ -72,7 +86,10 @@
                 symbol: 'function',
                 rhs: ['id', 'L_PAREN', 'params', 'COMMA', 'hash', 'R_PAREN'],
                 action: function () {
-                    return new this.yy.Function(this.lexer.lineNumber, this.$1, this.$3, this.$5);
+                    return new this.yy.Function({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1, this.$3, this.$5);
                 }
             },
 
@@ -80,21 +97,30 @@
                 symbol: 'function',
                 rhs: ['id', 'L_PAREN', 'params', 'R_PAREN'],
                 action: function () {
-                    return new this.yy.Function(this.lexer.lineNumber, this.$1, this.$3);
+                    return new this.yy.Function({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1, this.$3);
                 }
             },
             {
                 symbol: 'function',
                 rhs: ['id', 'L_PAREN', 'hash', 'R_PAREN'],
                 action: function () {
-                    return new this.yy.Function(this.lexer.lineNumber, this.$1, null, this.$3);
+                    return new this.yy.Function({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1, null, this.$3);
                 }
             },
             {
                 symbol: 'function',
                 rhs: ['id', 'L_PAREN', 'R_PAREN'],
                 action: function () {
-                    return new this.yy.Function(this.lexer.lineNumber, this.$1);
+                    return new this.yy.Function({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1);
                 }
             },
 
@@ -321,14 +347,20 @@
                 symbol: 'primaryExpression',
                 rhs: ['STRING'],
                 action: function () {
-                    return new this.yy.String(this.lexer.lineNumber, this.$1);
+                    return new this.yy.String({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1);
                 }
             },
             {
                 symbol: 'primaryExpression',
                 rhs: ['NUMBER'],
                 action: function () {
-                    return new this.yy.Number(this.lexer.lineNumber, this.$1);
+                    return new this.yy.Number({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1);
                 }
             },
             {
@@ -358,7 +390,10 @@
                 symbol: 'hash',
                 rhs: ['hashSegment'],
                 action: function () {
-                    var hash = new this.yy.Hash(this.lexer.lineNumber),
+                    var hash = new this.yy.Hash({
+                            line: this.lexer.firstLine,
+                            col: this.lexer.firstColumn
+                        }),
                         $1 = this.$1;
                     hash.value[$1[0]] = $1[1];
                     return hash;
@@ -378,7 +413,10 @@
                 symbol: 'id',
                 rhs: ['idSegments'],
                 action: function () {
-                    return new this.yy.Id(this.lexer.lineNumber, this.$1);
+                    return new this.yy.Id({
+                        line: this.lexer.firstLine,
+                        col: this.lexer.firstColumn
+                    }, this.$1);
                 }
             },
             {

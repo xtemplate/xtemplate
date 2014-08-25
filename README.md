@@ -14,6 +14,18 @@ template engine lib on browser and nodejs
 ## docs
 http://kissyteam.github.io/xtpl/
 
+## changelog
+
+* 1.2.1
+ * improve speed
+ * compiled code changed
+
+* 1.1.1
+ * improve speed
+ * compiled code changed
+ * buffer.write only support unescaped write
+ * add buffer.writeEscaped to write escaped write
+
 ## contribute
 
 ### fork and clone

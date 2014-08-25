@@ -23,12 +23,12 @@ gulp.task('lint', function () {
 });
 
 gulp.task('clean', function () {
-    gulp.src(build, {
+    return gulp.src(build, {
         read: false
     }).pipe(clean());
 });
 
-gulp.task('build-xtemplate', ['lint'], function () {
+gulp.task('xtemplate', ['lint'], function () {
     return gulp.src('./lib/xtemplate.js')
         .pipe(modulex({
             modulex: {
@@ -56,7 +56,7 @@ gulp.task('build-xtemplate', ['lint'], function () {
         .pipe(gulp.dest(build));
 });
 
-gulp.task('build-xtemplate/runtime', ['lint'], function () {
+gulp.task('xtemplate/runtime', ['lint'], function () {
     return gulp.src('./lib/xtemplate/runtime.js')
         .pipe(modulex({
             modulex: {
@@ -83,10 +83,10 @@ gulp.task('build-xtemplate/runtime', ['lint'], function () {
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
 
-gulp.task('default', ['build-xtemplate', 'build-standalone']);
+gulp.task('default', ['xtemplate', 'xtemplate-standalone', 'runtime-standalone']);
 
-gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
-    gulp.src('./lib/xtemplate.js')
+gulp.task('xtemplate-standalone', ['lint'],function () {
+    return gulp.src('./lib/xtemplate.js')
         .pipe(modulex({
             modulex: {
                 packages: {
@@ -114,8 +114,10 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
         .pipe(uglify())
         .pipe(rename('xtemplate-standalone.js'))
         .pipe(gulp.dest(build));
+});
 
-    gulp.src('./build/xtemplate/runtime-debug.js')
+gulp.task('runtime-standalone', ['xtemplate/runtime'], function () {
+    return gulp.src('./build/xtemplate/runtime-debug.js')
         .pipe(kclean({
             files: [
                 {
@@ -135,14 +137,44 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
 
-gulp.task('build-kg', function () {
+gulp.task('kg', function () {
     var fs = require('fs');
     var kgInfo = JSON.parse(fs.readFileSync('./kg.log'));
     var version = packageInfo.version;
-    gulp.src('./build/xtemplate/{runtime,runtime-debug}.js')
+    return gulp.src('./build/xtemplate/{runtime,runtime-debug}.js')
         .pipe(replace(/"xtemplate\/runtime"/, '"kg/xtemplate/' + version + '/runtime"'))
         .pipe(gulp.dest(kgInfo.dest))
         .pipe(filter('runtime.js'))
         .pipe(rename('runtime-min.js'))
         .pipe(gulp.dest(kgInfo.dest));
+});
+
+gulp.task('parser', function (callback) {
+    require('child_process').exec('node node_modules/kison/bin/kison -g lib/xtemplate/compiler/parser-grammar.kison',
+        function (error, stdout, stderr) {
+            if (stdout) {
+                console.log('stdout: ' + stdout);
+            }
+            if (stderr) {
+                console.log('stderr: ' + stderr);
+            }
+            if (error) {
+                console.log('exec error: ' + error);
+            }
+        }).on('exit', callback);
+});
+
+gulp.task('parser-dev', function (callback) {
+    require('child_process').exec('node node_modules/kison/bin/kison -g lib/xtemplate/compiler/parser-grammar.kison --no-compressSymbol',
+        function (error, stdout, stderr) {
+            if (stdout) {
+                console.log('stdout: ' + stdout);
+            }
+            if (stderr) {
+                console.log('stderr: ' + stderr);
+            }
+            if (error) {
+                console.log('exec error: ' + error);
+            }
+        }).on('exit', callback);
 });

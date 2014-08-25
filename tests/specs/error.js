@@ -80,7 +80,7 @@ describe('error detection', function () {
                 //S.log('!'+e.replace(/\n/g,'\\n').replace(/\r/g,'\\r')+'!');
                 throw e;
             }
-        }).to['throw']('Syntax error at line 3:\n' +
+        }).to['throw']('Syntax error at line 3, col 7:\n' +
             'expect {{/if}} not {{/with}}');
     });
 
@@ -93,7 +93,7 @@ describe('error detection', function () {
             } catch (e) {
                 throw e;
             }
-        }).to['throw']('Syntax error at line 2:\n' +
+        }).to['throw']('Syntax error at line 2, col 4:\n' +
             'expect {{/x,y}} not {{/x}}');
     });
 });

@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": "~0.10"
@@ -39,6 +39,7 @@
     "gulp-uglify": "^0.3.1",
     "gulp-util": "^3.0.0",
     "jshint-stylish": "^0.4.0",
+    "kison": "^0.3.3",
     "mocha": "^1.21.4",
     "node-jscover": "^0.6.8",
     "node-jscover-coveralls": "^1.0.10",
