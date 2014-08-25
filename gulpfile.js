@@ -1,10 +1,10 @@
 var gulp = require('gulp');
-var gulpFilter = require('gulp-filter');
+var filter = require('gulp-filter');
 var kclean = require('gulp-kclean');
-var gulpModulex = require('gulp-modulex');
+var modulex = require('gulp-modulex');
 var path = require('path');
-var gulpRename = require('gulp-rename');
-var packageInfo  = require('./package.json');
+var rename = require('gulp-rename');
+var packageInfo = require('./package.json');
 var src = path.resolve(process.cwd(), 'lib');
 var build = path.resolve(process.cwd(), 'build');
 var clean = require('gulp-clean');
@@ -30,7 +30,7 @@ gulp.task('clean', function () {
 
 gulp.task('build-xtemplate', ['lint'], function () {
     return gulp.src('./lib/xtemplate.js')
-        .pipe(gulpModulex({
+        .pipe(modulex({
             modulex: {
                 packages: {
                     xtemplate: {
@@ -41,22 +41,24 @@ gulp.task('build-xtemplate', ['lint'], function () {
             excludeModules: ['xtemplate/runtime']
         }))
         .pipe(kclean({
-            files:[{
-                src:'./lib/xtemplate-debug.js',
-                outputModule:'xtemplate'
-            }]
+            files: [
+                {
+                    src: './lib/xtemplate-debug.js',
+                    outputModule: 'xtemplate'
+                }
+            ]
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulp.dest(build))
-        .pipe(gulpFilter('xtemplate-debug.js'))
+        .pipe(filter('xtemplate-debug.js'))
         .pipe(uglify())
-        .pipe(gulpRename('xtemplate.js'))
+        .pipe(rename('xtemplate.js'))
         .pipe(gulp.dest(build));
 });
 
 gulp.task('build-xtemplate/runtime', ['lint'], function () {
     return gulp.src('./lib/xtemplate/runtime.js')
-        .pipe(gulpModulex({
+        .pipe(modulex({
             modulex: {
                 packages: {
                     xtemplate: {
@@ -66,16 +68,18 @@ gulp.task('build-xtemplate/runtime', ['lint'], function () {
             }
         }))
         .pipe(kclean({
-            files:[{
-                src:'./lib/xtemplate/runtime-debug.js',
-                outputModule:'xtemplate/runtime'
-            }]
+            files: [
+                {
+                    src: './lib/xtemplate/runtime-debug.js',
+                    outputModule: 'xtemplate/runtime'
+                }
+            ]
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
-        .pipe(gulpFilter('runtime-debug.js'))
+        .pipe(filter('runtime-debug.js'))
         .pipe(uglify())
-        .pipe(gulpRename('runtime.js'))
+        .pipe(rename('runtime.js'))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
 
@@ -83,7 +87,7 @@ gulp.task('default', ['build-xtemplate', 'build-standalone']);
 
 gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
     gulp.src('./lib/xtemplate.js')
-        .pipe(gulpModulex({
+        .pipe(modulex({
             modulex: {
                 packages: {
                     xtemplate: {
@@ -92,7 +96,7 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
                 }
             }
         }))
-        .pipe(gulpFilter('xtemplate-debug.js'))
+        .pipe(filter('xtemplate-debug.js'))
         .pipe(kclean({
             files: [
                 {
@@ -105,10 +109,10 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
             ]
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
-        .pipe(gulpRename('xtemplate-standalone-debug.js'))
+        .pipe(rename('xtemplate-standalone-debug.js'))
         .pipe(gulp.dest(build))
         .pipe(uglify())
-        .pipe(gulpRename('xtemplate-standalone.js'))
+        .pipe(rename('xtemplate-standalone.js'))
         .pipe(gulp.dest(build));
 
     gulp.src('./build/xtemplate/runtime-debug.js')
@@ -123,10 +127,22 @@ gulp.task('build-standalone', ['build-xtemplate/runtime'], function () {
                 }
             ]
         }))
-        .pipe(gulpRename('runtime-standalone-debug.js'))
+        .pipe(rename('runtime-standalone-debug.js'))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
         .pipe(uglify())
-        .pipe(gulpRename('runtime-standalone.js'))
+        .pipe(rename('runtime-standalone.js'))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
+});
+
+gulp.task('build-kg', function () {
+    var fs = require('fs');
+    var kgInfo = JSON.parse(fs.readFileSync('./kg.log'));
+    var version = packageInfo.version;
+    gulp.src('./build/xtemplate/{runtime,runtime-debug}.js')
+        .pipe(replace(/"xtemplate\/runtime"/, '"kg/xtemplate/' + version + '/runtime"'))
+        .pipe(gulp.dest(kgInfo.dest))
+        .pipe(filter('runtime.js'))
+        .pipe(rename('runtime-min.js'))
+        .pipe(gulp.dest(kgInfo.dest));
 });

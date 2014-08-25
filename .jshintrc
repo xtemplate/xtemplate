@@ -22,7 +22,6 @@
         "expect": false,
         "beforeEach": false,
         "afterEach": false,
-        "modulex": false,
         "it": false
     }
 }
