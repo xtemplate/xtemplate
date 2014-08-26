@@ -38,13 +38,23 @@
     "gulp-replace": "^0.4.0",
     "gulp-uglify": "^0.3.1",
     "gulp-util": "^3.0.0",
+    "jshint": "^2.5.5",
     "jshint-stylish": "^0.4.0",
     "kison": "^0.3.3",
     "mocha": "^1.21.4",
     "node-jscover": "^0.6.8",
     "node-jscover-coveralls": "^1.0.10",
     "node-jscover-handler": "^1.0.3",
+    "precommit-hook": "^1.0.7",
     "serve-index": "^1.1.6",
     "serve-static": "^1.5.3"
+  },
+  "precommit": [
+    "lint",
+    "browser-test"
+  ],
+  "scripts": {
+    "lint": "gulp lint",
+    "browser-test": "mocha-phantomjs http://localhost:8002/tests/runner.html"
   }
 }
