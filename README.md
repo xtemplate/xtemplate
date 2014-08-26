@@ -13,14 +13,9 @@ template engine lib on browser and nodejs
 
 ## docs
 
-## 基本 api
-
 ### Class
 
 XTemplate/XTemplateRuntime
-
-构造器参数
-
 
 <table class="table table-bordered table-striped">
     <thead>
@@ -34,13 +29,12 @@ XTemplate/XTemplateRuntime
     <tr>
         <td>content</td>
         <td>String</td>
-        <td>模板字符串</td>
+        <td>template content string</td>
     </tr>
     <tr>
             <td>config</td>
             <td>Object</td>
             <td>
-            对象属性含义：
             <table class="table table-bordered table-striped">
                     <thead>
                     <tr>
@@ -53,12 +47,12 @@ XTemplate/XTemplateRuntime
                     <tr>
                         <td>name</td>
                         <td>String</td>
-                        <td>模板名字，用于编译时报错</td>
+                        <td>name of template for error report</td>
                     </tr>
                     <tr>
                         <td>commands</td>
                         <td>Object</td>
-                        <td>命令定义，详见下文</td>
+                        <td>command definition</td>
                         </tr>
                     </tbody>
                 </table></td>
@@ -71,7 +65,7 @@ XTemplate/XTemplateRuntime
 
 
 ```javascript
-String render(data:Object, [option:Object, callback:Function]) // 渲染数据，参数含义如下
+String render(data:Object, [option:Object, callback:Function]) // render data
 ```
 
 <table class="table table-bordered table-striped">
@@ -86,17 +80,17 @@ String render(data:Object, [option:Object, callback:Function]) // 渲染数据�
       <tr>
           <td>data</td>
           <td>Object</td>
-          <td>数据对象</td>
+          <td>data object to be rendered</td>
       </tr>
       <tr>
           <td>option</td>
           <td>Object</td>
-          <td>运行时选项，支持 commands，例如 {commands: {}}</td>
+          <td>support runtime commands. for example: {commands: {}}</td>
       </tr>
       <tr>
           <td>callback</td>
           <td>Function</td>
-          <td>完毕回调，第一个参数为 error，第二个参数为渲染结果。如果不提供，同步命令下 render 返回渲染结果。</td>
+          <td>callback function after render</td>
       </tr>
     </tbody>
 </table>
@@ -107,7 +101,7 @@ String render(data:Object, [option:Object, callback:Function]) // 渲染数据�
 
 
 ```javascript
-Buffer write(data:String, escape:Boolean) // 写数据到缓冲区
+Buffer write(data:String)
 ```
 
 <table class="table table-bordered table-striped">
@@ -122,24 +116,36 @@ Buffer write(data:String, escape:Boolean) // 写数据到缓冲区
     <tr>
         <td>data</td>
         <td>String</td>
-        <td>将要写到缓冲区的字符串</td>
+        <td>string to be written into buffer</td>
     </tr>
-    <tr>
-            <td>escape</td>
-            <td>Boolean</td>
-            <td>是否转义</td>
-        </tr>
-    </tbody>
 </table>
 
+```javascript
+Buffer writeEscaped(data:String)
+```
 
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>data</td>
+        <td>String</td>
+        <td>first escape string, then write it into buffer</td>
+    </tr>
+</table>
 
 ```javascript
-Buffer async(fn:Function) // 产生新的异步缓冲区，新的缓冲区为 fn 回调函数的第一个参数
+Buffer async(fn:Function) // generate a new buffer as the first parameter of callback
 
-Buffer end(data, escape) // 参数含义同 write 函数。 标志缓冲区数据填充完毕，用于通知异步缓冲区的结束。
+Buffer end() // mark escape of current buffer
 
-Buffer error(reason) // 触发 render 异步回调为失败。 reason 为回调的第一个参数.
+Buffer error(reason) // mark error of current render
 ```
 
 ### Scope api
@@ -149,24 +155,24 @@ Buffer error(reason) // 触发 render 异步回调为失败。 reason 为回调�
 
 
 ```javascript
-parent // 上级作用域
+parent // parent scope
 
-root // 顶层作用域
+root // topmost scope
 ```
 
 #### Methods
 
 
 ```javascript
-void setParent(scope: Scope) // 设置当前作用域的上级作用域
+void setParent(scope: Scope)
 
-void setData(data) // 设置当前作用域内数据
+void setData(data) // set data of current scope
 
-var getData() // 获取当前作用域内数据
+var getData()
 
-void set(name, value) // 设置当前作用域内附属数据
+void set(name, value) // set kv value of current scope
 
-void get(name) // 获取当前作用域内数据值（包括附属数据）
+void get(name)
 ```
 
 ### compiler api
@@ -177,17 +183,17 @@ XTemplate.Compiler
 
 ##### compile
 ```
-Object parse(content, name): 得到模板名字为 name 的模板内容 content 对应的编译后的函数
+Object compile(content, name): get compiled function of template whose content is content and name is name
 ```
 
 ##### parse
 ```
-Object parse(content, name): 得到模板名字为 name 的模板内容 content 对应的 ast 树
+Object parse(content, name): get compiled ast of template whose content is content and name is name
 ```
 
 ##### compileToStr
 ```
-String compileToStr(param:Object): 得到编译后的函数字符串
+String compileToStr(param:Object): get function string of template whose content is content and name is name
 ```
 
 param 包含:
@@ -206,39 +212,38 @@ param 包含:
         <td>name</td>
         <td>String</td>
         <td></td>
-        <td>模板名字</td>
+        <td>name of template</td>
     </tr>
     <tr>
         <td>content</td>
         <td>String</td>
         <td></td>
-        <td>模板内容</td>
+        <td>content of template</td>
     </tr>
     <tr>
         <td>isModule</td>
         <td>Boolean</td>
         <td>false</td>
-        <td>是否用于模块</td>
+        <td>whether generate module require</td>
     </tr>
     </tbody>
 </table>
 
-## 浏览器端使用
+## use on browser
 
-参考：https://github.com/yiminghe/xtemplate-on-browser
+refer：https://github.com/yiminghe/xtemplate-on-browser
 
-## node 下使用
+## use on node
 
-使用 https://github.com/kissyteam/xtpl
+use https://github.com/kissyteam/xtpl
 
-## 语法
+## syntax
 
-### 基本类型
+### simple data type
 
-支持 true false null undefined number string map array
+true false null undefined number string map array
 
 ### map
-值为基本类型
 
 ```
 {{#with({
@@ -249,7 +254,6 @@ param 包含:
 ```
 
 ### array
-元素项为基本类型
 
 ```
 {{#each([1,2,4])}}
@@ -257,9 +261,9 @@ param 包含:
 {{/each}}
 ```
 
-### 转义
+### escape
 
-#### 使用 {{%%}}
+#### {{%%}}
 
 ```
 {{%
@@ -269,40 +273,38 @@ param 包含:
 %}}  // => {{x}}
 ```
 
-#### 使用 \\{{
+####  \\{{
 
 ```
 \{{a}}  // -> {{a}}
 ```
 
-#### angularjs
-
-如果是 angularjs 的话，可以直接配置 angularjs 使用不同的标记
+#### angularjs conflict
 
 [http://stackoverflow.com/questions/13671701/angularjs-twig-conflict-with-double-curly-braces](http://stackoverflow.com/questions/13671701/angularjs-twig-conflict-with-double-curly-braces)
 
-### 注释
+### comment
 
 
 ```
 {{! zhu shi }}
 ```
 
-### 变量渲染
+### variable
 
-转义：
+escaped：
 
 ```
 {{x}}
 ```
 
-非转义:
+unescaped:
 
 ```
 {{{x}}}
 ```
 
-### 根数据访问
+### root data
 
 ```javascript
 var x = {name:1,arr:[{name:2}]}
@@ -314,7 +316,7 @@ var x = {name:1,arr:[{name:2}]}
 {{/each}}
 ```
 
-### 支持变量属性获取
+### property access
 
 
 ```javascript
@@ -334,9 +336,7 @@ var x = 'q';
 {{z[x]}} // 1
 ```
 
-### 调用变量方法
-
-注意：该用法会影响性能，推荐自定义命令
+### methods of data
 
 ```javascript
 var x = [1, 2, 3];
@@ -346,9 +346,9 @@ var x = [1, 2, 3];
 {{#each(x.slice(1))}}{{this}} {{/each}} // => 2 3
 ```
 
-### 变量运算
+### operation
 
-支持 + - * / %
++ - * / %
 
 ```
 {{x+y}}
@@ -356,9 +356,9 @@ var x = [1, 2, 3];
 {{ y - 1 }}
 ```
 
-### 比较操作
+### comparison
 
-支持 if elseif else === !=== > >= < <=
+if elseif else === !=== > >= < <=
 
 ```
 {{#if( x===1 )}}
@@ -373,9 +373,9 @@ var x = [1, 2, 3];
 {{/if}}
 ```
 
-### 逻辑操作
+### logic
 
-支持 || &&
+|| &&
 
 ```
 {{#if(x>1 && y<2)}}
@@ -387,9 +387,7 @@ var x = [1, 2, 3];
 {{/if}}
 ```
 
-### 循环
-
-可以对数组或对象进行循环操作，默认获取循环对象值为 {{this}}，键为 {{xindex}} , 也可以指定.
+### loop
 
 ```javascript
 var x = ['a', 'b'];
@@ -405,9 +403,7 @@ var x = ['a', 'b'];
 {{/each}}
 ```
 
-### 范围循环
-
-可以对 start 和 end(不包含) 范围内的数字进行循环
+### range
 
 ```
 {{#each(range(0,3))}}{{this}}{{/each}} // 012
@@ -415,7 +411,7 @@ var x = ['a', 'b'];
 {{#each(range(3,0,2))}}{{this}}{{/each}} // 31
 ```
 
-### 设置操作
+### set
 
 
 ```
@@ -425,20 +421,20 @@ var x = ['a', 'b'];
 {{y+z}} // 5
 ```
 
-### 宏
+### macro
 
 
 ```
-// 声明
+// declare
 {{#macro("test","param" default=1)}}param is {{param}} {{default}}{{/macro}}
 
-// 调用宏
+// call
 {{macro("test","2")}} // => param is 2 1
 
 {{macro("test", "2", 2)}} // => param is 2 2
 ```
 
-### 包含操作
+### include
 
 x.xtpl
 
@@ -452,7 +448,7 @@ y.xtpl
 {{include("x")}}
 ```
 
-### 继承
+### extend
 
 layout.xtpl
 
@@ -477,24 +473,22 @@ index.xtpl
 ```html
 {{extend ("./layout1")}}
 
-// 填
 {{#block ("head")}}
     <link type="text/css" href="test.css" rev="stylesheet" rel="stylesheet"/>
 {{/block}}
 
-// 填
 {{#block ("body")}}
     <h2>{{title}}</h2>
 {{/block}}
 ```
 
-### 自定义命令
+### custom command
 
 
-#### 全局命令
+#### global command
 
 
-同步调用行内：
+sync inline command
 
 ```javascript
 XTemplate.addCommand('xInline',function(scope, option){
@@ -502,10 +496,7 @@ XTemplate.addCommand('xInline',function(scope, option){
 });
 ```
 
-此时模板中可通过 {{}} 来转义命令返回的内容.
-
-
-或使用 buffer (详见下面 Buffer api)
+use buffer
 
 ```javascript
 XTemplate.addCommand('xInline',function(scope, option, buffer){
@@ -513,13 +504,12 @@ XTemplate.addCommand('xInline',function(scope, option, buffer){
 });
 ```
 
-此时模板不能控制命令返回内容是否转义.
 
 ```
 {{xInline(1)}} // => 2
 ```
 
-同步调用块级：
+sync block command
 
 ```javascript
 XTemplate.addCommand('xBlock',function(scope, option, buffer){
@@ -534,7 +524,7 @@ XTemplate.addCommand('xBlock',function(scope, option, buffer){
 // => 21
 ```
 
-异步调用行内
+async inline command
 
 ```javascript
 XTemplate.addCommand('xInline',function(scope, option,buffer){
@@ -551,7 +541,7 @@ XTemplate.addCommand('xInline',function(scope, option,buffer){
 {{xInline(1)}} // => 2
 ```
 
-异步调用块级：
+async block command
 
 ```javascript
 XTemplate.addCommand('xInline',function(scope, option,buffer){
@@ -576,8 +566,6 @@ XTemplate.addCommand('xInline',function(scope, option,buffer){
 
 
 ## Reserved words
-
-**Xtemplate内置以下命令，请避免重复定义同名命令**
 
 <table>
     <tr>
