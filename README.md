@@ -225,34 +225,11 @@ param 包含:
 
 ## 浏览器端使用
 
-参考：https://github.com/yiminghe/xtemplate-browser
-
-### 预编译
-
-推荐首先将模板预编译为模块：https://github.com/kissyteam/gulp-xtemplate
-
-### standalone 模式
-
-载入 build/xtemplate-standalone.js 或 build/xtemplate/runtime-standalone.js 使用全局变量即可，不支持 include 语法
-
-### 动态加载模式
-
-将 modulex 与 build/ 下的文件放到同一目录
-
-### kissy 使用
-
-```html
-<script src='http://g.assets.daily.taobao.net/kissy/k/1.4.7/seed-min.js'></script>
-<script>
-	KISSY.use('x/x-render',function(S,XRender){
-    	console.log(XRender({x:1}));
-    });
-</script>
-```
+参考：https://github.com/yiminghe/xtemplate-on-browser
 
 ## node 下使用
 
-https://github.com/kissyteam/xtpl
+使用 https://github.com/kissyteam/xtpl
 
 ## 语法
 
