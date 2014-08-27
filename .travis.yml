@@ -11,7 +11,7 @@ before_script:
 - phantomjs --version
 script:
 - npm test
-- mocha-phantomjs http://localhost:8002/tests/runner.html
-- mocha-phantomjs http://localhost:8002/tests/runner.html?build
-- mocha-phantomjs http://localhost:8002/tests/runner.html?standalone
-- mocha-phantomjs -R node_modules/node-jscover/lib/reporters/mocha/console http://localhost:8002/tests/runner.html?coverage
+- npm run-script browser-test
+- npm run-script browser-test-build
+- npm run-script browser-test-standalone
+- npm run-script browser-test-cover
