@@ -21,23 +21,15 @@ https://github.com/kissyteam/xtemplate/blob/master/docs/syntax.md
 
 ## use on browser
 
-refer：https://github.com/yiminghe/xtemplate-on-browser
+https://github.com/yiminghe/xtemplate-on-browser
 
 ## use on node
 
-use https://github.com/kissyteam/xtpl
+https://github.com/kissyteam/xtpl
 
 ## changelog
 
-* 1.2.1
- * improve speed
- * compiled code changed
-
-* 1.1.1
- * improve speed
- * compiled code changed
- * buffer.write only support unescaped write
- * add buffer.writeEscaped to write escaped write
+https://github.com/kissyteam/xtemplate/milestones
 
 ## contribute
 

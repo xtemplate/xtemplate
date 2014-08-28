@@ -31,7 +31,7 @@ function modularize(req, res, next) {
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/lib/', modularize);
-app.use('/tests/specs/', modularize);
+app.use('/tests/browser/specs/', modularize);
 
 app.use(jscoverCoveralls());
 app.use(jscoverHandler());

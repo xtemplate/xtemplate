@@ -37,6 +37,11 @@ XTemplate/XTemplateRuntime
                         <td>name of template for error report</td>
                     </tr>
                     <tr>
+                        <td>loader</td>
+                        <td>Object</td>
+                        <td>contains a load function to load included template</td>
+                    </tr>
+                    <tr>
                         <td>commands</td>
                         <td>Object</td>
                         <td>command definition</td>
@@ -240,6 +245,63 @@ XTemplate.addCommand('xInline',function(scope, option,buffer){
 {{ret}}
 {{/xBlock}}
 // => 21
+```
+
+## loader
+
+a object which contains a load function and passed to XTemplate config
+
+```javascript
+void load(params:Object, callback:Function)
+```
+
+params detail:
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>name</td>
+        <td>String</td>
+        <td>included template name</td>
+    </tr>
+    <tr>
+        <td>root</td>
+        <td>XTemplate</td>
+        <td>xtemplate instance</td>
+    </tr>
+</table>
+
+for example, XTemplate load precompiled template by require from modulex:
+
+```javascript
+var loader = {
+    cache: {},
+    load: function (params, callback) {
+        var name = params.name;
+        var cache = this.cache;
+        if (cache[name]) {
+            return callback(undefined, cache[name]);
+        }
+        require([name], {
+            success: function (tpl) {
+                cache[name] = tpl;
+                callback(undefined, tpl);
+            },
+            error: function () {
+                var error = 'template "' + params.name + '" does not exist';
+                util.log(error, 'error');
+                callback(error);
+            }
+        });
+    }
+};
 ```
 
 ## compiler

@@ -85,9 +85,17 @@ gulp.task('xtemplate/runtime', ['lint'], function () {
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
 
-gulp.task('default', ['xtemplate', 'xtemplate-standalone', 'runtime-standalone']);
+gulp.task('precompile-test', function () {
+    var gulpXTemplate = require('gulp-xtemplate');
+    return gulp.src('tests/browser/fixture/*.xtpl').pipe(gulpXTemplate({
+        useGallery: false,
+        XTemplate: require('./')
+    })).pipe(gulp.dest('tests/browser/fixture/'));
+});
 
-gulp.task('xtemplate-standalone', ['lint'],function () {
+gulp.task('default', ['xtemplate', 'xtemplate-standalone', 'runtime-standalone', 'precompile-test']);
+
+gulp.task('xtemplate-standalone', ['lint'], function () {
     return gulp.src('./lib/xtemplate.js')
         .pipe(modulex({
             modulex: {

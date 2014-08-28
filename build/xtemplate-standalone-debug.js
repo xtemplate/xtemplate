@@ -6386,7 +6386,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '1.2.2',
+    version: '1.2.3',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6513,7 +6513,8 @@ xtemplateCompiler = function (exports) {
   var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {depth});';
   var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}]);';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
-  var REQUIRE_MODULE = 're' + 'quire("{name}");';
+  var REQUIRE_MODULE = 'var {variable} = re' + 'quire("{name}");';
+  var CHANGE_REQUIRE_PARAM = '{option}.params[0] = {variable}.TPL_NAME;';
   var CHECK_BUFFER = [
       'if({name} && {name}.isBuffer){',
       'buffer = {name};',
@@ -6768,7 +6769,15 @@ xtemplateCompiler = function (exports) {
     }
     if (xtplAstToJs.isModule) {
       if (idString === 'include' || idString === 'extend') {
-        source.push(substitute(REQUIRE_MODULE, { name: func.params[0].value }));
+        var moduleVariable = guid('module');
+        source.push(substitute(REQUIRE_MODULE, {
+          name: func.params[0].value,
+          variable: moduleVariable
+        }));
+        source.push(substitute(CHANGE_REQUIRE_PARAM, {
+          option: optionName,
+          variable: moduleVariable
+        }));
       }
     }
     if (!block) {
@@ -6984,7 +6993,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '1.2.2',
+    version: '1.2.3',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

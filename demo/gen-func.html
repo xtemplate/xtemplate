@@ -49,6 +49,8 @@
 
                     my first {{tpl(name ,'0', file=3)}} o
 
+                    {{include('./y')}}
+
                     {{#each(this)}}
                     {{xindex}} {{name}}
                     {{/each}}
@@ -91,6 +93,7 @@
             </div>
             <br/>
             <button id='parse' class="ks-button">parse</button>
+            <span><label style="display: inline">isModule: <input type="checkbox" id="isModule"/></label></span>
         </div>
 
         <div class="span15">
@@ -110,7 +113,8 @@
         modulex.use('xtemplate', function (XTemplate) {
             $('#parse').on('click', function () {
                 var g = XTemplate.Compiler.compileToStr({
-                    content: $('#tpl').val()
+                    content: $('#tpl').val(),
+                    isModule: $('#isModule')[0].checked
                 });
                 $('#gen').html('<pre class="brush: js;">' +
                         util.escapeHtml(js_beauty(g)) + '</pre>');

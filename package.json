@@ -1,62 +1,65 @@
 {
-    "name": "xtemplate",
-    "version": "1.2.2",
-    "author": "yiminghe <yiminghe@gmail.com>",
-    "engines": {
-        "node": "~0.10"
-    },
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "http://github.com/kissyteam/xtemplate.git"
-    },
-    "testling": {
-        "server": "server.js",
-        "html": "tests/runner.html",
-        "browsers": [
-            "ie/6..latest",
-            "chrome/latest",
-            "firefox/latest",
-            "safari/latest",
-            "iphone/6..lastest",
-            "ipad/6..latest",
-            "android-browser/latest"
-        ]
-    },
-    "devDependencies": {
-        "body-parser": "^1.6.5",
-        "chai": "^1.9.1",
-        "express": "^4.8.5",
-        "gulp": "^3.8.7",
-        "gulp-clean": "^0.3.1",
-        "gulp-filter": "^1.0.0",
-        "gulp-jscs": "^1.1.0",
-        "gulp-jshint": "^1.8.4",
-        "gulp-kclean": "^0.0.13",
-        "gulp-modulex": "^1.0.0",
-        "gulp-rename": "^1.2.0",
-        "gulp-replace": "^0.4.0",
-        "gulp-uglify": "^0.3.1",
-        "gulp-util": "^3.0.0",
-        "jshint": "^2.5.5",
-        "jshint-stylish": "^0.4.0",
-        "kison": "^0.3.3",
-        "mocha": "^1.21.4",
-        "node-jscover": "^0.6.8",
-        "node-jscover-coveralls": "^1.0.10",
-        "node-jscover-handler": "^1.0.3",
-        "precommit-hook": "^1.0.7",
-        "serve-index": "^1.1.6",
-        "serve-static": "^1.5.3"
-    },
-    "precommit": [
-        "lint"
-    ],
-    "scripts": {
-        "lint": "gulp lint",
-        "browser-test": "mocha-phantomjs http://localhost:8002/tests/runner.html",
-        "browser-test-build": "mocha-phantomjs http://localhost:8002/tests/runner.html?build",
-        "browser-test-cover": "mocha-phantomjs -R node_modules/node-jscover/lib/reporters/mocha/console http://localhost:8002/tests/runner.html?coverage",
-        "browser-test-standalone": "mocha-phantomjs http://localhost:8002/tests/runner.html?standalone"
-    }
+  "name": "xtemplate",
+  "version": "1.2.4",
+  "author": "yiminghe <yiminghe@gmail.com>",
+  "engines": {
+    "node": "~0.10"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/kissyteam/xtemplate.git"
+  },
+  "testling": {
+    "server": "server.js",
+    "html": "tests/runner.html",
+    "browsers": [
+      "ie/6..latest",
+      "chrome/latest",
+      "firefox/latest",
+      "safari/latest",
+      "iphone/6..lastest",
+      "ipad/6..latest",
+      "android-browser/latest"
+    ]
+  },
+  "devDependencies": {
+    "body-parser": "^1.6.5",
+    "chai": "^1.9.1",
+    "express": "^4.8.5",
+    "gulp": "^3.8.7",
+    "gulp-clean": "^0.3.1",
+    "gulp-filter": "^1.0.0",
+    "gulp-jscs": "^1.1.0",
+    "gulp-jshint": "^1.8.4",
+    "gulp-kclean": "^0.0.13",
+    "gulp-modulex": "^1.0.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-replace": "^0.4.0",
+    "gulp-uglify": "^0.3.1",
+    "gulp-util": "^3.0.0",
+    "gulp-xtemplate": "^1.0.2",
+    "jshint": "^2.5.5",
+    "jshint-stylish": "^0.4.0",
+    "kison": "^0.3.3",
+    "mocha": "^1.21.4",
+    "node-jscover": "^0.6.8",
+    "node-jscover-coveralls": "^1.0.10",
+    "node-jscover-handler": "^1.0.3",
+    "precommit-hook": "^1.0.7",
+    "serve-index": "^1.1.6",
+    "serve-static": "^1.5.3",
+    "xtpl": "^1.1.2"
+  },
+  "precommit": [
+    "lint"
+  ],
+  "scripts": {
+    "lint": "gulp lint",
+    "test": "node ./node_modules/mocha/bin/mocha -R list tests/node/specs",
+    "browser-test": "mocha-phantomjs http://localhost:8002/tests/runner.html",
+    "browser-test-build": "mocha-phantomjs http://localhost:8002/tests/runner.html?build",
+    "browser-test-cover": "mocha-phantomjs -R node_modules/node-jscover/lib/reporters/mocha/console http://localhost:8002/tests/runner.html?coverage",
+    "browser-test-standalone": "mocha-phantomjs http://localhost:8002/tests/runner.html?standalone"
+  }
 }
