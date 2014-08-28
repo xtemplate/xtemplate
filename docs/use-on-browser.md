@@ -2,7 +2,7 @@
 
 [xtemplate](https://github.com/kissyteam/xtemplate) 经过独立化而摆脱了对 kissy 的依赖，从而可以在 kissy 升级时仍然使用老的 xtemplate，或者单独升级 xtemplate，本文介绍浏览器端单独使用 xtemplate 的几种方案
 
-## 依赖工具
+## 依赖库与工具
 
 * [gulp](https://github.com/gulpjs/gulp/) 项目构建工具
 * [xtemplate](https://github.com/kissyteam/xtemplate) 应用于 nodejs 构建工具以及浏览器端的模板引擎库
@@ -31,7 +31,7 @@ xtemplate 以及其依赖的浏览器端库可通过 [bower](https://github.com/
 
 ### 模块加载模式
 
-standlone 模式需要浏览器端在线编译，并且不能有效处理（需要另行配置）模板 include/extend 的情景，而通过把模板编译为模板函数模块，则可以利用现有的模块加载引擎以及打包机制来处理模版的依赖，并且避免了浏览器端的编译
+standalone 模式需要浏览器端在线编译，并且不能有效处理（需要另行配置）模板 include/extend 的情景，而通过把模板编译为模板函数模块，则可以利用现有的模块加载引擎以及打包机制来处理模版的依赖，并且避免了浏览器端的编译
 
 首先准备 .xtpl 模板文件，例如
 
@@ -91,7 +91,7 @@ bower install xtemplate#1.2.4
 
 ### 通过 kissy gallery 使用
 
-kissy 是一个整理的解决方案，如果你选择使用 kissy，那么客户端将极其简单，离线编译部分同理，不过不需要再 bower install xtemplate 了，
+kissy 是一个整体的解决方案，如果你选择使用 kissy，那么客户端将极其简单，离线编译部分同理，不过不需要再 bower install xtemplate 了，
 只需要 npm install 指定版本的 xtemplate (npm install xtemplate@1.2.4)，然后编译即可，gulpfile:
 
 ```
@@ -110,14 +110,14 @@ gulp.task('default', function () {
 ```
 <script src="//g.alicdn.com/kissy/k/1.4.8/seed.js"></script>
 <script>
-    modulex.config({
+    KISSY.config({
         packages: {
             xtpl: {
                 base: './build'
             }
         }
     });
-    modulex.use('xtpl/a-render', function (aRender) {
+    KISSY.use('xtpl/a-render', function (S, aRender) {
         console.log(aRender({
             x: 1,
             y: 2
