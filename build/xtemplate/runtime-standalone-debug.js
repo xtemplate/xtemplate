@@ -1,4 +1,5 @@
 var XTemplateRuntime = (function(){ var module = {};
+
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
   /*
@@ -632,7 +633,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '1.2.3',
+      version: '1.2.4',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
@@ -748,5 +749,5 @@ _xtemplateRuntime_ = function (exports) {
   exports = xtemplateRuntime;
   return exports;
 }();
-return xtemplateRuntime;
-})()
+return _xtemplateRuntime_;
+})();

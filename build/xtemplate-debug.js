@@ -6343,7 +6343,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '1.2.3',
+    version: '1.2.4',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

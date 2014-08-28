@@ -631,7 +631,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '1.2.3',
+    version: '1.2.4',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,

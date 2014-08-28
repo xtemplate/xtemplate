@@ -1,4 +1,5 @@
 var XTemplate = (function(){ var module = {};
+
 /*
 combined modules:
 xtemplate
@@ -6386,7 +6387,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '1.2.3',
+    version: '1.2.4',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6993,7 +6994,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '1.2.3',
+    version: '1.2.4',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
@@ -7004,4 +7005,4 @@ xtemplate = function (exports) {
   return exports;
 }();
 return xtemplate;
-})()
+})();

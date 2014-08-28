@@ -112,8 +112,8 @@ gulp.task('xtemplate-standalone', ['lint'], function () {
                 {
                     src: path.resolve(src, 'xtemplate-debug.js'),
                     wrap: {
-                        start: 'var XTemplate = (function(){ var module = {};',
-                        end: '\nreturn xtemplate;\n})()'
+                        start: 'var XTemplate = (function(){ var module = {};\n',
+                        end: '\nreturn xtemplate;\n})();'
                     }
                 }
             ]
@@ -134,8 +134,8 @@ gulp.task('runtime-standalone', ['xtemplate/runtime'], function () {
                 {
                     src: './build/xtemplate/runtime-debug.js',
                     wrap: {
-                        start: 'var XTemplateRuntime = (function(){ var module = {};',
-                        end: '\nreturn xtemplateRuntime;\n})()'
+                        start: 'var XTemplateRuntime = (function(){ var module = {};\n',
+                        end: '\nreturn _xtemplateRuntime_;\n})();'
                     }
                 }
             ]
@@ -143,8 +143,8 @@ gulp.task('runtime-standalone', ['xtemplate/runtime'], function () {
         .pipe(rename('runtime-standalone-debug.js'))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
-        .pipe(uglify())
         .pipe(replace(/@DEBUG@/g, ''))
+        .pipe(uglify())
         .pipe(rename('runtime-standalone.js'))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')));
 });
@@ -153,11 +153,15 @@ gulp.task('kg', function () {
     var fs = require('fs');
     var kgInfo = JSON.parse(fs.readFileSync('./kg.log'));
     var version = packageInfo.version;
-    return gulp.src('./build/xtemplate/{runtime,runtime-debug}.js')
-        .pipe(replace(/"xtemplate\/runtime"/, '"kg/xtemplate/' + version + '/runtime"'))
+    return gulp.src('./build/xtemplate/runtime-debug.js')
+        .pipe(replace('modulex.add("xtemplate/runtime", [], function(require, exports, module)',
+                'KISSY.add("kg/xtemplate/'+version+'/runtime",[],function(S,require,exports,module)'))
         .pipe(gulp.dest(kgInfo.dest))
-        .pipe(filter('runtime.js'))
+        .pipe(replace(/@DEBUG@/g, ''))
+        .pipe(uglify())
         .pipe(rename('runtime-min.js'))
+        .pipe(gulp.dest(kgInfo.dest))
+        .pipe(rename('runtime.js'))
         .pipe(gulp.dest(kgInfo.dest));
 });
 

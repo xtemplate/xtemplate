@@ -1,0 +1,10 @@
+<script src="/build/xtemplate/runtime-standalone.js"></script>
+<script>
+    (function () {
+        var x = XTemplateRuntime;
+        console.log(new XTemplateRuntime(function b(scope,buffer,undefined){
+            buffer.writeEscaped(1);
+            return buffer;
+        }).render());
+    })();
+</script>
