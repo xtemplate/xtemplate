@@ -58,7 +58,12 @@ gulp.task('default', function () {
 });
 ```
 
-这里需要保证 npm install 的 xtemplate 和 bower install 的 xtemplate 是同一个版本.
+这里需要保证 npm install 的 xtemplate 和 bower install 的 xtemplate 是同一个版本.例如
+
+```
+npm install xtemplate@1.2.4
+bower install xtemplate#1.2.4
+```
 
 接下来使用 modulex 加载并配置模板引擎包使用即可：
 ```
@@ -86,7 +91,8 @@ gulp.task('default', function () {
 
 ### 通过 kissy gallery 使用
 
-kissy 是一个整理的解决方案，如果你选择使用 kissy，那么客户端将极其简单，离线编译部分同理，不过不需要再 bower install xtemplate 了，只需要 npm install 指定版本的 xtemplate，然后编译即可，gulpfile:
+kissy 是一个整理的解决方案，如果你选择使用 kissy，那么客户端将极其简单，离线编译部分同理，不过不需要再 bower install xtemplate 了，
+只需要 npm install 指定版本的 xtemplate (npm install xtemplate@1.2.4)，然后编译即可，gulpfile:
 
 ```
 var gulpXTemplate = require('gulp-xtemplate');
@@ -99,10 +105,10 @@ gulp.task('default', function () {
 });
 ```
 
-在使用时只需载入 kissy seed 即可（目前支持 5.0.0.alpha.12）:
+在使用时只需载入 kissy seed 即可 (1.4.x 从 1.4.8 支持):
 
 ```
-<script src="//g.alicdn.com/kissy/edge/2014.08.26/seed-debug.js"></script>
+<script src="//g.alicdn.com/kissy/k/1.4.8/seed.js"></script>
 <script>
     modulex.config({
         packages: {
