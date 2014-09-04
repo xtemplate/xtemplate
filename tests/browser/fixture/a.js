@@ -36,5 +36,5 @@ callRet4 = undefined;
 buffer.writeEscaped(callRet4);
 return buffer;
 };
-module.exports.TPL_NAME = module.name;
+module.exports.TPL_NAME = module.id || module.name;
 });

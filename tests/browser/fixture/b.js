@@ -21,5 +21,5 @@ var id0 = scope.resolve(["y"]);
 buffer.writeEscaped(id0);
 return buffer;
 };
-module.exports.TPL_NAME = module.name;
+module.exports.TPL_NAME = module.id || module.name;
 });
