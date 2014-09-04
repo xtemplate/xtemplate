@@ -8,6 +8,7 @@
 * [xtemplate](https://github.com/kissyteam/xtemplate) 应用于 nodejs 构建工具以及浏览器端的模板引擎库
 * [gulp-xtemplate](https://github.com/kissyteam/gulp-xtemplate) 将指定后缀的模板文件（默认 .xtpl）编译为可加载的模块.
 * [modulex](https://github.com/kissyteam/modulex) 下一代独立的 kissy 模块加载器
+* [requirejs](https://github.com/jrburke/requirejs) 流行的模块加载器
 
 ## 浏览器端使用
 
