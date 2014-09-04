@@ -21,8 +21,8 @@ https://github.com/kissyteam/xtemplate/blob/master/docs/syntax.md
 
 ## use on browser
 
-https://github.com/kissyteam/xtemplate/blob/master/docs/use-on-browser.md
-https://github.com/yiminghe/xtemplate-on-browser
+guide: https://github.com/kissyteam/xtemplate/blob/master/docs/use-on-browser.md
+demo: https://github.com/yiminghe/xtemplate-on-browser
 
 ## use on node
 

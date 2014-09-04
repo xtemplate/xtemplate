@@ -31,6 +31,8 @@ xtemplate 以及其依赖的浏览器端库可通过 [bower](https://github.com/
 
 ### 模块加载模式
 
+#### modulex loader
+
 standalone 模式需要浏览器端在线编译，并且不能有效处理（需要另行配置）模板 include/extend 的情景，而通过把模板编译为模板函数模块，则可以利用现有的模块加载引擎以及打包机制来处理模版的依赖，并且避免了浏览器端的编译
 
 首先准备 .xtpl 模板文件，例如
@@ -53,7 +55,7 @@ var xtemplate = require('xtemplate');
 gulp.task('default', function () {
     gulp.src('xtpl/**/*').pipe(gulpXTemplate({
         XTemplate: xtemplate,
-        useGallery: false
+        runtime: 'xtemplate/runtime'
     })).pipe(gulp.dest('build'))
 });
 ```
@@ -86,6 +88,65 @@ bower install xtemplate#1.2.4
             y: 2
         }));
     }); // 12
+</script>
+```
+
+#### requirejs loader
+
+同 modulex 类似，也可以使用 requirejs 加载 xtemplate 的模板，如果不想重新构建 xtemplate 的话这里需要做下适配：
+
+```javascript
+var modulex = {
+        add: function (name, deps, fn) {
+            if (arguments.length === 3) {
+                deps.unshift.apply(deps, ['require', 'exports', 'module']);
+                define(name, deps, fn);
+            } else {
+                define(name, deps, fn);
+            }
+        }
+    };
+```
+
+接下来对构建脚本做下配置为生成 define 包装：
+
+```javascript
+    gulp.src('xtpl/**/*').pipe(gulpXTemplate({
+        XTemplate: xtemplate,
+        wrap: 'define',
+        runtime: 'xtemplate/runtime'
+    })).pipe(gulp.dest('build'))
+```
+
+最后就可以使用了：
+
+```html
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js"></script>
+<script>
+    var modulex = {
+        add: function (name, deps, fn) {
+            if (arguments.length === 3) {
+                deps.unshift.apply(deps, ['require', 'exports', 'module']);
+                define(name, deps, fn);
+            } else {
+                define(name, deps, fn);
+            }
+        }
+    };
+    require.config({
+        paths: {
+            xtpl: './build',
+            'xtemplate/runtime': '../bower_components/xtemplate/build/xtemplate/runtime-debug'
+        }
+    });
+    require(['xtpl/a-render'], function (aRender) {
+       aRender({
+            x: 1,
+            y: 2
+        },function(err,content){
+            console.log(content);
+        });
+    });
 </script>
 ```
 
@@ -125,7 +186,6 @@ gulp.task('default', function () {
     });
 </script>
 ```
-
 
 上述例子详见: [xtemplate-on-browser](https://github.com/yiminghe/xtemplate-on-browser)
 
