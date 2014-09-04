@@ -8,7 +8,7 @@ template engine lib on browser and nodejs
 [![Coverage Status](https://img.shields.io/coveralls/kissyteam/xtemplate.svg)](https://coveralls.io/r/kissyteam/xtemplate?branch=master)
 [![Dependency Status](https://gemnasium.com/kissyteam/xtemplate.png)](https://gemnasium.com/kissyteam/xtemplate)
 [![Bower version](https://badge.fury.io/bo/xtemplate.svg)](http://badge.fury.io/bo/xtemplate)
-[![node version][https://img.shields.io/badge/node.js-%3E=_0.10-green.svg?style=flat-square]][http://nodejs.org/download/]
+[![node version](https://img.shields.io/badge/node.js-%3E=_0.10-green.svg?style=flat-square)](http://nodejs.org/download/)
 
 [![browser support](https://ci.testling.com/kissyteam/xtemplate.png)](https://ci.testling.com/kissyteam/xtemplate)
 
