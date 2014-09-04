@@ -88,7 +88,7 @@ gulp.task('xtemplate/runtime', ['lint'], function () {
 gulp.task('precompile-test', function () {
     var gulpXTemplate = require('gulp-xtemplate');
     return gulp.src('tests/browser/fixture/*.xtpl').pipe(gulpXTemplate({
-        useGallery: false,
+        runtime: 'xtemplate/runtime',
         XTemplate: require('./')
     })).pipe(gulp.dest('tests/browser/fixture/'));
 });
