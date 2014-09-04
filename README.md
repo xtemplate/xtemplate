@@ -21,7 +21,11 @@ https://github.com/kissyteam/xtemplate/blob/master/docs/syntax.md
 
 ## use on browser
 
+support [requirejs](https://github.com/jrburke/requirejs) [modulex](https://github.com/kissyteam/modulex)
+[kissy](http://docs.kissyui.com) [kissy gallery](http://gallery.kissyui.com)
+
 guide: https://github.com/kissyteam/xtemplate/blob/master/docs/use-on-browser.md
+
 demo: https://github.com/yiminghe/xtemplate-on-browser
 
 ## use on node
