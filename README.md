@@ -1,6 +1,6 @@
 # xtemplate
 
-template engine lib on browser and nodejs
+eXtensible Template Engine lib on browser and nodejs
 
 [![xtemplate](https://nodei.co/npm/xtemplate.png)](https://npmjs.org/package/xtemplate)
 [![NPM downloads](http://img.shields.io/npm/dm/xtemplate.svg)](https://npmjs.org/package/xtemplate)

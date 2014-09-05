@@ -1,6 +1,30 @@
 var XTemplate = require('xtemplate');
 
 describe('each', function () {
+    it('support foreach', function () {
+        var tpl = '{{#foreach(data, "v", "i")}}{{i}}: {{v}}{{/foreach}}';
+        var data = {
+            data: [1, 2]
+        };
+        var render = new XTemplate(tpl).render(data);
+        expect(render).to.equal('0: 11: 2');
+    });
+
+    it('support forin', function () {
+        var tpl = '{{#forin (data)}}{{r}}{{xindex}}:{{this}}{{/forin}}';
+        var data = {
+            r: '!',
+            data: {
+                x: 1,
+                y: 2
+            }
+        };
+
+        var render = new XTemplate(tpl).render(data);
+
+        expect(render).to.equal('!x:1!y:2');
+    });
+
     it('support null as array element', function () {
         var tpl = '{{#each (data)}}{{xindex}}:{{this}}{{/each}}';
         var data = {

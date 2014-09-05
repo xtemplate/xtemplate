@@ -28,6 +28,7 @@
 
 ```
 {{#each([1,2,4])}}
+{{#each([1,2,4])}}
 {{this}}  // => 1 2 4
 {{/each}}
 ```
@@ -158,6 +159,20 @@ if elseif else === !=== > >= < <=
 {{/if}}
 ```
 
+## with
+
+```javascript
+var a = {
+    b: 1
+}
+```
+
+```
+{{#with(a)}}
+{{b}} // 1
+{{/with}}
+```
+
 ## loop
 
 ```javascript
@@ -172,6 +187,23 @@ var x = ['a', 'b'];
 {{#each(x,"value","key")}}
 {{key}} {{value}} // 0 a 1 b
 {{/each}}
+```
+
+## level access
+
+```javascript
+var x = {
+    a: 1,
+    b: [{a: 2}]
+};
+```
+
+```
+{{#with(x)}}
+{{#each(b)}}
+{{../a}}{{a}} // 12
+{{/each}}
+{{/with}}
 ```
 
 ## range
