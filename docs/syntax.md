@@ -128,9 +128,10 @@ var x = [1, 2, 3];
 {{ y - 1 }}
 ```
 
-## comparison
+## condition and comparison
 
-if elseif else === !=== > >= < <=
+- condition: `if`, `elseif`, `else`
+- comparison: `===`, `!==`, `>`, `>=`, `<`, `<=`
 
 ```
 {{#if( x===1 )}}
