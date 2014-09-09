@@ -28,4 +28,4 @@
 {{/foreach}}
 </body>
 </html>
-{{include ('includes/xtpl_part')}}
+{{include ('./part')}}
