@@ -28,7 +28,7 @@ function getData() {
     };
 }
 
-xtpl.renderFile('./views/includes/main.xtpl', getData(), function (err, content) {
+xtpl.renderFile(path.resolve(__dirname,'./views/includes/main.xtpl'), getData(), function (err, content) {
     console.log(err || content);
 });
 

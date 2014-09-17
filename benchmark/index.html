@@ -215,6 +215,7 @@
                 nunjucks: ['includes/nunjucks'],
                 handlebars: ['includes/handlebars', 'includes/handlebars_part']
             };
+            return benchmark(includes);
             log('<span style="font-size: 30px;font-weight: bold;">common benchmark:</span>');
             benchmark(files).then(function () {
                 log('<span style="font-size: 30px;font-weight: bold;">include benchmark:</span>');

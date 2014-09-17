@@ -1,6 +1,7 @@
 # xtemplate
 
-eXtensible Template Engine lib on browser and nodejs
+eXtensible Template Engine lib on browser and nodejs.
+support async control, inheritance, include, logic expression, custom function and more.
 
 [![xtemplate](https://nodei.co/npm/xtemplate.png)](https://npmjs.org/package/xtemplate)
 [![NPM downloads](http://img.shields.io/npm/dm/xtemplate.svg)](https://npmjs.org/package/xtemplate)
