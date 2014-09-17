@@ -1,6 +1,7 @@
 bower_components/
 nohup.out
 *.iml
+*.cfg
 .idea/
 .ipr
 .iws

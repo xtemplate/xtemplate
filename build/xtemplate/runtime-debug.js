@@ -120,14 +120,15 @@ xtemplateRuntimeUtil = function (exports) {
   return exports;
 }();
 xtemplateRuntimeScope = function (exports) {
-  var undef;
   function Scope(data) {
-    if (data !== undef) {
+    if (data !== undefined) {
       this.data = data;
     } else {
       this.data = {};
     }
     this.root = this;
+    this.parent = undefined;
+    this.affix = undefined;
   }
   Scope.prototype = {
     isScope: 1,
@@ -161,13 +162,13 @@ xtemplateRuntimeScope = function (exports) {
       var v;
       var affix = this.affix;
       v = affix && affix[name];
-      if (v !== undef) {
+      if (v !== undefined) {
         return v;
       }
-      if (data !== undef && data !== null) {
+      if (data !== undefined && data !== null) {
         v = data[name];
       }
-      if (v !== undef) {
+      if (v !== undefined) {
         return v;
       }
       if (name === 'this') {
@@ -182,7 +183,7 @@ xtemplateRuntimeScope = function (exports) {
       var v;
       if (!depth && parts.length === 1) {
         v = self.get(parts[0]);
-        if (v !== undef) {
+        if (v !== undefined) {
           return v;
         } else {
           depth = 1;
@@ -201,7 +202,7 @@ xtemplateRuntimeScope = function (exports) {
         }
       }
       if (!scope) {
-        return undef;
+        return undefined;
       }
       if (!len) {
         return scope.data;
@@ -209,14 +210,14 @@ xtemplateRuntimeScope = function (exports) {
       var part0 = parts[0];
       do {
         v = scope.get(part0);
-      } while (v === undef && (scope = scope.parent));
+      } while (v === undefined && (scope = scope.parent));
       if (v && scope) {
         for (i = 1; v && i < len; i++) {
           v = v[parts[i]];
         }
         return v;
       } else {
-        return undef;
+        return undefined;
       }
     }
   };
@@ -224,11 +225,12 @@ xtemplateRuntimeScope = function (exports) {
   return exports;
 }();
 xtemplateRuntimeLinkedBuffer = function (exports) {
-  var undef;
   var util = xtemplateRuntimeUtil;
-  function Buffer(list) {
+  function Buffer(list, next) {
     this.list = list;
     this.init();
+    this.next = next;
+    this.ready = false;
   }
   Buffer.prototype = {
     constructor: Buffer,
@@ -255,10 +257,8 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     async: function (fn) {
       var self = this;
       var list = self.list;
-      var asyncFragment = new Buffer(list);
-      var nextFragment = new Buffer(list);
-      nextFragment.next = self.next;
-      asyncFragment.next = nextFragment;
+      var nextFragment = new Buffer(list, self.next);
+      var asyncFragment = new Buffer(list, nextFragment);
       self.next = asyncFragment;
       self.ready = true;
       fn(asyncFragment);
@@ -267,7 +267,7 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     error: function (reason) {
       var callback = this.list.callback;
       if (callback) {
-        callback(reason, undef);
+        callback(reason, undefined);
         this.list.callback = null;
       }
     },
@@ -347,8 +347,14 @@ xtemplateRuntimeCommands = function (exports) {
         xcount = param0.length;
         for (xindex = 0; xindex < xcount; xindex++) {
           opScope = new Scope(param0[xindex]);
-          affix = opScope.affix = { xcount: xcount };
-          affix[xindexName] = xindex;
+          affix = opScope.affix = {
+            xcount: xcount,
+            xindex: xindex
+          };
+          if (xindexName !== 'xindex') {
+            affix[xindexName] = xindex;
+            delete affix.xindex;
+          }
           if (valueName) {
             affix[valueName] = param0[xindex];
           }
@@ -644,7 +650,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '1.4.0',
+    version: '1.4.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -679,11 +685,12 @@ xtemplateRuntime = function (exports) {
         var error = 'parent template does not have name' + ' for relative sub tpl name: ' + subName;
         throw new Error(error);
       }
-      var nameResolveCache = this.subNameResolveCache[parentName] = this.subNameResolveCache[parentName] || {};
-      if (nameResolveCache[subName]) {
-        return nameResolveCache[subName];
+      var key = parentName + '_ks_' + subName;
+      var nameResolveCache = this.subNameResolveCache;
+      if (nameResolveCache[key]) {
+        return nameResolveCache[key];
       }
-      subName = nameResolveCache[subName] = getSubNameFromParentName(parentName, subName);
+      subName = nameResolveCache[key] = getSubNameFromParentName(parentName, subName);
       return subName;
     },
     include: function (subTplName, tpl, scope, option, buffer) {
