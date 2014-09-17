@@ -319,6 +319,24 @@ describe('feature', function () {
         expect(new XTemplate(tpl).render(data)).to.equal('2-3|4-6|');
     });
 
+    it('support set for this', function () {
+        var tpl = '{{#each (data)}}' +
+            '{{set (n2 = this*2, n3 = this*3)}}' +
+            '{{this.n2}}-{{this.n3}}|' +
+            '{{/each}}';
+
+        var data = {
+            data: [1, 2]
+        };
+
+        expect(new XTemplate(tpl).render(data)).to.equal('2-3|4-6|');
+    });
+
+    it('support set on top', function () {
+        var tpl = '{{set(n=1)}}{{n}}';
+        expect(new XTemplate(tpl).render({})).to.equal('1');
+    });
+
     it('support function as property value', function () {
         var tpl = '{{x.y(1,2)}}' +
             '{{#with(x)}}{{#with(z)}}{{../y(3,4)}}{{/with}}{{/with}}' +

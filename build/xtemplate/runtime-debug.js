@@ -161,21 +161,13 @@ xtemplateRuntimeScope = function (exports) {
       var data = this.data;
       var v;
       var affix = this.affix;
-      v = affix && affix[name];
-      if (v !== undefined) {
-        return v;
-      }
-      if (data !== undefined && data !== null) {
+      if (data != null) {
         v = data[name];
       }
       if (v !== undefined) {
         return v;
       }
-      if (name === 'this') {
-        return data;
-      } else if (name === 'root') {
-        return this.root.data;
-      }
+      v = affix && affix[name];
       return v;
     },
     resolve: function (parts, depth) {
@@ -192,7 +184,11 @@ xtemplateRuntimeScope = function (exports) {
       var len = parts.length;
       var scope = self;
       var i;
-      if (len && parts[0] === 'root') {
+      var part0 = parts[0];
+      if (part0 === 'this') {
+        parts.shift();
+        len--;
+      } else if (len && part0 === 'root') {
         parts.shift();
         scope = scope.root;
         len--;
@@ -207,7 +203,7 @@ xtemplateRuntimeScope = function (exports) {
       if (!len) {
         return scope.data;
       }
-      var part0 = parts[0];
+      part0 = parts[0];
       do {
         v = scope.get(part0);
       } while (v === undefined && (scope = scope.parent));
@@ -283,7 +279,7 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
   function LinkedBuffer(callback, config) {
     var self = this;
     self.config = config;
-    self.head = new Buffer(self);
+    self.head = new Buffer(self, undefined);
     self.callback = callback;
     this.init();
   }
@@ -297,6 +293,7 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     },
     end: function () {
       this.callback(null, this.data);
+      this.callback = null;
     },
     flush: function () {
       var self = this;
@@ -305,10 +302,10 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
         if (fragment.ready) {
           this.append(fragment.data);
         } else {
+          self.head = fragment;
           return;
         }
         fragment = fragment.next;
-        self.head = fragment;
       }
       self.end();
     }
@@ -443,12 +440,14 @@ xtemplateRuntimeCommands = function (exports) {
       var i, newScope;
       var l = params.length;
       newScope = scope;
+      var directAccess = true;
       if (option.hash) {
         newScope = new Scope(option.hash);
         newScope.setParent(scope);
+        directAccess = false;
       }
       for (i = 0; i < l; i++) {
-        buffer = this.root.include(params[i], this, newScope, option, buffer);
+        buffer = this.root.include(params[i], this, newScope, option, buffer, directAccess);
       }
       return buffer;
     },
@@ -628,8 +627,9 @@ xtemplateRuntime = function (exports) {
     load: function (params, callback) {
       var name = params.name;
       var cache = this.cache;
-      if (cache[name]) {
-        return callback(undefined, cache[name]);
+      var cached = cache[name];
+      if (cached) {
+        return callback(undefined, cached);
       }
       require([name], function (tpl) {
         cache[name] = tpl;
@@ -650,7 +650,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '1.4.1',
+    version: '2.0.2',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -687,13 +687,14 @@ xtemplateRuntime = function (exports) {
       }
       var key = parentName + '_ks_' + subName;
       var nameResolveCache = this.subNameResolveCache;
-      if (nameResolveCache[key]) {
-        return nameResolveCache[key];
+      var cached = nameResolveCache[key];
+      if (cached) {
+        return cached;
       }
       subName = nameResolveCache[key] = getSubNameFromParentName(parentName, subName);
       return subName;
     },
-    include: function (subTplName, tpl, scope, option, buffer) {
+    include: function (subTplName, tpl, scope, option, buffer, directAccess) {
       var self = this;
       var parentName = tpl.name;
       var resolvedSubTplName = self.resolve(subTplName, parentName);
@@ -706,22 +707,23 @@ xtemplateRuntime = function (exports) {
           scope: scope,
           option: option
         }, function (error, tplFn) {
-          if (error) {
+          if (typeof tplFn === 'function') {
+            renderTpl({
+              directAccess: directAccess,
+              root: tpl.root,
+              fn: tplFn,
+              name: resolvedSubTplName,
+              runtime: tpl.runtime
+            }, scope, newBuffer);
+          } else if (error) {
             newBuffer.error(error);
-          } else if (typeof tplFn === 'string') {
+          } else {
             if (option && option.escaped) {
               newBuffer.writeEscaped(tplFn);
             } else {
               newBuffer.append(tplFn);
             }
             newBuffer.end();
-          } else {
-            renderTpl({
-              root: tpl.root,
-              fn: tplFn,
-              name: resolvedSubTplName,
-              runtime: tpl.runtime
-            }, scope, newBuffer);
           }
         });
       });
@@ -754,7 +756,8 @@ xtemplateRuntime = function (exports) {
         name: name,
         fn: fn,
         runtime: { commands: option.commands },
-        root: self
+        root: self,
+        directAccess: true
       }, scope, buffer);
       return html;
     }
