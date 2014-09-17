@@ -5870,6 +5870,9 @@ xtemplateCompiler = function (exports) {
       ')'
     ].join('');
   }
+  function directScopeReadNoField(root) {
+    return ['scope.' + (root ? 'root.' : '') + 'data'].join('');
+  }
   var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer);';
   var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, [{idParts}]);';
   var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}]);';
@@ -5878,6 +5881,9 @@ xtemplateCompiler = function (exports) {
   var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP = ['var {lhs} = directAccess ? ' + directScopeRead() + ': scope.resolve([{idPartsArr}]);'].join('\n');
   var IF_AFFIX_DIRECT_SCOPE_RESOLVE = ['var {lhs} = ' + directScopeRead() + ';'].join('\n');
   var IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = ' + directScopeRead(1) + ';';
+  var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP_NO_FIELD = ['var {lhs} = directAccess ? ' + directScopeReadNoField() + ': scope.resolve([{idPartsArr}]);'].join('\n');
+  var IF_AFFIX_DIRECT_SCOPE_RESOLVE_NO_FIELD = ['var {lhs} = ' + directScopeReadNoField() + ';'].join('\n');
+  var IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE_NO_FIELD = 'var {lhs} = ' + directScopeReadNoField(1) + ';';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
   var REQUIRE_MODULE = 'var {variable} = re' + 'quire("{name}");';
   var CHANGE_REQUIRE_PARAM = '{option}.params[0] = {variable}.TPL_NAME;';
@@ -6262,7 +6268,7 @@ xtemplateCompiler = function (exports) {
           if (remain) {
             remain = '.' + remain;
           }
-          source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE, {
+          source.push(substitute(remain ? IF_AFFIX_DIRECT_SCOPE_RESOLVE : IF_AFFIX_DIRECT_SCOPE_RESOLVE_NO_FIELD, {
             lhs: idName,
             idParts: remain
           }));
@@ -6276,7 +6282,7 @@ xtemplateCompiler = function (exports) {
           if (remain) {
             remain = '.' + remain;
           }
-          source.push(substitute(IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE, {
+          source.push(substitute(remain ? IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE : IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE_NO_FIELD, {
             lhs: idName,
             idParts: remain
           }));
@@ -6289,7 +6295,7 @@ xtemplateCompiler = function (exports) {
           if (remain) {
             remain = '.' + remain;
           }
-          source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
+          source.push(substitute(remain ? IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP : IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP_NO_FIELD, {
             lhs: idName,
             idParts: remain,
             idPartsArr: joinArrayOfString(idParts)
