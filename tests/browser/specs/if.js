@@ -107,7 +107,7 @@ describe('if', function () {
     });
 
     it('can not get sub property data from null', function () {
-        var tpl = '{{#if (data.x)}}x{{else}}y{{/if}}';
+        var tpl = '{{#if (data&&data.x)}}x{{else}}y{{/if}}';
         var data = {
             data: null
         };
