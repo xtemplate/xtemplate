@@ -189,14 +189,7 @@ xtemplateRuntimeScope = function (exports) {
       var scope = self;
       var i;
       var part0 = parts[0];
-      if (part0 === 'this') {
-        parts.shift();
-        len--;
-      } else if (len && part0 === 'root') {
-        parts.shift();
-        scope = scope.root;
-        len--;
-      } else if (depth) {
+      if (depth) {
         while (scope && depth--) {
           scope = scope.parent;
         }
@@ -204,14 +197,19 @@ xtemplateRuntimeScope = function (exports) {
       if (!scope) {
         return undefined;
       }
-      if (!len) {
+      if (part0 === 'this') {
+        v = scope.data;
+      } else if (part0 === 'root') {
+        scope = scope.root;
+        v = scope.data;
+      } else if (part0) {
+        do {
+          v = scope.get(part0);
+        } while (v === undefined && (scope = scope.parent));
+      } else {
         return scope.data;
       }
-      part0 = parts[0];
-      do {
-        v = scope.get(part0);
-      } while (v === undefined && (scope = scope.parent));
-      if (v && scope) {
+      if (v != null && scope) {
         for (i = 1; v && i < len; i++) {
           v = v[parts[i]];
         }
@@ -6406,7 +6404,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.0.4',
+    version: '2.0.5',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -7088,7 +7086,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.0.4',
+    version: '2.0.5',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

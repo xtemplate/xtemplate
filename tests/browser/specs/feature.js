@@ -339,7 +339,7 @@ describe('feature', function () {
 
     it('support function as property value', function () {
         var tpl = '{{x.y(1,2)}}' +
-            '{{#with(x)}}{{#with(z)}}{{../y(3,4)}}{{/with}}{{/with}}' +
+           '{{#with(x)}}{{#with(z)}}{{../y(3,4)}}{{/with}}{{/with}}' +
             '{{#with(x)}}{{#with(z)}}{{../../x["y"](3,4)}}{{/with}}{{/with}}';
 
         var render = new XTemplate(tpl).render({

@@ -10,6 +10,30 @@ describe('each', function () {
         expect(render).to.equal('0: 11: 2');
     });
 
+    it('this will prevent up resolve',function(){
+        var tpl = '{{#each (data)}}{{this.title}}{{/each}}';
+        var data = {
+            title:'2',
+            data: [{title2:'1'}]
+        };
+
+        var render = new XTemplate(tpl).render(data);
+
+        expect(render).to.equal('');
+    });
+
+    it('this will prevent up resolve -2',function(){
+        var tpl = '{{#each (data)}}{{this["title"]}}{{/each}}';
+        var data = {
+            title:'2',
+            data: [{title2:'1'}]
+        };
+
+        var render = new XTemplate(tpl).render(data);
+
+        expect(render).to.equal('');
+    });
+
     it('support forin', function () {
         var tpl = '{{#forin (data)}}{{r}}{{xindex}}:{{this}}{{/forin}}';
         var data = {

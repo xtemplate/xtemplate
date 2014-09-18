@@ -73,14 +73,14 @@ describe('sub template', function () {
     });
 
     it('allow shadow parent data', function () {
-        var tpl = '{{title}}{{include ("xtemplate-test/sub-tpl-5", title="2")}}{{include ("xtemplate-test/sub-tpl-6")}}';
+        var tpl = '{{title}}{{include ("xtemplate-test/sub-tpl-5", title="2")}}{{include ("xtemplate-test/sub-tpl-5-1")}}';
 
         var data = {
             title: '1'
         };
 
         modulex.add('xtemplate-test/sub-tpl-5', '{{title}}{{../title}}');
-        modulex.add('xtemplate-test/sub-tpl-6', '{{title}}');
+        modulex.add('xtemplate-test/sub-tpl-5-1', '{{title}}');
 
 
         var render = new XTemplate(tpl).render(data);
