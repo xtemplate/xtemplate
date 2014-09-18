@@ -195,9 +195,9 @@ describe('feature', function () {
             expect(render).to.equal('h-2');
         });
 
-        it('this will prevent up resolve',function(){
-            var tpl ='{{#with(t)}}{{#with(t2)}}{{#with(t3)}}{{../this.tt}}{{/with}}{{/with}}{{/with}}';
-            var data = {t:{tt:1,t2:{t3:{tt:3}}}};
+        it('this will prevent up resolve', function () {
+            var tpl = '{{#with(t)}}{{#with(t2)}}{{#with(t3)}}{{../this.tt}}{{/with}}{{/with}}{{/with}}';
+            var data = {t: {tt: 1, t2: {t3: {tt: 3}}}};
             var render = new XTemplate(tpl).render(data);
             expect(render).to.equal('');
         });
@@ -346,8 +346,9 @@ describe('feature', function () {
 
     it('support function as property value', function () {
         var tpl = '{{x.y(1,2)}}' +
-           '{{#with(x)}}{{#with(z)}}{{../y(3,4)}}{{/with}}{{/with}}' +
+            '{{#with(x)}}{{#with(z)}}{{../y(3,4)}}{{/with}}{{/with}}' +
             '{{#with(x)}}{{#with(z)}}{{../../x["y"](3,4)}}{{/with}}{{/with}}';
+
 
         var render = new XTemplate(tpl).render({
             x: {
@@ -401,8 +402,8 @@ describe('feature', function () {
 
             var render = new XTemplate(tpl, {
                 commands: {
-                    t: function (scope, option) {
-                        return option.params[0];
+                    t: function (scope, option, buffer) {
+                        return buffer.writeEscaped(option.params[0]);
                     }
                 }
             }).render(data);

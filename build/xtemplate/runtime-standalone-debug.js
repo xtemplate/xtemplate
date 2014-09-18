@@ -237,13 +237,13 @@ _xtemplateRuntime_ = function (exports) {
       },
       write: function (data) {
         if (data != null) {
-          this.append(data);
+          this.data += data;
         }
         return this;
       },
       writeEscaped: function (data) {
         if (data != null) {
-          this.append(util.escapeHtml(data));
+          this.data += util.escapeHtml(data);
         }
         return this;
       },
@@ -316,7 +316,7 @@ _xtemplateRuntime_ = function (exports) {
         var fragment = self.head;
         while (fragment) {
           if (fragment.ready) {
-            this.append(fragment.data);
+            this.data += fragment.data;
           } else {
             self.head = fragment;
             return;
@@ -615,24 +615,19 @@ _xtemplateRuntime_ = function (exports) {
       }
     }
     function callFn(tpl, scope, option, buffer, parts, depth) {
-      var error, caller, fn, command1;
+      var caller, fn, command1;
       if (!depth) {
         command1 = findCommand(tpl.runtime.commands, tpl.root.config.commands, parts);
       }
       if (command1) {
         return command1.call(tpl, scope, option, buffer);
-      } else {
-        error = 'in file: ' + tpl.name + ' can not call: ' + parts.join('.') + '" at line ' + tpl.pos.line + ', col ' + tpl.pos.col;
       }
       caller = scope.resolve(parts.slice(0, -1), depth);
       fn = caller[parts[parts.length - 1]];
       if (fn) {
         return fn.apply(caller, option.params);
       }
-      if (error) {
-        throw new Error(error);
-      }
-      return buffer;
+      throw new Error('in file: ' + tpl.name + ' can not call: ' + parts.join('.') + '" at line ' + tpl.pos.line);
     }
     var utils = {
       callFn: callFn,
@@ -668,7 +663,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '2.2.5',
+      version: '2.2.6',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
@@ -742,7 +737,7 @@ _xtemplateRuntime_ = function (exports) {
               if (option && option.escaped) {
                 newBuffer.writeEscaped(tplFn);
               } else {
-                newBuffer.append(tplFn);
+                newBuffer.data += tplFn;
               }
               newBuffer.end();
             }

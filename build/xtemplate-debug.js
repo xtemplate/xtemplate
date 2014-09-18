@@ -5881,8 +5881,6 @@ xtemplateCompiler = function (exports) {
   var DIRECT_SCOPE_RESOLVE = ['var {lhs} = scope.data;'].join('\n');
   var DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = scope.root.data;';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
-  var REQUIRE_MODULE = 'var {variable} = re' + 'quire("{name}");';
-  var CHANGE_REQUIRE_PARAM = '{option}.params[0] = {variable}.TPL_NAME;';
   var CHECK_BUFFER = [
     'if({name} && {name}.isBuffer){',
     'buffer = {name};',
@@ -5901,7 +5899,7 @@ xtemplateCompiler = function (exports) {
   var DECLARE_NATIVE_COMMANDS = 'var {name}Command = nativeCommands["{name}"];';
   var DECLARE_UTILS = 'var {name}Util = utils["{name}"];';
   var BUFFER_WRITE = 'buffer.write({value});';
-  var BUFFER_APPEND = 'buffer.append({value});';
+  var BUFFER_APPEND = 'buffer.data += {value};';
   var BUFFER_WRITE_ESCAPED = 'buffer.writeEscaped({value});';
   var RETURN_BUFFER = 'return buffer;';
   var XTemplateRuntime = xtemplateRuntime;
@@ -5958,7 +5956,9 @@ xtemplateCompiler = function (exports) {
     return str;
   }
   function pushToArray(to, from) {
-    arrayPush.apply(to, from);
+    if (from) {
+      arrayPush.apply(to, from);
+    }
   }
   function opExpression(e, extra) {
     var source = [], type = e.opType, exp1, exp2, code1Source, code2Source, code1 = this[e.op1.type](e.op1, extra), code2 = this[e.op2.type](e.op2, extra);
@@ -6025,24 +6025,35 @@ xtemplateCompiler = function (exports) {
       return null;
     }
   }
-  function genFunction(self, statements) {
+  function genFunction(self, statements, extra) {
     var functionName = guid(self, 'func');
-    var source = ['function ' + functionName + '(scope, buffer) {'];
+    var source = ['function ' + functionName + '(scope, buffer, undefined) {'];
     var statement;
     for (var i = 0, len = statements.length; i < len; i++) {
       statement = statements[i];
-      pushToArray(source, self[statement.type](statement).source);
+      pushToArray(source, self[statement.type](statement, extra).source);
     }
     source.push(RETURN_BUFFER);
     source.push('}');
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
+  function genConditionFunction(self, condition, extra) {
+    var functionName = guid(self, 'func');
+    var source = ['function ' + functionName + '(scope, buffer, undefined) {'];
+    var gen = self[condition.type](condition, extra);
+    pushToArray(source, gen.source);
+    source.push('return ' + gen.exp + ';');
+    source.push('}');
+    pushToArray(self.functionDeclares, source);
+    return functionName;
+  }
   function genTopFunction(self, statements) {
     var source = [
-      'function run(tpl) {',
+      'var tpl = this;',
       TOP_DECLARATION,
-      nativeCode
+      nativeCode,
+      'try {'
     ];
     var statement;
     for (var i = 0, len = statements.length; i < len; i++) {
@@ -6050,60 +6061,79 @@ xtemplateCompiler = function (exports) {
       pushToArray(source, self[statement.type](statement, { top: 1 }).source);
     }
     source.splice.apply(source, [
-      2,
+      3,
       0
     ].concat(self.functionDeclares).concat(''));
     source.push(RETURN_BUFFER);
-    source.push('}');
-    source.push('function tryRun(tpl) {');
-    source.push('try {');
-    source.push('return run(tpl);');
     source.push('} catch(e) {');
     source.push('if(!e.xtpl){');
     source.push('buffer.error(e);');
     source.push('}else{ throw e; }');
     source.push('}');
-    source.push('}');
-    source.push('return tryRun(this);');
     return {
       params: [
         'scope',
-        'buffer'
+        'buffer',
+        'undefined'
       ],
       source: source.join('\n')
     };
   }
-  function genOptionFromFunction(self, func, escape, extra) {
-    var optionName = guid(self, 'option');
-    var source = ['var ' + optionName + ' = {' + (escape ? 'escape: 1' : '') + '};'], params = func.params, hash = func.hash;
+  function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse, extra) {
+    var source = [], params = func.params, hash = func.hash;
+    var funcParams = [];
     if (params) {
-      var paramsName = guid(self, 'params');
-      source.push('var ' + paramsName + ' = [];');
       each(params, function (param) {
         var nextIdNameCode = self[param.type](param, extra);
         pushToArray(source, nextIdNameCode.source);
-        source.push(paramsName + '.push(' + nextIdNameCode.exp + ');');
+        funcParams.push(nextIdNameCode.exp);
       });
-      source.push(optionName + '.params = ' + paramsName + ';');
     }
+    var funcHash = [];
     if (hash) {
-      var hashName = guid(self, 'hash');
-      source.push('var ' + hashName + ' = {};');
       each(hash.value, function (v, key) {
         var nextIdNameCode = self[v.type](v, extra);
         pushToArray(source, nextIdNameCode.source);
-        source.push(hashName + '[' + wrapByDoubleQuote(key) + '] = ' + nextIdNameCode.exp + ';');
+        funcHash.push([
+          wrapByDoubleQuote(key),
+          nextIdNameCode.exp
+        ]);
       });
-      source.push(optionName + '.hash = ' + hashName + ';');
+    }
+    var exp = '';
+    if (funcParams.length || funcHash.length || escape || fn || inverse || elseIfs) {
+      if (escape) {
+        exp += ',escape:1';
+      }
+      if (funcParams.length) {
+        exp += ',params:[' + funcParams.join(',') + ']';
+      }
+      if (funcHash.length) {
+        var hashStr = '';
+        util.each(funcHash, function (h) {
+          hashStr += ',' + h[0] + ':' + h[1];
+        });
+        exp += ',hash:{' + hashStr.slice(1) + '}';
+      }
+      if (fn) {
+        exp += ',fn: ' + fn;
+      }
+      if (inverse) {
+        exp += ',inverse: ' + inverse;
+      }
+      if (elseIfs) {
+        exp += ',elseIfs: ' + elseIfs;
+      }
+      exp = '{' + exp.slice(1) + '}';
     }
     return {
-      exp: optionName,
+      exp: exp || '{}',
       source: source
     };
   }
   function generateFunction(self, func, escape, block, extra) {
     var source = [];
-    var functionConfigCode, optionName, idName;
+    var functionConfigCode, idName;
     var id = func.id;
     var idString = id.string;
     var idParts = id.parts;
@@ -6114,12 +6144,10 @@ xtemplateCompiler = function (exports) {
         source: []
       };
     }
-    functionConfigCode = genOptionFromFunction(self, func, escape, extra);
-    optionName = functionConfigCode.exp;
-    pushToArray(source, functionConfigCode.source);
     if (block) {
       var programNode = block.program;
       var inverse = programNode.inverse;
+      var fnName, elseIfsName, inverseName;
       var elseIfs = [];
       var elseIf, functionValue, statement;
       var statements = programNode.statements;
@@ -6143,41 +6171,33 @@ xtemplateCompiler = function (exports) {
       if (elseIf) {
         elseIfs.push(elseIf);
       }
-      source.push(optionName + '.fn = ' + genFunction(self, thenStatements) + ';');
+      fnName = genFunction(self, thenStatements, idString === 'if' || idString === 'block' ? extra : null);
       if (inverse) {
-        source.push(optionName + '.inverse = ' + genFunction(self, inverse) + ';');
+        inverseName = genFunction(self, inverse, idString === 'if' || idString === 'block' ? extra : null);
       }
       if (elseIfs.length) {
-        var elseIfsVariable = guid(self, 'elseIfs');
-        source.push('var ' + elseIfsVariable + ' = []');
+        var elseIfsVariable = [];
         for (i = 0; i < elseIfs.length; i++) {
           var elseIfStatement = elseIfs[i];
-          var elseIfVariable = guid(self, 'elseIf');
-          source.push('var ' + elseIfVariable + ' = {}');
-          var condition = elseIfStatement.condition;
-          var conditionCode = self[condition.type](condition, extra);
-          source.push(elseIfVariable + '.test = function(scope){');
-          pushToArray(source, conditionCode.source);
-          source.push('return (' + conditionCode.exp + ');');
-          source.push('};');
-          source.push(elseIfVariable + '.fn = ' + genFunction(self, elseIfStatement.statements) + ';');
-          source.push(elseIfsVariable + '.push(' + elseIfVariable + ');');
+          var conditionName = genConditionFunction(self, elseIfStatement.condition, extra);
+          elseIfsVariable.push('{test: ' + conditionName + ',fn : ' + genFunction(self, elseIfStatement.statements, extra) + '}');
         }
-        source.push(optionName + '.elseIfs = ' + elseIfsVariable + ';');
+        elseIfsName = '[' + elseIfsVariable.join(',') + ']';
       }
+      functionConfigCode = genOptionFromFunction(self, func, escape, fnName, elseIfsName, inverseName, extra);
+      pushToArray(source, functionConfigCode.source);
     }
     if (self.isModule) {
       if (idString === 'include' || idString === 'extend') {
-        var moduleVariable = guid(self, 'module');
-        source.push(substitute(REQUIRE_MODULE, {
-          name: func.params[0].value,
-          variable: moduleVariable
-        }));
-        source.push(substitute(CHANGE_REQUIRE_PARAM, {
-          option: optionName,
-          variable: moduleVariable
-        }));
+        func.params[0] = {
+          type: 'raw',
+          value: 're' + 'quire("' + func.params[0].value + '").TPL_NAME'
+        };
       }
+    }
+    if (!functionConfigCode) {
+      functionConfigCode = genOptionFromFunction(self, func, escape, null, null, null, extra);
+      pushToArray(source, functionConfigCode.source);
     }
     if (!block) {
       idName = guid(self, 'callRet');
@@ -6187,18 +6207,18 @@ xtemplateCompiler = function (exports) {
       source.push(substitute(CALL_NATIVE_COMMAND, {
         lhs: block ? 'buffer' : idName,
         name: idString,
-        option: optionName
+        option: functionConfigCode.exp
       }));
     } else if (block) {
       source.push(substitute(CALL_CUSTOM_COMMAND, {
-        option: optionName,
+        option: functionConfigCode.exp,
         idParts: joinArrayOfString(idParts)
       }));
     } else {
       var newParts = getIdStringFromIdParts(self, source, idParts, extra);
       source.push(substitute(id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION, {
         lhs: idName,
-        option: optionName,
+        option: functionConfigCode.exp,
         idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
         depth: id.depth
       }));
@@ -6218,6 +6238,9 @@ xtemplateCompiler = function (exports) {
   }
   AstToJSProcessor.prototype = {
     constructor: AstToJSProcessor,
+    raw: function (raw) {
+      return { exp: raw.value };
+    },
     arrayExpression: function (e, extra) {
       var list = e.list;
       var len = list.length;
@@ -6454,7 +6477,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.2.5',
+    version: '2.2.6',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
