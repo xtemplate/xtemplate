@@ -6404,7 +6404,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.0.5',
+    version: '2.0.6',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6924,54 +6924,59 @@ xtemplateCompiler = function (exports) {
           source: []
         };
       }
-      var source = [], depth = idNode.depth, idParts = idNode.parts, idName = guid('id');
-      var isComplex = isComplexIdParts(idParts);
-      if (!isComplex) {
-        var part0 = idParts[0];
-        var remain;
-        var remainParts;
-        if (part0 === 'this') {
-          remainParts = idParts.slice(1);
-          remain = remainParts.join('.');
-          if (remain) {
-            remain = '.' + remain;
+      var source = [];
+      var depth = idNode.depth;
+      var idParts = idNode.parts;
+      var idName = guid('id');
+      if (!depth) {
+        var isComplex = isComplexIdParts(idParts);
+        if (!isComplex) {
+          var part0 = idParts[0];
+          var remain;
+          var remainParts;
+          if (part0 === 'this') {
+            remainParts = idParts.slice(1);
+            remain = remainParts.join('.');
+            if (remain) {
+              remain = '.' + remain;
+            }
+            source.push(substitute(remain ? IF_AFFIX_DIRECT_SCOPE_RESOLVE : DIRECT_SCOPE_RESOLVE, {
+              lhs: idName,
+              idParts: remain
+            }));
+            return {
+              exp: idName,
+              source: source
+            };
+          } else if (part0 === 'root') {
+            remainParts = idParts.slice(1);
+            remain = remainParts.join('.');
+            if (remain) {
+              remain = '.' + remain;
+            }
+            source.push(substitute(remain ? IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE : DIRECT_ROOT_SCOPE_RESOLVE, {
+              lhs: idName,
+              idParts: remain
+            }));
+            return {
+              exp: idName,
+              source: source
+            };
+          } else if (extra && extra.top) {
+            remain = idParts.join('.');
+            if (remain) {
+              remain = '.' + remain;
+            }
+            source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
+              lhs: idName,
+              idParts: remain,
+              idPartsArr: joinArrayOfString(idParts)
+            }));
+            return {
+              exp: idName,
+              source: source
+            };
           }
-          source.push(substitute(remain ? IF_AFFIX_DIRECT_SCOPE_RESOLVE : DIRECT_SCOPE_RESOLVE, {
-            lhs: idName,
-            idParts: remain
-          }));
-          return {
-            exp: idName,
-            source: source
-          };
-        } else if (part0 === 'root') {
-          remainParts = idParts.slice(1);
-          remain = remainParts.join('.');
-          if (remain) {
-            remain = '.' + remain;
-          }
-          source.push(substitute(remain ? IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE : DIRECT_ROOT_SCOPE_RESOLVE, {
-            lhs: idName,
-            idParts: remain
-          }));
-          return {
-            exp: idName,
-            source: source
-          };
-        } else if (extra && extra.top && !depth) {
-          remain = idParts.join('.');
-          if (remain) {
-            remain = '.' + remain;
-          }
-          source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
-            lhs: idName,
-            idParts: remain,
-            idPartsArr: joinArrayOfString(idParts)
-          }));
-          return {
-            exp: idName,
-            source: source
-          };
         }
       }
       var newParts = getIdStringFromIdParts(source, idParts, extra);
@@ -7086,7 +7091,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.0.5',
+    version: '2.0.6',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

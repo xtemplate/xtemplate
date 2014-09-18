@@ -194,6 +194,13 @@ describe('feature', function () {
 
             expect(render).to.equal('h-2');
         });
+
+        it('this will prevent up resolve',function(){
+            var tpl ='{{#with(t)}}{{#with(t2)}}{{#with(t3)}}{{../this.tt}}{{/with}}{{/with}}{{/with}}';
+            var data = {t:{tt:1,t2:{t3:{tt:3}}}};
+            var render = new XTemplate(tpl).render(data);
+            expect(render).to.equal('');
+        });
     });
 
     describe('parent scope', function () {
