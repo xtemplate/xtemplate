@@ -20,8 +20,8 @@ slower:
 ```
 
 faster:
-{{this.top}}
 ```javascript
+{{this.top}}
 {{#each(arr)}}
 {{this.v}}
 {{/each}}
