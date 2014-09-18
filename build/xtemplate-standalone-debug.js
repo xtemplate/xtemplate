@@ -281,8 +281,8 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
             name: name
           };
         }
-        callback(e, undefined);
         this.list.callback = null;
+        callback(e, undefined);
       }
     },
     end: function () {
@@ -6358,13 +6358,15 @@ xtemplateRuntime = function (exports) {
   }
   function renderTpl(tpl, scope, buffer) {
     buffer = tpl.fn(scope, buffer);
-    var runtime = tpl.runtime;
-    var extendTplName = runtime.extendTplName;
-    if (extendTplName) {
-      runtime.extendTplName = null;
-      buffer = tpl.root.include(extendTplName, tpl, scope, null, buffer);
+    if (buffer) {
+      var runtime = tpl.runtime;
+      var extendTplName = runtime.extendTplName;
+      if (extendTplName) {
+        runtime.extendTplName = null;
+        buffer = tpl.root.include(extendTplName, tpl, scope, null, buffer);
+      }
+      return buffer.end();
     }
-    return buffer.end();
   }
   function callFn(tpl, scope, option, buffer, parts, depth) {
     var error, caller, fn, command1;
@@ -6420,7 +6422,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.2.4',
+    version: '2.2.5',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6755,8 +6757,7 @@ xtemplateCompiler = function (exports) {
     source.push('} catch(e) {');
     source.push('if(!e.xtpl){');
     source.push('buffer.error(e);');
-    source.push('}');
-    source.push('throw e;');
+    source.push('}else{ throw e; }');
     source.push('}');
     source.push('}');
     source.push('return tryRun(this);');
@@ -7149,7 +7150,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.2.4',
+    version: '2.2.5',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

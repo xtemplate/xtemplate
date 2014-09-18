@@ -6061,8 +6061,7 @@ xtemplateCompiler = function (exports) {
     source.push('} catch(e) {');
     source.push('if(!e.xtpl){');
     source.push('buffer.error(e);');
-    source.push('}');
-    source.push('throw e;');
+    source.push('}else{ throw e; }');
     source.push('}');
     source.push('}');
     source.push('return tryRun(this);');
@@ -6455,7 +6454,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.2.4',
+    version: '2.2.5',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

@@ -48,8 +48,7 @@ return run(tpl);
 } catch(e) {
 if(!e.xtpl){
 buffer.error(e);
-}
-throw e;
+}else{ throw e; }
 }
 }
 return tryRun(this);

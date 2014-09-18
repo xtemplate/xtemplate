@@ -104,8 +104,34 @@ describe('error detection', function () {
         try {
             new XTemplate(tpl, {
                 name: 'x.xtpl'
-            }).render({x: 1}, function (e, content) {
-                    expect(content).to.be(undefined);
+            }).render({x: 1});
+        } catch (e) {
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
+                expect(e.message).to.contain("x.xtpl:6");
+            }
+            expect(e.xtpl).to.eql({
+                pos: {line: 6},
+                name: "x.xtpl"
+            });
+            callback();
+        }
+
+        function callback() {
+            ++count;
+            if (count === 1) {
+                done();
+            }
+        }
+    });
+
+    it('detect runtime error silent', function () {
+        var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
+        var count = 0;
+
+        try {
+            new XTemplate(tpl, {
+                name: 'x.xtpl'
+            }).render({x: 1}, function (e) {
                     if (navigator.userAgent.indexOf('Chrome') !== -1) {
                         expect(e.message).to.contain("x.xtpl:6");
                     }
@@ -126,14 +152,12 @@ describe('error detection', function () {
             callback();
         }
 
+        expect(count).to.be(1);
+
         function callback() {
             ++count;
-            if (count === 2) {
-                done();
-            }
         }
     });
-
 
     it('detect sub template runtime error', function (done) {
         var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
@@ -152,6 +176,7 @@ describe('error detection', function () {
                         name: "detect-runtime-error"
                     });
                     callback();
+                    throw e;
                 });
         } catch (e) {
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
