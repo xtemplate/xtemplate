@@ -4,7 +4,7 @@ function run(tpl) {
 var t;
 var root = tpl.root;
 var directAccess = tpl.directAccess;
-var pos = tpl.pos = {line:1};
+var pos = tpl.pos;
 var nativeCommands = root.nativeCommands;
 var utils = root.utils;
 
@@ -33,8 +33,6 @@ try {
 return run(tpl);
 } catch(e) {
 if(!e.xtpl){
-e.message += " (\\tests\\browser\\fixture\\b.xtpl:"+tpl.pos.line+")"
-e.xtpl = {pos: tpl.pos, name: '\\tests\\browser\\fixture\\b.xtpl'};
 buffer.error(e);
 }
 throw e;

@@ -5855,7 +5855,7 @@ xtemplateCompiler = function (exports) {
     'var t;',
     'var root = tpl.root;',
     'var directAccess = tpl.directAccess;',
-    'var pos = tpl.pos = {line:1};',
+    'var pos = tpl.pos;',
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
   ].join('\n');
@@ -6038,7 +6038,7 @@ xtemplateCompiler = function (exports) {
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
-  function genTopFunction(self, statements, name) {
+  function genTopFunction(self, statements) {
     var source = [
       'function run(tpl) {',
       TOP_DECLARATION,
@@ -6060,8 +6060,6 @@ xtemplateCompiler = function (exports) {
     source.push('return run(tpl);');
     source.push('} catch(e) {');
     source.push('if(!e.xtpl){');
-    source.push('e.message += " (' + escapeString(name) + ':"+tpl.pos.line+")"');
-    source.push('e.xtpl = {pos: tpl.pos, name: ' + wrapBySingleQuote(escapeString(name)) + '};');
     source.push('buffer.error(e);');
     source.push('}');
     source.push('throw e;');
@@ -6399,7 +6397,7 @@ xtemplateCompiler = function (exports) {
     compileToJson: function (param) {
       var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
       var root = compiler.parse(param.content, name);
-      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements, name);
+      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements);
     },
     compile: function (tplContent, name) {
       var code = compiler.compileToJson({
@@ -6457,7 +6455,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.2.2',
+    version: '2.2.3',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

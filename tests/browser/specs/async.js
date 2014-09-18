@@ -8,6 +8,7 @@ describe('async', function () {
     it('can report error', function (done) {
         var tpl = '{{tms(1)}}3';
         expect(new XTemplate(tpl, {
+            name:'report.xtpl',
             commands: {
                 'tms': function (scope, option, buffer) {
                     return buffer.async(function (asyncBuffer) {
@@ -18,7 +19,7 @@ describe('async', function () {
                 }
             }
         }).render({}, function (error) {
-                expect(error).to.equal('report error');
+                expect(error.message).to.equal('report error (report.xtpl:1)');
                 done();
             })).to.equal('');
     });

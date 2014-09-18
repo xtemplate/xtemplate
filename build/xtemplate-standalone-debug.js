@@ -209,7 +209,7 @@ xtemplateRuntimeScope = function (exports) {
       } else {
         return scope.data;
       }
-      for (i = 1; v && i < len; i++) {
+      for (i = 1; i < len; i++) {
         v = v[parts[i]];
       }
       return v;
@@ -225,6 +225,7 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     this.init();
     this.next = next;
     this.ready = false;
+    this.tpl = undefined;
   }
   Buffer.prototype = {
     constructor: Buffer,
@@ -251,17 +252,34 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     async: function (fn) {
       var self = this;
       var list = self.list;
+      var tpl = self.tpl;
       var nextFragment = new Buffer(list, self.next);
+      nextFragment.tpl = tpl;
       var asyncFragment = new Buffer(list, nextFragment);
+      asyncFragment.tpl = tpl;
       self.next = asyncFragment;
       self.ready = true;
       fn(asyncFragment);
       return nextFragment;
     },
-    error: function (reason) {
+    error: function (e) {
       var callback = this.list.callback;
       if (callback) {
-        callback(reason, undefined);
+        var tpl = this.tpl;
+        if (tpl) {
+          if (e instanceof Error) {
+          } else {
+            e = new Error(e);
+          }
+          var name = tpl.name;
+          var pos = tpl.pos;
+          e.message += ' (' + name + ':' + pos.line + ')';
+          e.xtpl = {
+            pos: pos,
+            name: name
+          };
+        }
+        callback(e, undefined);
         this.list.callback = null;
       }
     },
@@ -6400,7 +6418,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.2.2',
+    version: '2.2.3',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6457,14 +6475,17 @@ xtemplateRuntime = function (exports) {
           scope: scope,
           option: option
         }, function (error, tplFn) {
+          var subTpl = {
+            directAccess: directAccess,
+            pos: { line: 1 },
+            root: tpl.root,
+            fn: tplFn,
+            name: resolvedSubTplName,
+            runtime: tpl.runtime
+          };
+          newBuffer.tpl = subTpl;
           if (typeof tplFn === 'function') {
-            renderTpl({
-              directAccess: directAccess,
-              root: tpl.root,
-              fn: tplFn,
-              name: resolvedSubTplName,
-              runtime: tpl.runtime
-            }, scope, newBuffer);
+            renderTpl(subTpl, scope, newBuffer);
           } else if (error) {
             newBuffer.error(error);
           } else {
@@ -6502,13 +6523,16 @@ xtemplateRuntime = function (exports) {
       }
       var scope = new Scope(data);
       var buffer = new XTemplateRuntime.LinkedBuffer(callback, self.config).head;
-      renderTpl({
+      var tpl = {
         name: name,
         fn: fn,
+        pos: { line: 1 },
         runtime: { commands: option.commands },
         root: self,
         directAccess: true
-      }, scope, buffer);
+      };
+      buffer.tpl = tpl;
+      renderTpl(tpl, scope, buffer);
       return html;
     }
   };
@@ -6523,7 +6547,7 @@ xtemplateCompiler = function (exports) {
     'var t;',
     'var root = tpl.root;',
     'var directAccess = tpl.directAccess;',
-    'var pos = tpl.pos = {line:1};',
+    'var pos = tpl.pos;',
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
   ].join('\n');
@@ -6706,7 +6730,7 @@ xtemplateCompiler = function (exports) {
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
-  function genTopFunction(self, statements, name) {
+  function genTopFunction(self, statements) {
     var source = [
       'function run(tpl) {',
       TOP_DECLARATION,
@@ -6728,8 +6752,6 @@ xtemplateCompiler = function (exports) {
     source.push('return run(tpl);');
     source.push('} catch(e) {');
     source.push('if(!e.xtpl){');
-    source.push('e.message += " (' + escapeString(name) + ':"+tpl.pos.line+")"');
-    source.push('e.xtpl = {pos: tpl.pos, name: ' + wrapBySingleQuote(escapeString(name)) + '};');
     source.push('buffer.error(e);');
     source.push('}');
     source.push('throw e;');
@@ -7067,7 +7089,7 @@ xtemplateCompiler = function (exports) {
     compileToJson: function (param) {
       var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
       var root = compiler.parse(param.content, name);
-      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements, name);
+      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements);
     },
     compile: function (tplContent, name) {
       var code = compiler.compileToJson({
@@ -7125,7 +7147,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.2.2',
+    version: '2.2.3',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

@@ -207,7 +207,7 @@ _xtemplateRuntime_ = function (exports) {
         } else {
           return scope.data;
         }
-        for (i = 1; v && i < len; i++) {
+        for (i = 1; i < len; i++) {
           v = v[parts[i]];
         }
         return v;
@@ -223,6 +223,7 @@ _xtemplateRuntime_ = function (exports) {
       this.init();
       this.next = next;
       this.ready = false;
+      this.tpl = undefined;
     }
     Buffer.prototype = {
       constructor: Buffer,
@@ -249,17 +250,34 @@ _xtemplateRuntime_ = function (exports) {
       async: function (fn) {
         var self = this;
         var list = self.list;
+        var tpl = self.tpl;
         var nextFragment = new Buffer(list, self.next);
+        nextFragment.tpl = tpl;
         var asyncFragment = new Buffer(list, nextFragment);
+        asyncFragment.tpl = tpl;
         self.next = asyncFragment;
         self.ready = true;
         fn(asyncFragment);
         return nextFragment;
       },
-      error: function (reason) {
+      error: function (e) {
         var callback = this.list.callback;
         if (callback) {
-          callback(reason, undefined);
+          var tpl = this.tpl;
+          if (tpl) {
+            if (e instanceof Error) {
+            } else {
+              e = new Error(e);
+            }
+            var name = tpl.name;
+            var pos = tpl.pos;
+            e.message += ' (' + name + ':' + pos.line + ')';
+            e.xtpl = {
+              pos: pos,
+              name: name
+            };
+          }
+          callback(e, undefined);
           this.list.callback = null;
         }
       },
@@ -646,7 +664,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '2.2.2',
+      version: '2.2.3',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
@@ -703,14 +721,17 @@ _xtemplateRuntime_ = function (exports) {
             scope: scope,
             option: option
           }, function (error, tplFn) {
+            var subTpl = {
+              directAccess: directAccess,
+              pos: { line: 1 },
+              root: tpl.root,
+              fn: tplFn,
+              name: resolvedSubTplName,
+              runtime: tpl.runtime
+            };
+            newBuffer.tpl = subTpl;
             if (typeof tplFn === 'function') {
-              renderTpl({
-                directAccess: directAccess,
-                root: tpl.root,
-                fn: tplFn,
-                name: resolvedSubTplName,
-                runtime: tpl.runtime
-              }, scope, newBuffer);
+              renderTpl(subTpl, scope, newBuffer);
             } else if (error) {
               newBuffer.error(error);
             } else {
@@ -748,13 +769,16 @@ _xtemplateRuntime_ = function (exports) {
         }
         var scope = new Scope(data);
         var buffer = new XTemplateRuntime.LinkedBuffer(callback, self.config).head;
-        renderTpl({
+        var tpl = {
           name: name,
           fn: fn,
+          pos: { line: 1 },
           runtime: { commands: option.commands },
           root: self,
           directAccess: true
-        }, scope, buffer);
+        };
+        buffer.tpl = tpl;
+        renderTpl(tpl, scope, buffer);
         return html;
       }
     };
