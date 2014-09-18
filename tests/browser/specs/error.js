@@ -107,7 +107,7 @@ describe('error detection', function () {
             }).render({x: 1}, function (e, content) {
                     expect(content).to.be(undefined);
                     if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                        expect(e.message).to.be("Cannot read property 'z' of undefined (x.xtpl:6)");
+                        expect(e.message).to.contain("x.xtpl:6");
                     }
                     expect(e.xtpl).to.eql({
                         pos: {line: 6},
@@ -117,7 +117,7 @@ describe('error detection', function () {
                 });
         } catch (e) {
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                expect(e.message).to.be("Cannot read property 'z' of undefined (x.xtpl:6)");
+                expect(e.message).to.contain("x.xtpl:6");
             }
             expect(e.xtpl).to.eql({
                 pos: {line: 6},
@@ -145,7 +145,7 @@ describe('error detection', function () {
             }).render({x: 1}, function (e, content) {
                     expect(content).to.be(undefined);
                     if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                        expect(e.message).to.be("Cannot read property 'z' of undefined (detect-runtime-error:6)");
+                        expect(e.message).to.contain("detect-runtime-error:6");
                     }
                     expect(e.xtpl).to.eql({
                         pos: {line: 6},
@@ -155,7 +155,7 @@ describe('error detection', function () {
                 });
         } catch (e) {
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                expect(e.message).to.be("Cannot read property 'z' of undefined (detect-runtime-error:6)");
+                expect(e.message).to.contain("detect-runtime-error:6");
             }
             expect(e.xtpl).to.eql({
                 pos: {line: 6},

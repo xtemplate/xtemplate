@@ -269,7 +269,9 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
           }
           var name = tpl.name;
           var pos = tpl.pos;
-          e.message += ' (' + name + ':' + pos.line + ')';
+          var errorStr = 'At ' + name + ':' + pos.line + ': ';
+          e.stack = errorStr + e.stack;
+          e.message = errorStr + e.message;
           e.xtpl = {
             pos: pos,
             name: name
@@ -662,7 +664,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.2.3',
+    version: '2.2.4',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
