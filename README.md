@@ -57,3 +57,7 @@ then open http://localhost:8002/tests/runner.html
 ### modify code at lib
 
 ### commit and pull request
+
+## License
+
+xtemplate is released under the MIT license.
