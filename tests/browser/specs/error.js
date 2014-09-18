@@ -80,8 +80,8 @@ describe('error detection', function () {
                 //S.log('!'+e.replace(/\n/g,'\\n').replace(/\r/g,'\\r')+'!');
                 throw e;
             }
-        }).to['throw']('Syntax error at line 3, col 7:\n' +
-            'expect {{/if}} not {{/with}}');
+        }).to.throwError('Syntax error at line 3, col 7:\n' +
+                'expect {{/if}} not {{/with}}');
     });
 
     it('detect unmatched custom command', function () {
@@ -93,7 +93,82 @@ describe('error detection', function () {
             } catch (e) {
                 throw e;
             }
-        }).to['throw']('Syntax error at line 2, col 4:\n' +
-            'expect {{/x,y}} not {{/x}}');
+        }).to.throwError('Syntax error at line 2, col 4:\n' +
+                'expect {{/x,y}} not {{/x}}');
+    });
+
+    it('detect runtime error', function (done) {
+        var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
+        var count = 0;
+
+        try {
+            new XTemplate(tpl, {
+                name: 'e:/code/x.xtpl'
+            }).render({x: 1}, function (e, content) {
+                    expect(content).to.be(undefined);
+                    if (navigator.userAgent.indexOf('Chrome') !== -1) {
+                        expect(e.message).to.be("Cannot read property 'z' of undefined");
+                    }
+                    expect(e.xtpl).to.eql({
+                        pos: {line: 6},
+                        name: "e:/code/x.xtpl"
+                    });
+                    callback();
+                });
+        } catch (e) {
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
+                expect(e.message).to.be("Cannot read property 'z' of undefined");
+            }
+            expect(e.xtpl).to.eql({
+                pos: {line: 6},
+                name: "e:/code/x.xtpl"
+            });
+            callback();
+        }
+
+        function callback() {
+            ++count;
+            if (count === 2) {
+                done();
+            }
+        }
+    });
+
+
+    it('detect sub template runtime error', function (done) {
+        var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
+        var count = 0;
+        modulex.add('detect-runtime-error',tpl);
+        try {
+            new XTemplate('{{include("detect-runtime-error")}}', {
+                name: 'e:/code/x.xtpl'
+            }).render({x: 1}, function (e, content) {
+                    expect(content).to.be(undefined);
+                    if (navigator.userAgent.indexOf('Chrome') !== -1) {
+                        expect(e.message).to.be("Cannot read property 'z' of undefined");
+                    }
+                    expect(e.xtpl).to.eql({
+                        pos: {line: 6},
+                        name: "detect-runtime-error"
+                    });
+                    callback();
+                });
+        } catch (e) {
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
+                expect(e.message).to.be("Cannot read property 'z' of undefined");
+            }
+            expect(e.xtpl).to.eql({
+                pos: {line: 6},
+                name: "detect-runtime-error"
+            });
+            callback();
+        }
+
+        function callback() {
+            ++count;
+            if (count === 2) {
+                done();
+            }
+        }
     });
 });

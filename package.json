@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": "~0.10"
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "body-parser": "^1.6.5",
-    "chai": "^1.9.1",
+    "expect.js": "^0.3.1",
     "gulp": "^3.8.7",
     "gulp-clean": "^0.3.1",
     "gulp-filter": "^1.0.0",

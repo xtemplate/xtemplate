@@ -43,7 +43,7 @@ xtemplateRuntimeUtil = function (exports) {
   var toString = Object.prototype.toString;
   exports = util = {
     isArray: Array.isArray || function (obj) {
-      return toString.call(obj);
+      return toString.call(obj) === '[object Array]';
     },
     keys: Object.keys || function (o) {
       var result = [];
@@ -6404,7 +6404,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.1.1',
+    version: '2.2.0',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6524,11 +6524,10 @@ xtemplateRuntime = function (exports) {
 xtemplateCompiler = function (exports) {
   var util = xtemplateRuntime.util;
   var TOP_DECLARATION = [
-    'var tpl = this;',
     'var t;',
     'var root = tpl.root;',
     'var directAccess = tpl.directAccess;',
-    'var pos = tpl.pos = {line:1, col:1};',
+    'var pos = tpl.pos = {line:1};',
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
   ].join('\n');
@@ -6537,8 +6536,8 @@ xtemplateCompiler = function (exports) {
     var part0 = idParts[0];
     return [
       '(',
-      '(t=(' + 'scope.' + (root ? 'root.' : '') + 'affix &&' + 'scope.' + (root ? 'root.' : '') + 'affix.' + part0 + (idParts.length > 1 ? ' && ' + 'scope.' + (root ? 'root.' : '') + 'affix.' + str : '') + ')) !== undefined?',
-      't:',
+      '(t=(' + 'scope.' + (root ? 'root.' : '') + 'affix &&' + 'scope.' + (root ? 'root.' : '') + 'affix.' + part0 + ')) !== undefined?',
+      (idParts.length > 1 ? 'scope.' + (root ? 'root.' : '') + 'affix.' + str : 't') + ':',
       'scope.' + (root ? 'root.' : '') + 'data.' + str,
       ')'
     ].join('');
@@ -6656,8 +6655,13 @@ xtemplateCompiler = function (exports) {
       source: source
     };
   }
-  function markPos(pos) {
-    return 'pos.line = ' + pos.line + '; pos.col = ' + pos.col + ';';
+  var lastLine = 1;
+  function markPos(pos, source) {
+    if (lastLine === pos.line) {
+      return;
+    }
+    lastLine = pos.line;
+    source.push('pos.line = ' + pos.line + ';');
   }
   function isComplexIdParts(idParts) {
     var check = 0;
@@ -6706,8 +6710,9 @@ xtemplateCompiler = function (exports) {
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
-  function genTopFunction(self, statements) {
+  function genTopFunction(self, statements, name) {
     var source = [
+      'function run(tpl) {',
       TOP_DECLARATION,
       nativeCode
     ];
@@ -6721,11 +6726,23 @@ xtemplateCompiler = function (exports) {
       0
     ].concat(self.functionDeclares).concat(''));
     source.push(RETURN_BUFFER);
+    source.push('}');
+    source.push('function tryRun(tpl) {');
+    source.push('try {');
+    source.push('return run(tpl);');
+    source.push('} catch(e) {');
+    source.push('if(!e.xtpl){');
+    source.push('e.xtpl = {pos: tpl.pos,name: ' + wrapBySingleQuote(escapeString(name)) + '};');
+    source.push('buffer.error(e);');
+    source.push('}');
+    source.push('throw e;');
+    source.push('}');
+    source.push('}');
+    source.push('return tryRun(this);');
     return {
       params: [
         'scope',
-        'buffer',
-        'undefined'
+        'buffer'
       ],
       source: source.join('\n')
     };
@@ -6840,7 +6857,6 @@ xtemplateCompiler = function (exports) {
       idName = guid(self, 'callRet');
       source.push('var ' + idName);
     }
-    source.push(markPos(id.pos));
     if (idString in nativeCommands) {
       source.push(substitute(CALL_NATIVE_COMMAND, {
         lhs: block ? 'buffer' : idName,
@@ -6935,13 +6951,14 @@ xtemplateCompiler = function (exports) {
       };
     },
     id: function (idNode, extra) {
+      var source = [];
+      markPos(idNode.pos, source);
       if (isGlobalId(idNode)) {
         return {
           exp: idNode.string,
-          source: []
+          source: source
         };
       }
-      var source = [];
       var depth = idNode.depth;
       var idParts = idNode.parts;
       var idName = guid(this, 'id');
@@ -7051,13 +7068,14 @@ xtemplateCompiler = function (exports) {
       });
     },
     compileToJson: function (param) {
-      var root = compiler.parse(param.content, param.name);
-      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements);
+      var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
+      var root = compiler.parse(param.content, name);
+      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements, name);
     },
     compile: function (tplContent, name) {
       var code = compiler.compileToJson({
         content: tplContent,
-        name: name || 'xtemplate' + ++anonymousCount
+        name: name
       });
       return Function.apply(null, code.params.concat(code.source + substitute(SOURCE_URL, { name: name })));
     }
@@ -7110,7 +7128,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.1.1',
+    version: '2.2.0',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

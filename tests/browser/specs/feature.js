@@ -37,7 +37,7 @@ describe('feature', function () {
                 name: 'tpl-empty-content'
             }).render(data);
         } catch (e) {
-            expect(e.message.indexOf('syntax error') !== -1).to.equals(true);
+            expect(e.message.indexOf('syntax error') !== -1).to.be(true);
         }
     });
 

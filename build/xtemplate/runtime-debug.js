@@ -39,7 +39,7 @@ xtemplateRuntimeUtil = function (exports) {
   var toString = Object.prototype.toString;
   exports = util = {
     isArray: Array.isArray || function (obj) {
-      return toString.call(obj);
+      return toString.call(obj) === '[object Array]';
     },
     keys: Object.keys || function (o) {
       var result = [];
@@ -648,7 +648,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.1.1',
+    version: '2.2.0',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,

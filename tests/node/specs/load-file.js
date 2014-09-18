@@ -1,4 +1,4 @@
-var expect = require('chai').expect;
+var expect = require('expect.js');
 var xtpl = require('xtpl');
 var path = require('path');
 xtpl.config({

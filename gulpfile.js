@@ -89,6 +89,7 @@ gulp.task('precompile-test', function () {
     var gulpXTemplate = require('gulp-xtemplate');
     return gulp.src('tests/browser/fixture/*.xtpl').pipe(gulpXTemplate({
         runtime: 'xtemplate/runtime',
+        truncatePrefixLen: process.cwd().length,
         XTemplate: require('./')
     })).pipe(gulp.dest('tests/browser/fixture/'));
 });
@@ -155,7 +156,7 @@ gulp.task('kg', function () {
     var version = packageInfo.version;
     return gulp.src('./build/xtemplate/runtime-debug.js')
         .pipe(replace('modulex.add("xtemplate/runtime", [], function(require, exports, module)',
-                'KISSY.add("kg/xtemplate/'+version+'/runtime",[],function(S,require,exports,module)'))
+                'KISSY.add("kg/xtemplate/' + version + '/runtime",[],function(S,require,exports,module)'))
         .pipe(gulp.dest(kgInfo.dest))
         .pipe(replace(/@DEBUG@/g, ''))
         .pipe(uglify())
