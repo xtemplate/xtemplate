@@ -3,7 +3,7 @@ notifications:
   email:
   - yiminghe@gmail.com
 node_js:
-- 0.1
+- 0.11
 before_script:
 - node --harmony server &
 - npm install gulp bower mocha-phantomjs -g
