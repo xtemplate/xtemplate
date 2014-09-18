@@ -2,7 +2,7 @@
 
 ### variable render hint
 
-#### this is faster than without this
+#### this is faster than without this (avoid scope chain)
 
 ```javascript
 {
@@ -27,7 +27,7 @@ faster:
 {{/each}}
 ```
 
-#### root is faster in block
+#### root is faster in block (avoid scope chain)
 
 ```javascript
 {
