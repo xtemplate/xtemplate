@@ -205,14 +205,10 @@ xtemplateRuntimeScope = function (exports) {
       } else {
         return scope.data;
       }
-      if (v != null && scope) {
-        for (i = 1; v && i < len; i++) {
-          v = v[parts[i]];
-        }
-        return v;
-      } else {
-        return undefined;
+      for (i = 1; v && i < len; i++) {
+        v = v[parts[i]];
       }
+      return v;
     }
   };
   exports = Scope;
@@ -648,7 +644,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.2.1',
+    version: '2.2.2',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
