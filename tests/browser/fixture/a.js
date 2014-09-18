@@ -22,6 +22,7 @@ var extendCommand = nativeCommands["extend"];
 var blockCommand = nativeCommands["block"];
 var macroCommand = nativeCommands["macro"];
 var debuggerCommand = nativeCommands["debugger"];
+
 buffer.append('');
 var id0 = directAccess ? ((t=(scope.data && scope.data.x))!==undefined?t:(scope.affix && scope.affix.x)): scope.resolve(["x"]);
 buffer.writeEscaped(id0);
