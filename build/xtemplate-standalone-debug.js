@@ -6404,7 +6404,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.2.0',
+    version: '2.2.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6732,7 +6732,8 @@ xtemplateCompiler = function (exports) {
     source.push('return run(tpl);');
     source.push('} catch(e) {');
     source.push('if(!e.xtpl){');
-    source.push('e.xtpl = {pos: tpl.pos,name: ' + wrapBySingleQuote(escapeString(name)) + '};');
+    source.push('e.message += " (' + escapeString(name) + ':"+tpl.pos.line+")"');
+    source.push('e.xtpl = {pos: tpl.pos, name: ' + wrapBySingleQuote(escapeString(name)) + '};');
     source.push('buffer.error(e);');
     source.push('}');
     source.push('throw e;');
@@ -7128,7 +7129,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.2.0',
+    version: '2.2.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

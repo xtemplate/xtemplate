@@ -47,7 +47,8 @@ try {
 return run(tpl);
 } catch(e) {
 if(!e.xtpl){
-e.xtpl = {pos: tpl.pos,name: '\\tests\\browser\\fixture\\a.xtpl'};
+e.message += " (\\tests\\browser\\fixture\\a.xtpl:"+tpl.pos.line+")"
+e.xtpl = {pos: tpl.pos, name: '\\tests\\browser\\fixture\\a.xtpl'};
 buffer.error(e);
 }
 throw e;
