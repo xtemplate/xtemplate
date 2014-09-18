@@ -6739,12 +6739,12 @@ xtemplateCompiler = function (exports) {
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
-  function genTopFunction(self, statements) {
+  function genTopFunction(self, statements, catchError) {
     var source = [
       'var tpl = this;',
       TOP_DECLARATION,
       nativeCode,
-      'try {'
+      catchError ? 'try {' : ''
     ];
     var statement;
     for (var i = 0, len = statements.length; i < len; i++) {
@@ -6756,11 +6756,13 @@ xtemplateCompiler = function (exports) {
       0
     ].concat(self.functionDeclares).concat(''));
     source.push(RETURN_BUFFER);
-    source.push('} catch(e) {');
-    source.push('if(!e.xtpl){');
-    source.push('buffer.error(e);');
-    source.push('}else{ throw e; }');
-    source.push('}');
+    if (catchError) {
+      source.push('} catch(e) {');
+      source.push('if(!e.xtpl){');
+      source.push('buffer.error(e);');
+      source.push('}else{ throw e; }');
+      source.push('}');
+    }
     return {
       params: [
         'scope',
@@ -7110,12 +7112,13 @@ xtemplateCompiler = function (exports) {
     compileToJson: function (param) {
       var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
       var root = compiler.parse(param.content, name);
-      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements);
+      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements, param.catchError);
     },
-    compile: function (tplContent, name) {
+    compile: function (tplContent, name, config) {
       var code = compiler.compileToJson({
         content: tplContent,
-        name: name
+        name: name,
+        catchError: config && config.catchError
       });
       return Function.apply(null, code.params.concat(code.source + substitute(SOURCE_URL, { name: name })));
     }
@@ -7138,7 +7141,7 @@ xtemplate = function (exports) {
       require([name], function (tpl) {
         if (typeof tpl === 'string') {
           try {
-            tpl = XTemplate.compile(tpl, name);
+            tpl = XTemplate.compile(tpl, name, params.root.config);
           } catch (e) {
             return callback(e);
           }
@@ -7157,7 +7160,7 @@ xtemplate = function (exports) {
     config = self.config = config || {};
     config.loader = config.loader || XTemplate.loader;
     if (typeof tpl === 'string') {
-      tpl = Compiler.compile(tpl, config && config.name);
+      tpl = Compiler.compile(tpl, config && config.name, config);
     }
     XTemplateRuntime.call(self, tpl, config);
   }

@@ -23,16 +23,11 @@ var blockCommand = nativeCommands["block"];
 var macroCommand = nativeCommands["macro"];
 var debuggerCommand = nativeCommands["debugger"];
 
-try {
+
 buffer.data += '';
 var id0 = directAccess ? ((t=(scope.affix &&scope.affix.y)) !== undefined?t:scope.data.y) : scope.resolve(["y"]);
 buffer.writeEscaped(id0);
 return buffer;
-} catch(e) {
-if(!e.xtpl){
-buffer.error(e);
-}else{ throw e; }
-}
 };
 module.exports.TPL_NAME = module.id || module.name;
 });

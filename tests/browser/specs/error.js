@@ -103,7 +103,8 @@ describe('error detection', function () {
 
         try {
             new XTemplate(tpl, {
-                name: 'x.xtpl'
+                name: 'x.xtpl',
+                catchError:true
             }).render({x: 1});
         } catch (e) {
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
@@ -130,7 +131,8 @@ describe('error detection', function () {
 
         try {
             new XTemplate(tpl, {
-                name: 'x.xtpl'
+                name: 'x.xtpl',
+                catchError:true
             }).render({x: 1}, function (e) {
                     if (navigator.userAgent.indexOf('Chrome') !== -1) {
                         expect(e.message).to.contain("x.xtpl:6");
@@ -165,7 +167,8 @@ describe('error detection', function () {
         modulex.add('detect-runtime-error', tpl);
         try {
             new XTemplate('{{include("detect-runtime-error")}}', {
-                name: 'x.xtpl'
+                name: 'x.xtpl',
+                catchError:true
             }).render({x: 1}, function (e, content) {
                     expect(content).to.be(undefined);
                     if (navigator.userAgent.indexOf('Chrome') !== -1) {
