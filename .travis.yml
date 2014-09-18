@@ -5,7 +5,7 @@ notifications:
 node_js:
 - 0.1
 before_script:
-- node server &
+- node --harmony server &
 - npm install gulp bower mocha-phantomjs -g
 - bower install
 - phantomjs --version

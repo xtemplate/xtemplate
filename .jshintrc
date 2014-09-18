@@ -16,7 +16,7 @@
     "unused": true,
     "browser": true,
     "node": true,
-    "es3": true,
+    "esnext": true,
     "globals": {
         "describe": false,
         "expect": false,
