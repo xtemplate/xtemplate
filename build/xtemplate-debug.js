@@ -5860,12 +5860,14 @@ xtemplateCompiler = function (exports) {
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
   ].join('\n');
-  function directScopeRead(root) {
+  function chainedVariableRead(idParts, root) {
+    var str = idParts.join('.');
+    var part0 = idParts[0];
     return [
       '(',
-      '(t=(' + 'scope.' + (root ? 'root.' : '') + 'data' + ' && ' + 'scope.' + (root ? 'root.' : '') + 'data{idParts}))!==undefined?',
+      '(t=(' + 'scope.' + (root ? 'root.' : '') + 'affix &&' + 'scope.' + (root ? 'root.' : '') + 'affix.' + part0 + (idParts.length > 1 ? ' && ' + 'scope.' + (root ? 'root.' : '') + 'affix.' + str : '') + ')) !== undefined?',
       't:',
-      '(' + 'scope.' + (root ? 'root.' : '') + 'affix' + ' && ' + 'scope.' + (root ? 'root.' : '') + 'affix{idParts})',
+      'scope.' + (root ? 'root.' : '') + 'data.' + str,
       ')'
     ].join('');
   }
@@ -5874,9 +5876,9 @@ xtemplateCompiler = function (exports) {
   var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}]);';
   var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {depth});';
   var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}]);';
-  var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP = ['var {lhs} = directAccess ? ' + directScopeRead() + ': scope.resolve([{idPartsArr}]);'].join('\n');
-  var IF_AFFIX_DIRECT_SCOPE_RESOLVE = ['var {lhs} = ' + directScopeRead() + ';'].join('\n');
-  var IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = ' + directScopeRead(1) + ';';
+  var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP = ['var {lhs} = directAccess ? {value} : scope.resolve([{idPartsArr}]);'].join('\n');
+  var IF_AFFIX_DIRECT_SCOPE_RESOLVE = ['var {lhs} = {value};'].join('\n');
+  var IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = {value};';
   var DIRECT_SCOPE_RESOLVE = ['var {lhs} = scope.data;'].join('\n');
   var DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = scope.root.data;';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
@@ -6285,6 +6287,7 @@ xtemplateCompiler = function (exports) {
             }
             source.push(substitute(remain ? IF_AFFIX_DIRECT_SCOPE_RESOLVE : DIRECT_SCOPE_RESOLVE, {
               lhs: idName,
+              value: chainedVariableRead(remainParts),
               idParts: remain
             }));
             return {
@@ -6299,6 +6302,7 @@ xtemplateCompiler = function (exports) {
             }
             source.push(substitute(remain ? IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE : DIRECT_ROOT_SCOPE_RESOLVE, {
               lhs: idName,
+              value: chainedVariableRead(remainParts, true),
               idParts: remain
             }));
             return {
@@ -6313,6 +6317,7 @@ xtemplateCompiler = function (exports) {
             source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
               lhs: idName,
               idParts: remain,
+              value: chainedVariableRead(idParts),
               idPartsArr: joinArrayOfString(idParts)
             }));
             return {
@@ -6433,7 +6438,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.1.0',
+    version: '2.1.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

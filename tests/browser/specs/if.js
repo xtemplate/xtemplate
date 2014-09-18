@@ -6,6 +6,13 @@
 var XTemplate = require('xtemplate');
 
 describe('if', function () {
+    it('support empty field', function () {
+        var tpl = '{{set(q=1)}}{{#if(x.y.z)}}has title{{/if}}';
+        var render = new XTemplate(tpl).render({x: {y: {}}});
+
+        expect(render).to.equal('');
+    });
+
     it('support {{#if}} {{@', function () {
         var tpl = '{{#if(title)}}has title{{/if}}\n' +
             '{{@if(title2)}}has title2{{else}}not has title2{{/if}}';
