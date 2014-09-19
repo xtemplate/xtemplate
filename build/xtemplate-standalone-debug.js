@@ -174,31 +174,14 @@ xtemplateRuntimeScope = function (exports) {
       v = affix && affix[name];
       return v;
     },
-    resolve: function (parts, depth) {
-      var self = this;
-      var v;
-      if (!depth && parts.length === 1) {
-        v = self.get(parts[0]);
-        if (v !== undefined) {
-          return v;
-        } else {
-          depth = 1;
-        }
-      }
-      var len = parts.length;
-      var scope = self;
-      var i;
+    resolveInternal: function (parts) {
       var part0 = parts[0];
-      if (depth) {
-        while (scope && depth--) {
-          scope = scope.parent;
-        }
-      }
-      if (!scope) {
-        return undefined;
-      }
+      var v, i;
+      var self = this;
+      var scope = self;
+      var len = parts.length;
       if (part0 === 'this') {
-        v = scope.data;
+        v = self.data;
       } else if (part0 === 'root') {
         scope = scope.root;
         v = scope.data;
@@ -213,6 +196,31 @@ xtemplateRuntimeScope = function (exports) {
         v = v[parts[i]];
       }
       return v;
+    },
+    resolveUp: function (parts) {
+      return this.parent && this.parent.resolveInternal(parts);
+    },
+    resolve: function (parts, depth) {
+      var self = this;
+      var scope = self;
+      var v;
+      if (!depth && parts.length === 1) {
+        v = self.get(parts[0]);
+        if (v !== undefined) {
+          return v;
+        } else {
+          depth = 1;
+        }
+      }
+      if (depth) {
+        while (scope && depth--) {
+          scope = scope.parent;
+        }
+      }
+      if (!scope) {
+        return undefined;
+      }
+      return scope.resolveInternal(parts);
     }
   };
   exports = Scope;
@@ -239,13 +247,21 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
     },
     write: function (data) {
       if (data != null) {
-        this.data += data;
+        if (data.isBuffer) {
+          return data;
+        } else {
+          this.data += data;
+        }
       }
       return this;
     },
     writeEscaped: function (data) {
       if (data != null) {
-        this.data += util.escapeHtml(data);
+        if (data.isBuffer) {
+          return data;
+        } else {
+          this.data += util.escapeHtml(data);
+        }
       }
       return this;
     },
@@ -6417,7 +6433,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.2.6',
+    version: '2.3.0',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6550,14 +6566,15 @@ xtemplateCompiler = function (exports) {
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
   ].join('\n');
-  function chainedVariableRead(idParts, root) {
+  function chainedVariableRead(idParts, root, resolveUp) {
     var str = idParts.join('.');
     var part0 = idParts[0];
     return [
       '(',
       '(t=(' + 'scope.' + (root ? 'root.' : '') + 'affix &&' + 'scope.' + (root ? 'root.' : '') + 'affix.' + part0 + ')) !== undefined?',
       (idParts.length > 1 ? 'scope.' + (root ? 'root.' : '') + 'affix.' + str : 't') + ':',
-      'scope.' + (root ? 'root.' : '') + 'data.' + str,
+      (resolveUp ? '((t = ' : '') + 'scope.' + (root ? 'root.' : '') + 'data.' + str,
+      resolveUp ? ' )!== undefined?t:scope.resolveUp([' + joinArrayOfString(idParts) + ']))' : '',
       ')'
     ].join('');
   }
@@ -6566,18 +6583,12 @@ xtemplateCompiler = function (exports) {
   var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}]);';
   var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {depth});';
   var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}]);';
-  var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP = ['var {lhs} = directAccess ? {value} : scope.resolve([{idPartsArr}]);'].join('\n');
+  var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP = ['var {lhs} = {value};'].join('\n');
   var IF_AFFIX_DIRECT_SCOPE_RESOLVE = ['var {lhs} = {value};'].join('\n');
   var IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = {value};';
   var DIRECT_SCOPE_RESOLVE = ['var {lhs} = scope.data;'].join('\n');
   var DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = scope.root.data;';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
-  var CHECK_BUFFER = [
-    'if({name} && {name}.isBuffer){',
-    'buffer = {name};',
-    '{name} = undefined;',
-    '}'
-  ].join('\n');
   var FUNC = [
     'function {functionName}({params}){',
     '{body}',
@@ -6589,9 +6600,9 @@ xtemplateCompiler = function (exports) {
   ].join('\n');
   var DECLARE_NATIVE_COMMANDS = 'var {name}Command = nativeCommands["{name}"];';
   var DECLARE_UTILS = 'var {name}Util = utils["{name}"];';
-  var BUFFER_WRITE = 'buffer.write({value});';
+  var BUFFER_WRITE = 'buffer = buffer.write({value});';
   var BUFFER_APPEND = 'buffer.data += {value};';
-  var BUFFER_WRITE_ESCAPED = 'buffer.writeEscaped({value});';
+  var BUFFER_WRITE_ESCAPED = 'buffer = buffer.writeEscaped({value});';
   var RETURN_BUFFER = 'return buffer;';
   var XTemplateRuntime = xtemplateRuntime;
   var parser = xtemplateCompilerParser;
@@ -6916,9 +6927,6 @@ xtemplateCompiler = function (exports) {
         depth: id.depth
       }));
     }
-    if (idName) {
-      source.push(substitute(CHECK_BUFFER, { name: idName }));
-    }
     return {
       exp: idName,
       source: source
@@ -7041,15 +7049,9 @@ xtemplateCompiler = function (exports) {
               source: source
             };
           } else if (extra && extra.top) {
-            remain = idParts.join('.');
-            if (remain) {
-              remain = '.' + remain;
-            }
             source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
               lhs: idName,
-              idParts: remain,
-              value: chainedVariableRead(idParts),
-              idPartsArr: joinArrayOfString(idParts)
+              value: chainedVariableRead(idParts, false, true)
             }));
             return {
               exp: idName,
@@ -7171,7 +7173,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.2.6',
+    version: '2.3.0',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

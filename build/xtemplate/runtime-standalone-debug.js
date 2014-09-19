@@ -172,31 +172,14 @@ _xtemplateRuntime_ = function (exports) {
         v = affix && affix[name];
         return v;
       },
-      resolve: function (parts, depth) {
-        var self = this;
-        var v;
-        if (!depth && parts.length === 1) {
-          v = self.get(parts[0]);
-          if (v !== undefined) {
-            return v;
-          } else {
-            depth = 1;
-          }
-        }
-        var len = parts.length;
-        var scope = self;
-        var i;
+      resolveInternal: function (parts) {
         var part0 = parts[0];
-        if (depth) {
-          while (scope && depth--) {
-            scope = scope.parent;
-          }
-        }
-        if (!scope) {
-          return undefined;
-        }
+        var v, i;
+        var self = this;
+        var scope = self;
+        var len = parts.length;
         if (part0 === 'this') {
-          v = scope.data;
+          v = self.data;
         } else if (part0 === 'root') {
           scope = scope.root;
           v = scope.data;
@@ -211,6 +194,31 @@ _xtemplateRuntime_ = function (exports) {
           v = v[parts[i]];
         }
         return v;
+      },
+      resolveUp: function (parts) {
+        return this.parent && this.parent.resolveInternal(parts);
+      },
+      resolve: function (parts, depth) {
+        var self = this;
+        var scope = self;
+        var v;
+        if (!depth && parts.length === 1) {
+          v = self.get(parts[0]);
+          if (v !== undefined) {
+            return v;
+          } else {
+            depth = 1;
+          }
+        }
+        if (depth) {
+          while (scope && depth--) {
+            scope = scope.parent;
+          }
+        }
+        if (!scope) {
+          return undefined;
+        }
+        return scope.resolveInternal(parts);
       }
     };
     exports = Scope;
@@ -237,13 +245,21 @@ _xtemplateRuntime_ = function (exports) {
       },
       write: function (data) {
         if (data != null) {
-          this.data += data;
+          if (data.isBuffer) {
+            return data;
+          } else {
+            this.data += data;
+          }
         }
         return this;
       },
       writeEscaped: function (data) {
         if (data != null) {
-          this.data += util.escapeHtml(data);
+          if (data.isBuffer) {
+            return data;
+          } else {
+            this.data += util.escapeHtml(data);
+          }
         }
         return this;
       },
@@ -663,7 +679,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '2.2.6',
+      version: '2.3.0',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,

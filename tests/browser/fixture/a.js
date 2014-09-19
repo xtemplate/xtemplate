@@ -25,16 +25,12 @@ var debuggerCommand = nativeCommands["debugger"];
 
 
 buffer.data += '';
-var id0 = directAccess ? ((t=(scope.affix &&scope.affix.x)) !== undefined?t:scope.data.x) : scope.resolve(["x"]);
-buffer.writeEscaped(id0);
+var id0 = ((t=(scope.affix &&scope.affix.x)) !== undefined?t:((t = scope.data.x )!== undefined?t:scope.resolveUp(["x"])));
+buffer = buffer.writeEscaped(id0);
 buffer.data += '';
 var callRet1
 callRet1 = includeCommand.call(tpl, scope, {escape:1,params:[require("./b").TPL_NAME]}, buffer);
-if(callRet1 && callRet1.isBuffer){
-buffer = callRet1;
-callRet1 = undefined;
-}
-buffer.writeEscaped(callRet1);
+buffer = buffer.writeEscaped(callRet1);
 return buffer;
 };
 module.exports.TPL_NAME = module.id || module.name;

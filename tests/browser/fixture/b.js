@@ -25,8 +25,8 @@ var debuggerCommand = nativeCommands["debugger"];
 
 
 buffer.data += '';
-var id0 = directAccess ? ((t=(scope.affix &&scope.affix.y)) !== undefined?t:scope.data.y) : scope.resolve(["y"]);
-buffer.writeEscaped(id0);
+var id0 = ((t=(scope.affix &&scope.affix.y)) !== undefined?t:((t = scope.data.y )!== undefined?t:scope.resolveUp(["y"])));
+buffer = buffer.writeEscaped(id0);
 return buffer;
 };
 module.exports.TPL_NAME = module.id || module.name;
