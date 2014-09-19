@@ -52,7 +52,7 @@
                         success: function (tpl) {
                             if (typeof tpl === 'string') {
                                 try {
-                                    tpl = XTemplate.compile(tpl, name);
+                                    tpl = XTemplate.compile(tpl, name, params.root.config);
                                 } catch (e) {
                                     return callback(e);
                                 }
