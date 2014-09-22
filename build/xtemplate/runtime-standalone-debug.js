@@ -122,7 +122,7 @@ _xtemplateRuntime_ = function (exports) {
     return exports;
   }();
   xtemplateRuntimeScope = function (exports) {
-    function Scope(data) {
+    function Scope(data, affix) {
       if (data !== undefined) {
         this.data = data;
       } else {
@@ -130,7 +130,7 @@ _xtemplateRuntime_ = function (exports) {
       }
       this.root = this;
       this.parent = undefined;
-      this.affix = undefined;
+      this.affix = affix || {};
     }
     Scope.prototype = {
       isScope: 1,
@@ -139,9 +139,6 @@ _xtemplateRuntime_ = function (exports) {
         this.root = parentScope.root;
       },
       set: function (name, value) {
-        if (!this.affix) {
-          this.affix = {};
-        }
         this.affix[name] = value;
       },
       setData: function (data) {
@@ -152,9 +149,6 @@ _xtemplateRuntime_ = function (exports) {
       },
       mix: function (v) {
         var affix = this.affix;
-        if (!affix) {
-          affix = this.affix = {};
-        }
         for (var name in v) {
           affix[name] = v[name];
         }
@@ -169,8 +163,7 @@ _xtemplateRuntime_ = function (exports) {
         if (v !== undefined) {
           return v;
         }
-        v = affix && affix[name];
-        return v;
+        return affix[name];
       },
       resolveInternal: function (parts) {
         var part0 = parts[0];
@@ -375,14 +368,14 @@ _xtemplateRuntime_ = function (exports) {
         if (param0) {
           xcount = param0.length;
           for (xindex = 0; xindex < xcount; xindex++) {
-            opScope = new Scope(param0[xindex]);
-            affix = opScope.affix = {
+            opScope = new Scope(param0[xindex], {
               xcount: xcount,
               xindex: xindex
-            };
+            });
+            affix = opScope.affix;
             if (xindexName !== 'xindex') {
               affix[xindexName] = xindex;
-              delete affix.xindex;
+              affix.xindex = undefined;
             }
             if (valueName) {
               affix[valueName] = param0[xindex];
@@ -401,9 +394,12 @@ _xtemplateRuntime_ = function (exports) {
         var opScope, affix, name;
         if (param0) {
           for (name in param0) {
-            opScope = new Scope(param0[name]);
-            affix = opScope.affix = {};
-            affix[xindexName] = name;
+            opScope = new Scope(param0[name], { xindex: name });
+            affix = opScope.affix;
+            if (xindexName !== 'xindex') {
+              affix[xindexName] = name;
+              affix.xindex = undefined;
+            }
             if (valueName) {
               affix[valueName] = param0[name];
             }
@@ -679,7 +675,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '2.3.0',
+      version: '2.3.2',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,

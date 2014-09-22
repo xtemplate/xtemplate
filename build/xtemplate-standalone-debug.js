@@ -9,10 +9,11 @@ xtemplate/runtime/commands
 xtemplate/runtime/scope
 xtemplate/runtime/linked-buffer
 xtemplate/compiler
+xtemplate/compiler/tools
 xtemplate/compiler/parser
 xtemplate/compiler/ast
 */
-var xtemplateRuntimeUtil, xtemplateRuntimeScope, xtemplateRuntimeLinkedBuffer, xtemplateCompilerParser, xtemplateCompilerAst, xtemplateRuntimeCommands, xtemplateRuntime, xtemplateCompiler, xtemplate;
+var xtemplateRuntimeUtil, xtemplateRuntimeScope, xtemplateRuntimeLinkedBuffer, xtemplateCompilerTools, xtemplateCompilerParser, xtemplateCompilerAst, xtemplateRuntimeCommands, xtemplateRuntime, xtemplateCompiler, xtemplate;
 xtemplateRuntimeUtil = function (exports) {
   // http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
   // http://wonko.com/post/html-escaping
@@ -124,7 +125,7 @@ xtemplateRuntimeUtil = function (exports) {
   return exports;
 }();
 xtemplateRuntimeScope = function (exports) {
-  function Scope(data) {
+  function Scope(data, affix) {
     if (data !== undefined) {
       this.data = data;
     } else {
@@ -132,7 +133,7 @@ xtemplateRuntimeScope = function (exports) {
     }
     this.root = this;
     this.parent = undefined;
-    this.affix = undefined;
+    this.affix = affix || {};
   }
   Scope.prototype = {
     isScope: 1,
@@ -141,9 +142,6 @@ xtemplateRuntimeScope = function (exports) {
       this.root = parentScope.root;
     },
     set: function (name, value) {
-      if (!this.affix) {
-        this.affix = {};
-      }
       this.affix[name] = value;
     },
     setData: function (data) {
@@ -154,9 +152,6 @@ xtemplateRuntimeScope = function (exports) {
     },
     mix: function (v) {
       var affix = this.affix;
-      if (!affix) {
-        affix = this.affix = {};
-      }
       for (var name in v) {
         affix[name] = v[name];
       }
@@ -171,8 +166,7 @@ xtemplateRuntimeScope = function (exports) {
       if (v !== undefined) {
         return v;
       }
-      v = affix && affix[name];
-      return v;
+      return affix[name];
     },
     resolveInternal: function (parts) {
       var part0 = parts[0];
@@ -346,6 +340,106 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
   };
   LinkedBuffer.Buffer = Buffer;
   exports = LinkedBuffer;
+  return exports;
+}();
+xtemplateCompilerTools = function (exports) {
+  var doubleReg = /\\*"/g;
+  var singleReg = /\\*'/g;
+  var arrayPush = [].push;
+  var globals = {};
+  globals['undefined'] = globals['null'] = globals['true'] = globals['false'] = 1;
+  var tools = exports = {
+    isGlobalId: function (node) {
+      if (globals[node.string]) {
+        return 1;
+      }
+      return 0;
+    },
+    chainedVariableRead: function (self, source, idParts, root, resolveUp) {
+      var strs = tools.convertIdPartsToRawAccessor(self, source, idParts);
+      var part0 = strs.parts[0];
+      var scope = '';
+      if (root) {
+        scope = 'scope.root.';
+      }
+      var affix = scope + 'affix';
+      var data = scope + 'data';
+      var ret = [
+        '(',
+        '(t=(' + affix + part0 + ')) !== undefined ? ',
+        idParts.length > 1 ? affix + strs.str : 't',
+        ':'
+      ];
+      if (resolveUp) {
+        ret = ret.concat([
+          '(',
+          '(t = ' + data + part0 + ') !== undefined ? ',
+          idParts.length > 1 ? data + strs.str : 't',
+          ' :',
+          'scope.resolveUp(' + strs.arr + ')',
+          ')'
+        ]);
+      } else {
+        ret.push(data + part0);
+      }
+      ret.push(')');
+      return ret.join('');
+    },
+    convertIdPartsToRawAccessor: function (self, source, idParts) {
+      var i, l, idPart, idPartType, nextIdNameCode;
+      var parts = [];
+      var ret = [];
+      for (i = 0, l = idParts.length; i < l; i++) {
+        idPart = idParts[i];
+        idPartType = idPart.type;
+        if (idPartType) {
+          nextIdNameCode = self[idPartType](idPart);
+          tools.pushToArray(source, nextIdNameCode.source);
+          ret.push('[' + nextIdNameCode.exp + ']');
+          parts.push(nextIdNameCode.exp);
+        } else {
+          ret.push('.' + idPart);
+          parts.push(tools.wrapByDoubleQuote(idPart));
+        }
+      }
+      return {
+        str: ret.join(''),
+        arr: '[' + parts.join(',') + ']',
+        parts: ret
+      };
+    },
+    wrapByDoubleQuote: function (str) {
+      return '"' + str + '"';
+    },
+    wrapBySingleQuote: function (str) {
+      return '\'' + str + '\'';
+    },
+    joinArrayOfString: function (arr) {
+      return tools.wrapByDoubleQuote(arr.join('","'));
+    },
+    escapeSingleQuoteInCodeString: function (str, isDouble) {
+      return str.replace(isDouble ? doubleReg : singleReg, function (m) {
+        if (m.length % 2) {
+          m = '\\' + m;
+        }
+        return m;
+      });
+    },
+    escapeString: function (str, isCode) {
+      if (isCode) {
+        str = tools.escapeSingleQuoteInCodeString(str, 0);
+      } else {
+        str = str.replace(/\\/g, '\\\\').replace(/'/g, '\\\'');
+      }
+      str = str.replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t');
+      return str;
+    },
+    pushToArray: function (to, from) {
+      if (from) {
+        arrayPush.apply(to, from);
+      }
+    }
+  };
   return exports;
 }();
 xtemplateCompilerParser = function (exports) {
@@ -6129,14 +6223,14 @@ xtemplateRuntimeCommands = function (exports) {
       if (param0) {
         xcount = param0.length;
         for (xindex = 0; xindex < xcount; xindex++) {
-          opScope = new Scope(param0[xindex]);
-          affix = opScope.affix = {
+          opScope = new Scope(param0[xindex], {
             xcount: xcount,
             xindex: xindex
-          };
+          });
+          affix = opScope.affix;
           if (xindexName !== 'xindex') {
             affix[xindexName] = xindex;
-            delete affix.xindex;
+            affix.xindex = undefined;
           }
           if (valueName) {
             affix[valueName] = param0[xindex];
@@ -6155,9 +6249,12 @@ xtemplateRuntimeCommands = function (exports) {
       var opScope, affix, name;
       if (param0) {
         for (name in param0) {
-          opScope = new Scope(param0[name]);
-          affix = opScope.affix = {};
-          affix[xindexName] = name;
+          opScope = new Scope(param0[name], { xindex: name });
+          affix = opScope.affix;
+          if (xindexName !== 'xindex') {
+            affix[xindexName] = name;
+            affix.xindex = undefined;
+          }
           if (valueName) {
             affix[valueName] = param0[name];
           }
@@ -6433,7 +6530,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '2.3.0',
+    version: '2.3.2',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6558,6 +6655,9 @@ xtemplateRuntime = function (exports) {
 }();
 xtemplateCompiler = function (exports) {
   var util = xtemplateRuntime.util;
+  var compilerTools = xtemplateCompilerTools;
+  var pushToArray = compilerTools.pushToArray;
+  var wrapByDoubleQuote = compilerTools.wrapByDoubleQuote;
   var TOP_DECLARATION = [
     'var t;',
     'var root = tpl.root;',
@@ -6566,29 +6666,16 @@ xtemplateCompiler = function (exports) {
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
   ].join('\n');
-  function chainedVariableRead(idParts, root, resolveUp) {
-    var str = idParts.join('.');
-    var part0 = idParts[0];
-    return [
-      '(',
-      '(t=(' + 'scope.' + (root ? 'root.' : '') + 'affix &&' + 'scope.' + (root ? 'root.' : '') + 'affix.' + part0 + ')) !== undefined?',
-      (idParts.length > 1 ? 'scope.' + (root ? 'root.' : '') + 'affix.' + str : 't') + ':',
-      (resolveUp ? '((t = ' : '') + 'scope.' + (root ? 'root.' : '') + 'data.' + str,
-      resolveUp ? ' )!== undefined?t:scope.resolveUp([' + joinArrayOfString(idParts) + ']))' : '',
-      ')'
-    ].join('');
-  }
   var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer);';
-  var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, [{idParts}]);';
-  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}]);';
-  var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, [{idParts}], {depth});';
-  var SCOPE_RESOLVE = 'var {lhs} = scope.resolve([{idParts}]);';
+  var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, {idParts});';
+  var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts});';
+  var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts}, {depth});';
   var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP = ['var {lhs} = {value};'].join('\n');
   var IF_AFFIX_DIRECT_SCOPE_RESOLVE = ['var {lhs} = {value};'].join('\n');
   var IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = {value};';
-  var DIRECT_SCOPE_RESOLVE = ['var {lhs} = scope.data;'].join('\n');
+  var DIRECT_SCOPE_RESOLVE = ['var {lhs} = data;'].join('\n');
   var DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = scope.root.data;';
-  var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve([{idParts}],{depth});';
+  var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve({idParts},{depth});';
   var FUNC = [
     'function {functionName}({params}){',
     '{body}',
@@ -6612,8 +6699,6 @@ xtemplateCompiler = function (exports) {
   var each = util.each;
   var nativeCommands = XTemplateRuntime.nativeCommands;
   var nativeUtils = XTemplateRuntime.utils;
-  var globals = {};
-  globals['undefined'] = globals['null'] = globals['true'] = globals['false'] = 1;
   each(nativeUtils, function (v, name) {
     nativeCode.push(substitute(DECLARE_UTILS, { name: name }));
   });
@@ -6621,52 +6706,25 @@ xtemplateCompiler = function (exports) {
     nativeCode.push(substitute(DECLARE_NATIVE_COMMANDS, { name: name }));
   });
   nativeCode = nativeCode.join('\n');
-  var doubleReg = /\\*"/g, singleReg = /\\*'/g, arrayPush = [].push;
-  function isGlobalId(node) {
-    if (globals[node.string]) {
-      return 1;
-    }
-    return 0;
+  function getFunctionDeclare(functionName) {
+    return [
+      'function ' + functionName + '(scope, buffer, undefined) {',
+      'var data = scope.data;',
+      'var affix = scope.affix;'
+    ];
   }
   function guid(self, str) {
     return str + self.uuid++;
   }
-  function wrapByDoubleQuote(str) {
-    return '"' + str + '"';
-  }
-  function wrapBySingleQuote(str) {
-    return '\'' + str + '\'';
-  }
-  function joinArrayOfString(arr) {
-    return wrapByDoubleQuote(arr.join('","'));
-  }
-  function escapeSingleQuoteInCodeString(str, isDouble) {
-    return str.replace(isDouble ? doubleReg : singleReg, function (m) {
-      if (m.length % 2) {
-        m = '\\' + m;
-      }
-      return m;
-    });
-  }
-  function escapeString(str, isCode) {
-    if (isCode) {
-      str = escapeSingleQuoteInCodeString(str, 0);
-    } else {
-      str = str.replace(/\\/g, '\\\\').replace(/'/g, '\\\'');
-    }
-    str = str.replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\t/g, '\\t');
-    return str;
-  }
-  function pushToArray(to, from) {
-    if (from) {
-      arrayPush.apply(to, from);
-    }
-  }
-  function opExpression(e, extra) {
-    var source = [], type = e.opType, exp1, exp2, code1Source, code2Source, code1 = this[e.op1.type](e.op1, extra), code2 = this[e.op2.type](e.op2, extra);
+  function opExpression(e) {
+    var source = [];
+    var type = e.opType;
+    var exp1, exp2, code1Source, code2Source;
+    var code1 = this[e.op1.type](e.op1);
+    var code2 = this[e.op2.type](e.op2);
+    var exp = guid(this, 'exp');
     exp1 = code1.exp;
     exp2 = code2.exp;
-    var exp = guid(this, 'exp');
     code1Source = code1.source;
     code2Source = code2.source;
     pushToArray(source, code1Source);
@@ -6693,57 +6751,23 @@ xtemplateCompiler = function (exports) {
     lastLine = pos.line;
     source.push('pos.line = ' + pos.line + ';');
   }
-  function isComplexIdParts(idParts) {
-    var check = 0;
-    var i, l;
-    for (i = 0, l = idParts.length; i < l; i++) {
-      if (idParts[i].type) {
-        check = 1;
-        break;
-      }
-    }
-    return check;
-  }
-  function getIdStringFromIdParts(self, source, idParts, extra) {
-    if (idParts.length === 1) {
-      return null;
-    }
-    var i, l, idPart, idPartType, check = isComplexIdParts(idParts), nextIdNameCode;
-    if (check) {
-      var ret = [];
-      for (i = 0, l = idParts.length; i < l; i++) {
-        idPart = idParts[i];
-        idPartType = idPart.type;
-        if (idPartType) {
-          nextIdNameCode = self[idPartType](idPart, extra);
-          pushToArray(source, nextIdNameCode.source);
-          ret.push(nextIdNameCode.exp);
-        } else {
-          ret.push(wrapByDoubleQuote(idPart));
-        }
-      }
-      return ret;
-    } else {
-      return null;
-    }
-  }
-  function genFunction(self, statements, extra) {
+  function genFunction(self, statements) {
     var functionName = guid(self, 'func');
-    var source = ['function ' + functionName + '(scope, buffer, undefined) {'];
+    var source = getFunctionDeclare(functionName);
     var statement;
     for (var i = 0, len = statements.length; i < len; i++) {
       statement = statements[i];
-      pushToArray(source, self[statement.type](statement, extra).source);
+      pushToArray(source, self[statement.type](statement).source);
     }
     source.push(RETURN_BUFFER);
     source.push('}');
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
-  function genConditionFunction(self, condition, extra) {
+  function genConditionFunction(self, condition) {
     var functionName = guid(self, 'func');
-    var source = ['function ' + functionName + '(scope, buffer, undefined) {'];
-    var gen = self[condition.type](condition, extra);
+    var source = getFunctionDeclare(functionName);
+    var gen = self[condition.type](condition);
     pushToArray(source, gen.source);
     source.push('return ' + gen.exp + ';');
     source.push('}');
@@ -6753,17 +6777,19 @@ xtemplateCompiler = function (exports) {
   function genTopFunction(self, statements, catchError) {
     var source = [
       'var tpl = this;',
+      'var data = scope.data;',
+      'var affix = scope.affix;',
       TOP_DECLARATION,
       nativeCode,
       catchError ? 'try {' : ''
     ];
-    var statement;
-    for (var i = 0, len = statements.length; i < len; i++) {
+    var statement, i, len;
+    for (i = 0, len = statements.length; i < len; i++) {
       statement = statements[i];
       pushToArray(source, self[statement.type](statement, { top: 1 }).source);
     }
     source.splice.apply(source, [
-      3,
+      5,
       0
     ].concat(self.functionDeclares).concat(''));
     source.push(RETURN_BUFFER);
@@ -6783,12 +6809,14 @@ xtemplateCompiler = function (exports) {
       source: source.join('\n')
     };
   }
-  function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse, extra) {
-    var source = [], params = func.params, hash = func.hash;
+  function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
+    var source = [];
+    var params = func.params;
+    var hash = func.hash;
     var funcParams = [];
     if (params) {
       each(params, function (param) {
-        var nextIdNameCode = self[param.type](param, extra);
+        var nextIdNameCode = self[param.type](param);
         pushToArray(source, nextIdNameCode.source);
         funcParams.push(nextIdNameCode.exp);
       });
@@ -6796,7 +6824,7 @@ xtemplateCompiler = function (exports) {
     var funcHash = [];
     if (hash) {
       each(hash.value, function (v, key) {
-        var nextIdNameCode = self[v.type](v, extra);
+        var nextIdNameCode = self[v.type](v);
         pushToArray(source, nextIdNameCode.source);
         funcHash.push([
           wrapByDoubleQuote(key),
@@ -6835,7 +6863,7 @@ xtemplateCompiler = function (exports) {
       source: source
     };
   }
-  function generateFunction(self, func, escape, block, extra) {
+  function generateFunction(self, func, block, escape) {
     var source = [];
     var functionConfigCode, idName;
     var id = func.id;
@@ -6875,20 +6903,20 @@ xtemplateCompiler = function (exports) {
       if (elseIf) {
         elseIfs.push(elseIf);
       }
-      fnName = genFunction(self, thenStatements, idString === 'if' || idString === 'block' ? extra : null);
+      fnName = genFunction(self, thenStatements);
       if (inverse) {
-        inverseName = genFunction(self, inverse, idString === 'if' || idString === 'block' ? extra : null);
+        inverseName = genFunction(self, inverse);
       }
       if (elseIfs.length) {
         var elseIfsVariable = [];
         for (i = 0; i < elseIfs.length; i++) {
           var elseIfStatement = elseIfs[i];
-          var conditionName = genConditionFunction(self, elseIfStatement.condition, extra);
-          elseIfsVariable.push('{test: ' + conditionName + ',fn : ' + genFunction(self, elseIfStatement.statements, extra) + '}');
+          var conditionName = genConditionFunction(self, elseIfStatement.condition);
+          elseIfsVariable.push('{test: ' + conditionName + ',fn : ' + genFunction(self, elseIfStatement.statements) + '}');
         }
         elseIfsName = '[' + elseIfsVariable.join(',') + ']';
       }
-      functionConfigCode = genOptionFromFunction(self, func, escape, fnName, elseIfsName, inverseName, extra);
+      functionConfigCode = genOptionFromFunction(self, func, escape, fnName, elseIfsName, inverseName);
       pushToArray(source, functionConfigCode.source);
     }
     if (self.isModule) {
@@ -6900,7 +6928,7 @@ xtemplateCompiler = function (exports) {
       }
     }
     if (!functionConfigCode) {
-      functionConfigCode = genOptionFromFunction(self, func, escape, null, null, null, extra);
+      functionConfigCode = genOptionFromFunction(self, func, escape, null, null, null);
       pushToArray(source, functionConfigCode.source);
     }
     if (!block) {
@@ -6916,14 +6944,13 @@ xtemplateCompiler = function (exports) {
     } else if (block) {
       source.push(substitute(CALL_CUSTOM_COMMAND, {
         option: functionConfigCode.exp,
-        idParts: joinArrayOfString(idParts)
+        idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr
       }));
     } else {
-      var newParts = getIdStringFromIdParts(self, source, idParts, extra);
       source.push(substitute(id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION, {
         lhs: idName,
         option: functionConfigCode.exp,
-        idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
+        idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr,
         depth: id.depth
       }));
     }
@@ -6942,14 +6969,14 @@ xtemplateCompiler = function (exports) {
     raw: function (raw) {
       return { exp: raw.value };
     },
-    arrayExpression: function (e, extra) {
+    arrayExpression: function (e) {
       var list = e.list;
       var len = list.length;
       var r;
       var source = [];
       var exp = [];
       for (var i = 0; i < len; i++) {
-        r = this[list[i].type](list[i], extra);
+        r = this[list[i].type](list[i]);
         pushToArray(source, r.source);
         exp.push(r.exp);
       }
@@ -6958,7 +6985,7 @@ xtemplateCompiler = function (exports) {
         source: source
       };
     },
-    jsonExpression: function (e, extra) {
+    jsonExpression: function (e) {
       var json = e.json;
       var len = json.length;
       var r;
@@ -6966,9 +6993,9 @@ xtemplateCompiler = function (exports) {
       var exp = [];
       for (var i = 0; i < len; i++) {
         var item = json[i];
-        r = this[item[1].type](item[1], extra);
+        r = this[item[1].type](item[1]);
         pushToArray(source, r.source);
-        exp.push('"' + item[0] + '": ' + r.exp);
+        exp.push(wrapByDoubleQuote(item[0]) + ': ' + r.exp);
       }
       return {
         exp: '{' + exp.join(',') + '}',
@@ -6981,8 +7008,8 @@ xtemplateCompiler = function (exports) {
     equalityExpression: opExpression,
     additiveExpression: opExpression,
     multiplicativeExpression: opExpression,
-    unaryExpression: function (e, extra) {
-      var code = this[e.value.type](e.value, extra);
+    unaryExpression: function (e) {
+      var code = this[e.value.type](e.value);
       return {
         exp: e.unaryType + '(' + code.exp + ')',
         source: code.source
@@ -6990,7 +7017,7 @@ xtemplateCompiler = function (exports) {
     },
     string: function (e) {
       return {
-        exp: wrapBySingleQuote(escapeString(e.value, 1)),
+        exp: compilerTools.wrapBySingleQuote(compilerTools.escapeString(e.value, 1)),
         source: []
       };
     },
@@ -7000,10 +7027,11 @@ xtemplateCompiler = function (exports) {
         source: []
       };
     },
-    id: function (idNode, extra) {
+    id: function (idNode) {
       var source = [];
+      var self = this;
       markPos(idNode.pos, source);
-      if (isGlobalId(idNode)) {
+      if (compilerTools.isGlobalId(idNode)) {
         return {
           exp: idNode.string,
           source: source
@@ -7011,77 +7039,72 @@ xtemplateCompiler = function (exports) {
       }
       var depth = idNode.depth;
       var idParts = idNode.parts;
-      var idName = guid(this, 'id');
-      if (!depth) {
-        var isComplex = isComplexIdParts(idParts);
-        if (!isComplex) {
-          var part0 = idParts[0];
-          var remain;
-          var remainParts;
-          if (part0 === 'this') {
-            remainParts = idParts.slice(1);
-            remain = remainParts.join('.');
-            if (remain) {
-              remain = '.' + remain;
-            }
-            source.push(substitute(remain ? IF_AFFIX_DIRECT_SCOPE_RESOLVE : DIRECT_SCOPE_RESOLVE, {
-              lhs: idName,
-              value: chainedVariableRead(remainParts),
-              idParts: remain
-            }));
-            return {
-              exp: idName,
-              source: source
-            };
-          } else if (part0 === 'root') {
-            remainParts = idParts.slice(1);
-            remain = remainParts.join('.');
-            if (remain) {
-              remain = '.' + remain;
-            }
-            source.push(substitute(remain ? IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE : DIRECT_ROOT_SCOPE_RESOLVE, {
-              lhs: idName,
-              value: chainedVariableRead(remainParts, true),
-              idParts: remain
-            }));
-            return {
-              exp: idName,
-              source: source
-            };
-          } else if (extra && extra.top) {
-            source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
-              lhs: idName,
-              value: chainedVariableRead(idParts, false, true)
-            }));
-            return {
-              exp: idName,
-              source: source
-            };
+      var idName = guid(self, 'id');
+      if (depth) {
+        source.push(substitute(SCOPE_RESOLVE_DEPTH, {
+          lhs: idName,
+          idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr,
+          depth: depth
+        }));
+        return {
+          exp: idName,
+          source: source
+        };
+      } else {
+        var part0 = idParts[0];
+        var remain;
+        var remainParts;
+        if (part0 === 'this') {
+          remainParts = idParts.slice(1);
+          source.push(substitute(remainParts.length ? IF_AFFIX_DIRECT_SCOPE_RESOLVE : DIRECT_SCOPE_RESOLVE, {
+            lhs: idName,
+            value: compilerTools.chainedVariableRead(self, source, remainParts)
+          }));
+          return {
+            exp: idName,
+            source: source
+          };
+        } else if (part0 === 'root') {
+          remainParts = idParts.slice(1);
+          remain = remainParts.join('.');
+          if (remain) {
+            remain = '.' + remain;
           }
+          source.push(substitute(remain ? IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE : DIRECT_ROOT_SCOPE_RESOLVE, {
+            lhs: idName,
+            value: compilerTools.chainedVariableRead(self, source, remainParts, true),
+            idParts: remain
+          }));
+          return {
+            exp: idName,
+            source: source
+          };
+        } else {
+          source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
+            lhs: idName,
+            value: compilerTools.chainedVariableRead(self, source, idParts, false, true)
+          }));
+          return {
+            exp: idName,
+            source: source
+          };
         }
       }
-      var newParts = getIdStringFromIdParts(this, source, idParts, extra);
-      source.push(substitute(depth ? SCOPE_RESOLVE_DEPTH : SCOPE_RESOLVE, {
-        lhs: idName,
-        idParts: newParts ? newParts.join(',') : joinArrayOfString(idParts),
-        depth: depth
-      }));
-      return {
-        exp: idName,
-        source: source
-      };
     },
-    'function': function (func, extra) {
-      return generateFunction(this, func, extra.escape, false, extra);
+    'function': function (func, escape) {
+      return generateFunction(this, func, false, escape);
     },
-    blockStatement: function (block, extra) {
-      return generateFunction(this, block.func, block.escape, block, extra);
+    blockStatement: function (block) {
+      return generateFunction(this, block.func, block);
     },
-    expressionStatement: function (expressionStatement, extra) {
-      var source = [], escape = expressionStatement.escape, code, expression = expressionStatement.value, type = expression.type, expressionOrVariable;
-      extra = extra || {};
-      extra.escape = escape;
-      code = this[type](expression, extra);
+    expressionStatement: function (expressionStatement) {
+      var source = [];
+      var escape = expressionStatement.escape;
+      var code;
+      var expression = expressionStatement.value;
+      var type = expression.type;
+      var expressionOrVariable;
+      code = this[type](expression, escape);
       pushToArray(source, code.source);
       expressionOrVariable = code.exp;
       source.push(substitute(escape ? BUFFER_WRITE_ESCAPED : BUFFER_WRITE, { value: expressionOrVariable }));
@@ -7093,7 +7116,7 @@ xtemplateCompiler = function (exports) {
     contentStatement: function (contentStatement) {
       return {
         exp: '',
-        source: [substitute(BUFFER_APPEND, { value: wrapBySingleQuote(escapeString(contentStatement.value, 0)) })]
+        source: [substitute(BUFFER_APPEND, { value: compilerTools.wrapBySingleQuote(compilerTools.escapeString(contentStatement.value, 0)) })]
       };
     }
   };
@@ -7173,7 +7196,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.3.0',
+    version: '2.3.2',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

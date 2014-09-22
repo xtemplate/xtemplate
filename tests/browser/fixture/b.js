@@ -1,6 +1,8 @@
 modulex.add(function(require,exports,module){
 module.exports = function b(scope,buffer,undefined){
 var tpl = this;
+var data = scope.data;
+var affix = scope.affix;
 var t;
 var root = tpl.root;
 var directAccess = tpl.directAccess;
@@ -25,7 +27,7 @@ var debuggerCommand = nativeCommands["debugger"];
 
 
 buffer.data += '';
-var id0 = ((t=(scope.affix &&scope.affix.y)) !== undefined?t:((t = scope.data.y )!== undefined?t:scope.resolveUp(["y"])));
+var id0 = ((t=(affix.y)) !== undefined ? t:((t = data.y) !== undefined ? t :scope.resolveUp(["y"])));
 buffer = buffer.writeEscaped(id0);
 return buffer;
 };
