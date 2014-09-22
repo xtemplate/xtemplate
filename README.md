@@ -26,13 +26,17 @@ https://github.com/kissyteam/xtemplate/blob/master/docs/syntax.md
 support [requirejs](https://github.com/jrburke/requirejs) [modulex](https://github.com/kissyteam/modulex)
 [kissy](http://docs.kissyui.com) [kissy gallery](http://gallery.kissyui.com)
 
-guide: https://github.com/kissyteam/xtemplate/blob/master/docs/use-on-browser.md
+中文教程: https://github.com/kissyteam/xtemplate/blob/master/docs/use-on-browser.md
 
 demo: https://github.com/yiminghe/xtemplate-on-browser
 
 ## use on node
 
 https://github.com/kissyteam/xtpl
+
+## 中文介绍
+
+https://github.com/kissyteam/xtemplate/blob/master/docs/introduce.md
 
 ## changelog
 
