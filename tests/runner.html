@@ -42,8 +42,8 @@
             });
             XTemplate.loader = {
                 cache: {},
-                load: function (params, callback) {
-                    var name = params.name;
+                load: function (scope,option,buffer, callback) {
+                    var name = buffer.tpl.name;
                     var cache = this.cache;
                     if (cache[name]) {
                         return callback(undefined, cache[name]);
@@ -52,7 +52,7 @@
                         success: function (tpl) {
                             if (typeof tpl === 'string') {
                                 try {
-                                    tpl = XTemplate.compile(tpl, name, params.root.config);
+                                    tpl = XTemplate.compile(tpl, name, buffer.tpl.root.config);
                                 } catch (e) {
                                     return callback(e);
                                 }
