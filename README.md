@@ -1,6 +1,6 @@
 # xtemplate
 
-[High Speed](https://github.com/kissyteam/xtemplate/tree/master/benchmark/result) And eXtensible Template Engine lib on browser and nodejs.
+[High Speed](https://github.com/kissyteam/xtemplate/tree/master/benchmark/result), eXtensible Template Engine lib on browser and nodejs.
 support async control, inheritance, include, logic expression, custom function and more.
 
 [![xtemplate](https://nodei.co/npm/xtemplate.png)](https://npmjs.org/package/xtemplate)
