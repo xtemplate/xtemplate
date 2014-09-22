@@ -5872,7 +5872,7 @@ xtemplateCompiler = function (exports) {
   var TOP_DECLARATION = [
     'var t;',
     'var root = tpl.root;',
-    'var directAccess = tpl.directAccess;',
+    'var name = tpl.name;',
     'var pos = tpl.pos;',
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
@@ -5955,7 +5955,7 @@ xtemplateCompiler = function (exports) {
     };
   }
   var lastLine = 1;
-  function markPos(pos, source) {
+  function markLine(pos, source) {
     if (lastLine === pos.line) {
       return;
     }
@@ -5987,7 +5987,6 @@ xtemplateCompiler = function (exports) {
   }
   function genTopFunction(self, statements, catchError) {
     var source = [
-      'var tpl = this;',
       'var data = scope.data;',
       'var affix = scope.affix;',
       TOP_DECLARATION,
@@ -6015,6 +6014,7 @@ xtemplateCompiler = function (exports) {
       params: [
         'scope',
         'buffer',
+        'tpl',
         'undefined'
       ],
       source: source.join('\n')
@@ -6076,9 +6076,13 @@ xtemplateCompiler = function (exports) {
   }
   function generateFunction(self, func, block, escape) {
     var source = [];
+    markLine(func.pos, source);
     var functionConfigCode, idName;
     var id = func.id;
     var idString = id.string;
+    if (idString in nativeCommands) {
+      escape = 0;
+    }
     var idParts = id.parts;
     var i;
     if (idString === 'elseif') {
@@ -6131,7 +6135,7 @@ xtemplateCompiler = function (exports) {
       pushToArray(source, functionConfigCode.source);
     }
     if (self.isModule) {
-      if (idString === 'include' || idString === 'extend') {
+      if (idString === 'include' || idString === 'extend' || idString === 'parse') {
         func.params[0] = {
           type: 'raw',
           value: 're' + 'quire("' + func.params[0].value + '").TPL_NAME'
@@ -6147,11 +6151,17 @@ xtemplateCompiler = function (exports) {
       source.push('var ' + idName);
     }
     if (idString in nativeCommands) {
-      source.push(substitute(CALL_NATIVE_COMMAND, {
-        lhs: block ? 'buffer' : idName,
-        name: idString,
-        option: functionConfigCode.exp
-      }));
+      if (idString === 'include') {
+        source.push('buffer = root.include(scope,' + functionConfigCode.exp + ',buffer,tpl);');
+      } else if (idString === 'parse') {
+        source.push('buffer = root.include(new scope.constructor(),' + functionConfigCode.exp + ',buffer,tpl);');
+      } else {
+        source.push(substitute(CALL_NATIVE_COMMAND, {
+          lhs: block ? 'buffer' : idName,
+          name: idString,
+          option: functionConfigCode.exp
+        }));
+      }
     } else if (block) {
       source.push(substitute(CALL_CUSTOM_COMMAND, {
         option: functionConfigCode.exp,
@@ -6241,7 +6251,7 @@ xtemplateCompiler = function (exports) {
     id: function (idNode) {
       var source = [];
       var self = this;
-      markPos(idNode.pos, source);
+      markLine(idNode.pos, source);
       if (compilerTools.isGlobalId(idNode)) {
         return {
           exp: idNode.string,
@@ -6368,22 +6378,24 @@ xtemplate = function (exports) {
   var Compiler = xtemplateCompiler;
   var loader = {
     cache: {},
-    load: function (params, callback) {
-      var name = params.name;
+    load: function (scope, option, buffer, callback) {
       var cache = this.cache;
-      if (cache[name]) {
-        return callback(undefined, cache[name]);
+      var tpl = buffer.tpl;
+      var name = tpl.name;
+      var cached = cache[name];
+      if (cached !== undefined) {
+        return callback(undefined, cached);
       }
-      require([name], function (tpl) {
-        if (typeof tpl === 'string') {
+      require([name], function (content) {
+        if (typeof content === 'string') {
           try {
-            tpl = XTemplate.compile(tpl, name, params.root.config);
+            content = XTemplate.compile(content, name, tpl.root.config);
           } catch (e) {
             return callback(e);
           }
         }
-        cache[name] = tpl;
-        callback(undefined, tpl);
+        cache[name] = content;
+        callback(undefined, content);
       }, function () {
         var error = 'template "' + name + '" does not exist';
         util.log(error, 'error');
@@ -6407,7 +6419,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '2.3.2',
+    version: '3.0.0',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

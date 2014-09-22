@@ -100,7 +100,7 @@ describe('sub template', function () {
         expect(function () {
             new XTemplate(tpl).render(data);
         }).to.throwError('parent template does not have name ' +
-            'for relative sub tpl name:' +
-            ' ./sub-tpl-6');
+                'for relative sub tpl name:' +
+                ' ./sub-tpl-6');
     });
 });

@@ -1,11 +1,10 @@
 modulex.add(function(require,exports,module){
-module.exports = function b(scope,buffer,undefined){
-var tpl = this;
+module.exports = function b(scope,buffer,tpl,undefined){
 var data = scope.data;
 var affix = scope.affix;
 var t;
 var root = tpl.root;
-var directAccess = tpl.directAccess;
+var name = tpl.name;
 var pos = tpl.pos;
 var nativeCommands = root.nativeCommands;
 var utils = root.utils;

@@ -6,7 +6,7 @@ var XTemplate = require('xtemplate');
 
 describe('async', function () {
     it('can report error', function (done) {
-        var tpl = '{{tms(1)}}3';
+        var tpl = '\n{{tms(1)}}3';
         expect(new XTemplate(tpl, {
             name:'report.xtpl',
             commands: {
@@ -19,7 +19,7 @@ describe('async', function () {
                 }
             }
         }).render({}, function (error) {
-                expect(error.message).to.contain('report.xtpl:1');
+                expect(error.message).to.contain('report.xtpl:2');
                 done();
             })).to.equal('');
     });

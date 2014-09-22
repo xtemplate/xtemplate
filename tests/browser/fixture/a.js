@@ -1,11 +1,10 @@
 modulex.add(function(require,exports,module){
-module.exports = function a(scope,buffer,undefined){
-var tpl = this;
+module.exports = function a(scope,buffer,tpl,undefined){
 var data = scope.data;
 var affix = scope.affix;
 var t;
 var root = tpl.root;
-var directAccess = tpl.directAccess;
+var name = tpl.name;
 var pos = tpl.pos;
 var nativeCommands = root.nativeCommands;
 var utils = root.utils;
@@ -31,7 +30,7 @@ var id0 = ((t=(affix.x)) !== undefined ? t:((t = data.x) !== undefined ? t :scop
 buffer = buffer.writeEscaped(id0);
 buffer.data += '';
 var callRet1
-callRet1 = includeCommand.call(tpl, scope, {escape:1,params:[require("./b").TPL_NAME]}, buffer);
+buffer = root.include(scope,{params:[require("./b").TPL_NAME]},buffer,tpl);
 buffer = buffer.writeEscaped(callRet1);
 return buffer;
 };

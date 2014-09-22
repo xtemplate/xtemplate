@@ -89,6 +89,29 @@ String render(data:Object, [option:Object, callback:Function]) // render data
 
 ## Buffer
 
+### Members
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>data</td>
+        <td>String</td>
+        <td>string to be written into buffer</td>
+    </tr>
+    <tr>
+        <td>tpl</td>
+        <td>Object</td>
+        <td>template object belonged to this buffer</td>
+    </tr>
+</table>
+
 ### Methods
 
 
@@ -249,42 +272,22 @@ XTemplate.addCommand('xInline',function(scope, option,buffer){
 
 ## loader
 
-a object which contains a load function and passed to XTemplate config
+a object which contains a load function (called when user invoke native include command) and passed to XTemplate config
 
 ```javascript
-void load(params:Object, callback:Function)
+void load(scope, option, buffer, callback:Function)
 ```
 
-params detail:
-
-<table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-        <th style="width: 100px;">name</th>
-        <th style="width: 50px;">type</th>
-        <th>description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>name</td>
-        <td>String</td>
-        <td>included template name</td>
-    </tr>
-    <tr>
-        <td>root</td>
-        <td>XTemplate</td>
-        <td>xtemplate instance</td>
-    </tr>
-</table>
+scope, option, buffer is same as `command` 's parameter.
 
 for example, XTemplate load precompiled template by require from modulex:
 
 ```javascript
 var loader = {
     cache: {},
-    load: function (params, callback) {
-        var name = params.name;
+    load: function (scope, option, buffer, callback) {
+        var tpl = buffer.tpl;
+        var name = tpl.name;
         var cache = this.cache;
         if (cache[name]) {
             return callback(undefined, cache[name]);
