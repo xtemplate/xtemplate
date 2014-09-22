@@ -6398,7 +6398,7 @@ xtemplate = function (exports) {
         callback(undefined, content);
       }, function () {
         var error = 'template "' + name + '" does not exist';
-        util.log(error, 'error');
+        console.error(error);
         callback(error);
       });
     }
@@ -6419,7 +6419,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '3.0.0',
+    version: '3.0.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

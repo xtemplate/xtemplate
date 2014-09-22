@@ -8,7 +8,7 @@ describe('async', function () {
     it('can report error', function (done) {
         var tpl = '\n{{tms(1)}}3';
         expect(new XTemplate(tpl, {
-            name:'report.xtpl',
+            name: 'report.xtpl',
             commands: {
                 'tms': function (scope, option, buffer) {
                     return buffer.async(function (asyncBuffer) {
@@ -155,8 +155,7 @@ describe('async', function () {
         expect(new XTemplate(tpl, {
             commands: {
                 async: function (scope, option, buffer) {
-                    var newScope = new XTemplate.Scope();
-                    newScope.setParent(scope);
+                    var newScope = new XTemplate.Scope(undefined, undefined, scope);
                     return buffer.async(function (asyncBuffer) {
                         setTimeout(function () {
                             newScope.setData({

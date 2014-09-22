@@ -115,24 +115,24 @@ xtemplateRuntimeUtil = function (exports) {
       return (str + '').replace(escapeHtmlReg, function (m) {
         return htmlEntities[m];
       });
-    },
-    log: function () {
-      if (typeof console !== 'undefined') {
-        console.log.apply(console, arguments);
-      }
     }
   };
   return exports;
 }();
 xtemplateRuntimeScope = function (exports) {
-  function Scope(data, affix) {
+  function Scope(data, affix, parent) {
     if (data !== undefined) {
       this.data = data;
     } else {
       this.data = {};
     }
-    this.root = this;
-    this.parent = undefined;
+    if (parent) {
+      this.parent = parent;
+      this.root = parent.root;
+    } else {
+      this.parent = undefined;
+      this.root = this;
+    }
     this.affix = affix || {};
     this.ready = false;
   }
@@ -6226,7 +6226,7 @@ xtemplateRuntimeCommands = function (exports) {
           opScope = new Scope(param0[xindex], {
             xcount: xcount,
             xindex: xindex
-          });
+          }, scope);
           affix = opScope.affix;
           if (xindexName !== 'xindex') {
             affix[xindexName] = xindex;
@@ -6235,7 +6235,6 @@ xtemplateRuntimeCommands = function (exports) {
           if (valueName) {
             affix[valueName] = param0[xindex];
           }
-          opScope.setParent(scope);
           buffer = option.fn(opScope, buffer);
         }
       }
@@ -6249,7 +6248,7 @@ xtemplateRuntimeCommands = function (exports) {
       var opScope, affix, name;
       if (param0) {
         for (name in param0) {
-          opScope = new Scope(param0[name], { xindex: name });
+          opScope = new Scope(param0[name], { xindex: name }, scope);
           affix = opScope.affix;
           if (xindexName !== 'xindex') {
             affix[xindexName] = name;
@@ -6258,7 +6257,6 @@ xtemplateRuntimeCommands = function (exports) {
           if (valueName) {
             affix[valueName] = param0[name];
           }
-          opScope.setParent(scope);
           buffer = option.fn(opScope, buffer);
         }
       }
@@ -6280,8 +6278,7 @@ xtemplateRuntimeCommands = function (exports) {
       var params = option.params;
       var param0 = params[0];
       if (param0) {
-        var opScope = new Scope(param0);
-        opScope.setParent(scope);
+        var opScope = new Scope(param0, undefined, scope);
         buffer = option.fn(opScope, buffer);
       }
       return buffer;
@@ -6495,7 +6492,7 @@ xtemplateRuntime = function (exports) {
         callback(undefined, tpl);
       }, function () {
         var error = 'template "' + name + '" does not exist';
-        util.log(error, 'error');
+        console.error(error);
         callback(error);
       });
     }
@@ -6509,7 +6506,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '3.0.0',
+    version: '3.0.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6595,8 +6592,7 @@ xtemplateRuntime = function (exports) {
       var hash = option.hash;
       for (i = 0; i < l; i++) {
         if (hash) {
-          newScope = new Scope(hash);
-          newScope.setParent(scope);
+          newScope = new Scope(hash, undefined, scope);
         }
         buffer = includeInternal(newScope, option, buffer, this, tpl, params[i]);
       }
@@ -7171,7 +7167,7 @@ xtemplate = function (exports) {
         callback(undefined, content);
       }, function () {
         var error = 'template "' + name + '" does not exist';
-        util.log(error, 'error');
+        console.error(error);
         callback(error);
       });
     }
@@ -7192,7 +7188,7 @@ xtemplate = function (exports) {
   XTemplate.prototype.constructor = XTemplate;
   exports = util.mix(XTemplate, {
     compile: Compiler.compile,
-    version: '3.0.0',
+    version: '3.0.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

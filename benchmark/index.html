@@ -231,10 +231,10 @@ modulex.use('xtemplate', function (XTemplate) {
             nunjucks: ['includes/nunjucks'],
             handlebars: ['includes/handlebars', 'includes/handlebars_part']
         };
-        return benchmark({
-            xtpl: ['includes/main.xtpl','includes/part.xtpl'],
-            handlebars: ['includes/handlebars', 'includes/handlebars_part']
-        });
+//        return benchmark({
+//            xtpl: ['includes/main.xtpl','includes/part.xtpl'],
+//            handlebars: ['includes/handlebars', 'includes/handlebars_part']
+//        });
         log('<span style="font-size: 30px;font-weight: bold;">common benchmark:</span>');
         benchmark(files).then(function () {
             log('<span style="font-size: 30px;font-weight: bold;">include benchmark:</span>');
