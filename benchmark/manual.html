@@ -35,7 +35,7 @@ html(lang="en")
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{{title}}</title>
+    <title>{{this.title}}</title>
     <script type="text/javascript">
     if (foo) {
         bar(1 + 5)
@@ -45,15 +45,15 @@ html(lang="en")
 <body>
     <h1>Jade - node template engine</h1>
     <div id="container" class="col"></div>
-    {{#if (using)}}
+    {{#if (this.using)}}
         <p>You are amazing</p>
     {{else}}
         <p>Get on it!</p>
     {{/if}}
     <p>paragraph paragraph paragraph paragraph</p>
     <ul>
-    {{#each (lis)}}
-        <li>{{xindex}}: {{d}} of {{title}}</li>
+    {{#each (this.lis)}}
+        <li>{{this.xindex}}: {{this.d}} of {{root.title}}</li>
     {{/each}}
     </ul>
 </body>

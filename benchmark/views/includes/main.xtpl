@@ -23,7 +23,7 @@
     and powerful features.</p>
 <ul>
     {{#foreach (lis)}}
-    <li>{{xindex}}: {{this.d}} of {{title}}</li>
+    <li>{{this.xindex}}: {{this.d}} of {{title}}</li>
 </ul>
 {{/foreach}}
 </body>
