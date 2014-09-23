@@ -42,29 +42,26 @@
             });
             XTemplate.loader = {
                 cache: {},
-                load: function (scope,option,buffer, callback) {
-                    var name = buffer.tpl.name;
+                load: function (tpl, callback) {
+                    var name = tpl.name;
                     var cache = this.cache;
                     if (cache[name]) {
                         return callback(undefined, cache[name]);
                     }
-                    modulex.use([name], {
-                        success: function (tpl) {
-                            if (typeof tpl === 'string') {
-                                try {
-                                    tpl = XTemplate.compile(tpl, name, buffer.tpl.root.config);
-                                } catch (e) {
-                                    return callback(e);
-                                }
+                    modulex.use([name], function (content) {
+                        if (typeof content === 'string') {
+                            try {
+                                content = tpl.root.compile(content, name);
+                            } catch (e) {
+                                return callback(e);
                             }
-                            cache[name] = tpl;
-                            callback(undefined, tpl);
-                        },
-                        error: function () {
-                            var error = 'template "' + name + '" does not exist';
-                            util.log(error, 'error');
-                            callback(error);
                         }
+                        cache[name] = content;
+                        callback(undefined, content);
+                    }, function () {
+                        var error = 'template "' + name + '" does not exist';
+                        util.log(error, 'error');
+                        callback(error);
                     });
                 }
             };
