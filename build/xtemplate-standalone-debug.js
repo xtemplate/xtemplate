@@ -6508,7 +6508,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '3.1.0',
+    version: '3.1.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6632,7 +6632,7 @@ xtemplateRuntime = function (exports) {
       buffer.tpl = tpl;
       if (!fn) {
         config.loader.load(tpl, function (err, fn) {
-          if (callback) {
+          if (fn) {
             self.fn = fn;
             renderTpl(self, scope, buffer, tpl, fn);
           } else if (err) {
@@ -7190,10 +7190,15 @@ xtemplate = function (exports) {
     }
   };
   function XTemplate(tpl, config) {
+    var tplType = typeof tpl;
+    if (tplType !== 'string' && tplType !== 'function') {
+      config = tpl;
+      tpl = undefined;
+    }
     config = this.config = config || {};
     config.loader = config.loader || XTemplate.loader;
-    if (typeof tpl === 'string') {
-      tpl = this.compile(tpl, name);
+    if (tplType === 'string') {
+      tpl = this.compile(tpl, config.name);
     }
     XTemplateRuntime.call(this, tpl, config);
   }
@@ -7207,7 +7212,7 @@ xtemplate = function (exports) {
   };
   exports = util.mix(XTemplate, {
     compile: compile,
-    version: '3.1.0',
+    version: '3.1.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

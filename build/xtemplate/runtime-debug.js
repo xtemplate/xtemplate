@@ -651,7 +651,7 @@ xtemplateRuntime = function (exports) {
   }
   util.mix(XTemplateRuntime, {
     loader: loader,
-    version: '3.1.0',
+    version: '3.1.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -775,7 +775,7 @@ xtemplateRuntime = function (exports) {
       buffer.tpl = tpl;
       if (!fn) {
         config.loader.load(tpl, function (err, fn) {
-          if (callback) {
+          if (fn) {
             self.fn = fn;
             renderTpl(self, scope, buffer, tpl, fn);
           } else if (err) {

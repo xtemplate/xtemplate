@@ -9,7 +9,7 @@ var util = require('./util');
 describe('extend', function () {
     var mods = ['template_extend/base', 'template_extend/base2', 'template_extend/base3', 'template_extend/base4'];
 
-    beforeEach(function () {
+    afterEach(function () {
         util.each(mods, function (mod) {
             delete XTemplate.loader.cache[mod];
             delete modulex.Env.mods[mod];

@@ -1,6 +1,14 @@
 var XTemplate = require('xtemplate');
 
 describe('sub template', function () {
+    afterEach(function () {
+        for (var mod in modulex.Env.mods) {
+            delete XTemplate.loader.cache[mod];
+            delete modulex.Env.mods[mod];
+        }
+    });
+
+
     it('support parse', function () {
         modulex.add('xtemplate-test/sub-tpl-0', '{{title}}{{title2}}');
 
@@ -102,5 +110,14 @@ describe('sub template', function () {
         }).to.throwError('parent template does not have name ' +
                 'for relative sub tpl name:' +
                 ' ./sub-tpl-6');
+    });
+
+    it('will always use loader', function () {
+        modulex.add('parent-tpl', '{{include("child-tpl")}}');
+        modulex.add('child-tpl', '{{title}}');
+        var ret = new XTemplate({
+            name: 'parent-tpl'
+        }).render({title: 1});
+        expect(ret).to.be('1');
     });
 });
