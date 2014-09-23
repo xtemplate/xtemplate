@@ -1,11 +1,13 @@
 modulex.add(function(require,exports,module){
-module.exports = function b(scope,buffer,tpl,undefined){
-var data = scope.data;
-var affix = scope.affix;
+module.exports = function b(tpl,undefined){
 var t;
 var root = tpl.root;
+var buffer = tpl.buffer;
+var scope = tpl.scope;
 var name = tpl.name;
 var pos = tpl.pos;
+var data = scope.data;
+var affix = scope.affix;
 var nativeCommands = root.nativeCommands;
 var utils = root.utils;
 var callFnUtil = utils["callFn"];

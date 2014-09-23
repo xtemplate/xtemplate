@@ -87,6 +87,36 @@ String render(data:Object, [option:Object, callback:Function]) // render data
     </tbody>
 </table>
 
+## TplWrap
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>scope</td>
+        <td>Scope</td>
+        <td>scope object when loader is invoked</td>
+    </tr>
+    <tr>
+        <td>name</td>
+        <td>String</td>
+        <td>full name of template to be loaded</td>
+    </tr>
+    <tr>
+        <td>originalName</td>
+        <td>String</td>
+        <td>originalName name of template to be loaded. for example: {{include('./a')}}; name is maybe /code/a, originalName is ./a</td>
+    </tr>
+</table>
+
+### Members
+
 ## Buffer
 
 ### Members
@@ -108,7 +138,7 @@ String render(data:Object, [option:Object, callback:Function]) // render data
     <tr>
         <td>tpl</td>
         <td>Object</td>
-        <td>template object belonged to this buffer</td>
+        <td>TplWrap object belonged to this buffer</td>
     </tr>
 </table>
 
@@ -275,18 +305,15 @@ XTemplate.addCommand('xInline',function(scope, option,buffer){
 a object which contains a load function (called when user invoke native include command) and passed to XTemplate config
 
 ```javascript
-void load(scope, option, buffer, callback:Function)
+void load(tpl:TplWrap, callback:Function)
 ```
-
-scope, option, buffer is same as `command` 's parameter.
 
 for example, XTemplate load precompiled template by require from modulex:
 
 ```javascript
 var loader = {
     cache: {},
-    load: function (scope, option, buffer, callback) {
-        var tpl = buffer.tpl;
+    load: function (tpl, callback) {
         var name = tpl.name;
         var cache = this.cache;
         if (cache[name]) {

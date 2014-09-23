@@ -5872,8 +5872,12 @@ xtemplateCompiler = function (exports) {
   var TOP_DECLARATION = [
     'var t;',
     'var root = tpl.root;',
+    'var buffer = tpl.buffer;',
+    'var scope = tpl.scope;',
     'var name = tpl.name;',
     'var pos = tpl.pos;',
+    'var data = scope.data;',
+    'var affix = scope.affix;',
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
   ].join('\n');
@@ -5987,8 +5991,6 @@ xtemplateCompiler = function (exports) {
   }
   function genTopFunction(self, statements, catchError) {
     var source = [
-      'var data = scope.data;',
-      'var affix = scope.affix;',
       TOP_DECLARATION,
       nativeCode,
       catchError ? 'try {' : ''
@@ -5999,7 +6001,7 @@ xtemplateCompiler = function (exports) {
       pushToArray(source, self[statement.type](statement, { top: 1 }).source);
     }
     source.splice.apply(source, [
-      5,
+      2,
       0
     ].concat(self.functionDeclares).concat(''));
     source.push(RETURN_BUFFER);
@@ -6012,8 +6014,6 @@ xtemplateCompiler = function (exports) {
     }
     return {
       params: [
-        'scope',
-        'buffer',
         'tpl',
         'undefined'
       ],
@@ -6376,11 +6376,11 @@ xtemplate = function (exports) {
   var XTemplateRuntime = xtemplateRuntime;
   var util = XTemplateRuntime.util;
   var Compiler = xtemplateCompiler;
+  var compile = Compiler.compile;
   var loader = {
     cache: {},
-    load: function (scope, option, buffer, callback) {
+    load: function (tpl, callback) {
       var cache = this.cache;
-      var tpl = buffer.tpl;
       var name = tpl.name;
       var cached = cache[name];
       if (cached !== undefined) {
@@ -6389,7 +6389,7 @@ xtemplate = function (exports) {
       require([name], function (content) {
         if (typeof content === 'string') {
           try {
-            content = XTemplate.compile(content, name, tpl.root.config);
+            content = tpl.root.compile(content, name);
           } catch (e) {
             return callback(e);
           }
@@ -6404,22 +6404,24 @@ xtemplate = function (exports) {
     }
   };
   function XTemplate(tpl, config) {
-    var self = this;
-    config = self.config = config || {};
+    config = this.config = config || {};
     config.loader = config.loader || XTemplate.loader;
     if (typeof tpl === 'string') {
-      tpl = Compiler.compile(tpl, config && config.name, config);
+      tpl = this.compile(tpl, name);
     }
-    XTemplateRuntime.call(self, tpl, config);
+    XTemplateRuntime.call(this, tpl, config);
   }
   function Noop() {
   }
   Noop.prototype = XTemplateRuntime.prototype;
   XTemplate.prototype = new Noop();
   XTemplate.prototype.constructor = XTemplate;
+  XTemplate.prototype.compile = function (content, name) {
+    return compile(content, name, this.config);
+  };
   exports = util.mix(XTemplate, {
-    compile: Compiler.compile,
-    version: '3.0.1',
+    compile: compile,
+    version: '3.1.0',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
