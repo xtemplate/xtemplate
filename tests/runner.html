@@ -40,31 +40,7 @@
             modulex.add('xtemplate', function () {
                 return window.XTemplate;
             });
-            XTemplate.loader = {
-                cache: {},
-                load: function (tpl, callback) {
-                    var name = tpl.name;
-                    var cache = this.cache;
-                    if (cache[name]) {
-                        return callback(undefined, cache[name]);
-                    }
-                    modulex.use([name], function (content) {
-                        if (typeof content === 'string') {
-                            try {
-                                content = tpl.root.compile(content, name);
-                            } catch (e) {
-                                return callback(e);
-                            }
-                        }
-                        cache[name] = content;
-                        callback(undefined, content);
-                    }, function () {
-                        var error = 'template "' + name + '" does not exist';
-                        util.log(error, 'error');
-                        callback(error);
-                    });
-                }
-            };
+            window.require = modulex.use;
         } else {
             modulex.config({
                 packages: {
