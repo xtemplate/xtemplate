@@ -154,7 +154,10 @@ gulp.task('kg', function () {
     var fs = require('fs');
     var kgInfo = JSON.parse(fs.readFileSync('./kg.log'));
     var version = packageInfo.version;
-    return gulp.src('./build/xtemplate/runtime-debug.js')
+    var CombinedStream = require('combined-stream');
+    var stream = CombinedStream.create();
+    stream.append(gulp.src('./build/xtemplate/runtime-debug.js')
+        .pipe(rename('runtime.js'))
         .pipe(replace('modulex.add("xtemplate/runtime", [], function(require, exports, module)',
                 'KISSY.add("kg/xtemplate/' + version + '/runtime",[],function(S,require,exports,module)'))
         .pipe(gulp.dest(kgInfo.dest))
@@ -162,8 +165,20 @@ gulp.task('kg', function () {
         .pipe(uglify())
         .pipe(rename('runtime-min.js'))
         .pipe(gulp.dest(kgInfo.dest))
-        .pipe(rename('runtime.js'))
-        .pipe(gulp.dest(kgInfo.dest));
+        .pipe(gulp.dest(kgInfo.dest)));
+    stream.append(gulp.src('./build/xtemplate-debug.js')
+        .pipe(rename('index.js'))
+        .pipe(replace('modulex.add("xtemplate", ["xtemplate/runtime"], function(require, exports, module)',
+                'KISSY.add("kg/xtemplate/' + version + '/index",["./runtime"],function(S,require,exports,module)'))
+        .pipe(replace('require("xtemplate/runtime")',
+            'require("./runtime")'))
+        .pipe(gulp.dest(kgInfo.dest))
+        .pipe(replace(/@DEBUG@/g, ''))
+        .pipe(uglify())
+        .pipe(rename('index-min.js'))
+        .pipe(gulp.dest(kgInfo.dest))
+        .pipe(gulp.dest(kgInfo.dest)));
+    return stream;
 });
 
 gulp.task('parser', function (callback) {
