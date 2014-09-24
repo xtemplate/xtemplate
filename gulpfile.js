@@ -38,6 +38,7 @@ gulp.task('xtemplate', ['lint'], function () {
                     }
                 }
             },
+            genDeps: false,
             excludeModules: ['xtemplate/runtime']
         }))
         .pipe(kclean({
