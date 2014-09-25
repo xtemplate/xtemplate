@@ -85,7 +85,10 @@ modulex.use('xtemplate', function (XTemplate) {
                 reverseEach(files.xtpl, function (name) {
                     var data = ios.xtpl[name];
                     name = name.slice(0, -5);
-                    compilers.xtpl[name] = new XTemplate(data, {name: name});
+                    compilers.xtpl[name] = new XTemplate(data, {
+                        strict: 1,
+                        name: name
+                    });
                     console.log(name);
                     modulex.add(name, function () {
                         return compilers.xtpl[name].fn;
@@ -232,7 +235,7 @@ modulex.use('xtemplate', function (XTemplate) {
             handlebars: ['includes/handlebars', 'includes/handlebars_part']
         };
 //        return benchmark({
-//            xtpl: ['includes/main.xtpl','includes/part.xtpl'],
+//            xtpl: ['includes/main.xtpl', 'includes/part.xtpl'],
 //            handlebars: ['includes/handlebars', 'includes/handlebars_part']
 //        });
         log('<span style="font-size: 30px;font-weight: bold;">common benchmark:</span>');

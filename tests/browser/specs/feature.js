@@ -25,6 +25,51 @@ describe('feature', function () {
         expect(render).to.equal('');
     });
 
+    it('support deep property access', function () {
+        var render = new XTemplate('{{x.y.z}}').render({
+            x: {
+                y: {
+                    z: 1
+                }
+            }
+        });
+
+        expect(render).to.equal('1');
+    });
+
+    it('support deep property access by this', function () {
+        var render = new XTemplate('{{this.x.y.z}}').render({
+            x: {
+                y: {
+                    z: 1
+                }
+            }
+        });
+
+        expect(render).to.equal('1');
+    });
+
+    it('support deep property access by root', function () {
+        var render = new XTemplate('{{root.x.y.z}}').render({
+            x: {
+                y: {
+                    z: 1
+                }
+            }
+        });
+
+        expect(render).to.equal('1');
+    });
+
+    it('will output empty for deep absent property', function () {
+        var render = new XTemplate('{{x.y.z}}').render({
+            x: {
+            }
+        });
+
+        expect(render).to.equal('');
+    });
+
     it('not allow empty content', function () {
         var tpl = '';
 

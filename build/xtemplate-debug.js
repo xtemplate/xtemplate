@@ -18,6 +18,14 @@ xtemplateCompilerTools = function (exports) {
   var arrayPush = [].push;
   var globals = {};
   globals['undefined'] = globals['null'] = globals['true'] = globals['false'] = 1;
+  function genStackJudge(parts, data, count) {
+    var part0 = parts[0];
+    if (parts.length === 1) {
+      return '(' + data + part0 + ')';
+    }
+    var variable = 't' + count;
+    return '((' + variable + '=' + data + part0 + ') != null?' + genStackJudge(parts.slice(1), variable, ++count) + ':' + variable + ')';
+  }
   var tools = exports = {
     isGlobalId: function (node) {
       if (globals[node.string]) {
@@ -25,9 +33,10 @@ xtemplateCompilerTools = function (exports) {
       }
       return 0;
     },
-    chainedVariableRead: function (self, source, idParts, root, resolveUp) {
+    chainedVariableRead: function (self, source, idParts, root, resolveUp, loose) {
       var strs = tools.convertIdPartsToRawAccessor(self, source, idParts);
       var part0 = strs.parts[0];
+      var parts = strs.parts;
       var scope = '';
       if (root) {
         scope = 'scope.root.';
@@ -44,13 +53,13 @@ xtemplateCompilerTools = function (exports) {
         ret = ret.concat([
           '(',
           '(t = ' + data + part0 + ') !== undefined ? ',
-          idParts.length > 1 ? data + strs.str : 't',
+          idParts.length > 1 ? loose ? genStackJudge(parts.slice(1), 't', 0) : data + strs.str : 't',
           ' :',
-          'scope.resolveUp(' + strs.arr + ')',
+          loose ? 'scope.resolveLooseUp(' + strs.arr + ')' : 'scope.resolveUp(' + strs.arr + ')',
           ')'
         ]);
       } else {
-        ret.push(data + part0);
+        ret.push(loose ? genStackJudge(parts, data, 0) : data + strs.str);
       }
       ret.push(')');
       return ret.join('');
@@ -5869,8 +5878,11 @@ xtemplateCompiler = function (exports) {
   var compilerTools = xtemplateCompilerTools;
   var pushToArray = compilerTools.pushToArray;
   var wrapByDoubleQuote = compilerTools.wrapByDoubleQuote;
-  var TOP_DECLARATION = [
-    'var t;',
+  var TMP_DECLARATION = ['var t;'];
+  for (var i = 0; i < 10; i++) {
+    TMP_DECLARATION.push('var t' + i + ';');
+  }
+  var TOP_DECLARATION = TMP_DECLARATION.concat([
     'var root = tpl.root;',
     'var buffer = tpl.buffer;',
     'var scope = tpl.scope;',
@@ -5880,17 +5892,14 @@ xtemplateCompiler = function (exports) {
     'var affix = scope.affix;',
     'var nativeCommands = root.nativeCommands;',
     'var utils = root.utils;'
-  ].join('\n');
+  ]).join('\n');
   var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer);';
   var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, {idParts});';
   var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts});';
   var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts}, {depth});';
-  var IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP = ['var {lhs} = {value};'].join('\n');
-  var IF_AFFIX_DIRECT_SCOPE_RESOLVE = ['var {lhs} = {value};'].join('\n');
-  var IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = {value};';
-  var DIRECT_SCOPE_RESOLVE = ['var {lhs} = data;'].join('\n');
-  var DIRECT_ROOT_SCOPE_RESOLVE = 'var {lhs} = scope.root.data;';
+  var ASSIGN_STATEMENT = 'var {lhs} = {value};';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve({idParts},{depth});';
+  var SCOPE_RESOLVE_LOOSE_DEPTH = 'var {lhs} = scope.resolveLoose({idParts},{depth});';
   var FUNC = [
     'function {functionName}({params}){',
     '{body}',
@@ -5989,7 +5998,8 @@ xtemplateCompiler = function (exports) {
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
-  function genTopFunction(self, statements, catchError) {
+  function genTopFunction(self, statements) {
+    var catchError = self.config.catchError;
     var source = [
       TOP_DECLARATION,
       nativeCode,
@@ -6134,7 +6144,7 @@ xtemplateCompiler = function (exports) {
       functionConfigCode = genOptionFromFunction(self, func, escape, fnName, elseIfsName, inverseName);
       pushToArray(source, functionConfigCode.source);
     }
-    if (self.isModule) {
+    if (self.config.isModule) {
       if (idString === 'include' || idString === 'extend' || idString === 'parse') {
         func.params[0] = {
           type: 'raw',
@@ -6180,9 +6190,9 @@ xtemplateCompiler = function (exports) {
       source: source
     };
   }
-  function AstToJSProcessor(isModule) {
+  function AstToJSProcessor(config) {
     this.functionDeclares = [];
-    this.isModule = isModule;
+    this.config = config;
     this.uuid = 0;
   }
   AstToJSProcessor.prototype = {
@@ -6251,6 +6261,7 @@ xtemplateCompiler = function (exports) {
     id: function (idNode) {
       var source = [];
       var self = this;
+      var loose = !self.config.strict;
       markLine(idNode.pos, source);
       if (compilerTools.isGlobalId(idNode)) {
         return {
@@ -6262,7 +6273,7 @@ xtemplateCompiler = function (exports) {
       var idParts = idNode.parts;
       var idName = guid(self, 'id');
       if (depth) {
-        source.push(substitute(SCOPE_RESOLVE_DEPTH, {
+        source.push(substitute(loose ? SCOPE_RESOLVE_LOOSE_DEPTH : SCOPE_RESOLVE_DEPTH, {
           lhs: idName,
           idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr,
           depth: depth
@@ -6277,9 +6288,9 @@ xtemplateCompiler = function (exports) {
         var remainParts;
         if (part0 === 'this') {
           remainParts = idParts.slice(1);
-          source.push(substitute(remainParts.length ? IF_AFFIX_DIRECT_SCOPE_RESOLVE : DIRECT_SCOPE_RESOLVE, {
+          source.push(substitute(ASSIGN_STATEMENT, {
             lhs: idName,
-            value: compilerTools.chainedVariableRead(self, source, remainParts)
+            value: remainParts.length ? compilerTools.chainedVariableRead(self, source, remainParts, undefined, undefined, loose) : 'data'
           }));
           return {
             exp: idName,
@@ -6291,9 +6302,9 @@ xtemplateCompiler = function (exports) {
           if (remain) {
             remain = '.' + remain;
           }
-          source.push(substitute(remain ? IF_AFFIX_DIRECT_ROOT_SCOPE_RESOLVE : DIRECT_ROOT_SCOPE_RESOLVE, {
+          source.push(substitute(ASSIGN_STATEMENT, {
             lhs: idName,
-            value: compilerTools.chainedVariableRead(self, source, remainParts, true),
+            value: remain ? compilerTools.chainedVariableRead(self, source, remainParts, true, undefined, loose) : 'scope.root.data',
             idParts: remain
           }));
           return {
@@ -6301,9 +6312,9 @@ xtemplateCompiler = function (exports) {
             source: source
           };
         } else {
-          source.push(substitute(IF_AFFIX_DIRECT_SCOPE_RESOLVE_TOP, {
+          source.push(substitute(ASSIGN_STATEMENT, {
             lhs: idName,
-            value: compilerTools.chainedVariableRead(self, source, idParts, false, true)
+            value: compilerTools.chainedVariableRead(self, source, idParts, false, true, loose)
           }));
           return {
             exp: idName,
@@ -6358,14 +6369,13 @@ xtemplateCompiler = function (exports) {
     compileToJson: function (param) {
       var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
       var root = compiler.parse(param.content, name);
-      return genTopFunction(new AstToJSProcessor(param.isModule), root.statements, param.catchError);
+      return genTopFunction(new AstToJSProcessor(param), root.statements);
     },
     compile: function (tplContent, name, config) {
-      var code = compiler.compileToJson({
+      var code = compiler.compileToJson(util.merge(config, {
         content: tplContent,
-        name: name,
-        catchError: config && config.catchError
-      });
+        name: name
+      }));
       return Function.apply(null, code.params.concat(code.source + substitute(SOURCE_URL, { name: name })));
     }
   };
@@ -6426,7 +6436,7 @@ xtemplate = function (exports) {
   };
   exports = util.mix(XTemplate, {
     compile: compile,
-    version: '3.1.1',
+    version: '3.2.0',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

@@ -112,6 +112,18 @@ _xtemplateRuntime_ = function (exports) {
         return (str + '').replace(escapeHtmlReg, function (m) {
           return htmlEntities[m];
         });
+      },
+      merge: function () {
+        var i = 0;
+        var len = arguments.length;
+        var ret = {};
+        for (; i < len; i++) {
+          var arg = arguments[i];
+          if (arg) {
+            util.mix(ret, arg);
+          }
+        }
+        return ret;
       }
     };
     return exports;
@@ -167,12 +179,11 @@ _xtemplateRuntime_ = function (exports) {
         }
         return affix[name];
       },
-      resolveInternal: function (parts) {
+      resolveInternalOuter: function (parts) {
         var part0 = parts[0];
-        var v, i;
+        var v;
         var self = this;
         var scope = self;
-        var len = parts.length;
         if (part0 === 'this') {
           v = self.data;
         } else if (part0 === 'root') {
@@ -183,9 +194,35 @@ _xtemplateRuntime_ = function (exports) {
             v = scope.get(part0);
           } while (v === undefined && (scope = scope.parent));
         } else {
-          return scope.data;
+          return [scope.data];
         }
+        return [
+          undefined,
+          v
+        ];
+      },
+      resolveInternal: function (parts) {
+        var ret = this.resolveInternalOuter(parts);
+        if (ret.length === 1) {
+          return ret[0];
+        }
+        var i;
+        var len = parts.length;
+        var v = ret[1];
         for (i = 1; i < len; i++) {
+          v = v[parts[i]];
+        }
+        return v;
+      },
+      resolveLooseInternal: function (parts) {
+        var ret = this.resolveInternalOuter(parts);
+        if (ret.length === 1) {
+          return ret[0];
+        }
+        var i;
+        var len = parts.length;
+        var v = ret[1];
+        for (i = 1; v != null && i < len; i++) {
           v = v[parts[i]];
         }
         return v;
@@ -193,14 +230,17 @@ _xtemplateRuntime_ = function (exports) {
       resolveUp: function (parts) {
         return this.parent && this.parent.resolveInternal(parts);
       },
-      resolve: function (parts, depth) {
+      resolveLooseUp: function (parts) {
+        return this.parent && this.parent.resolveLooseInternal(parts);
+      },
+      resolveOuter: function (parts, depth) {
         var self = this;
         var scope = self;
         var v;
         if (!depth && parts.length === 1) {
           v = self.get(parts[0]);
           if (v !== undefined) {
-            return v;
+            return [v];
           } else {
             depth = 1;
           }
@@ -211,9 +251,26 @@ _xtemplateRuntime_ = function (exports) {
           }
         }
         if (!scope) {
-          return undefined;
+          return [undefined];
         }
-        return scope.resolveInternal(parts);
+        return [
+          undefined,
+          scope
+        ];
+      },
+      resolveLoose: function (parts, depth) {
+        var ret = this.resolveOuter(parts, depth);
+        if (ret.length === 1) {
+          return ret[0];
+        }
+        return ret[1].resolveLooseInternal(parts);
+      },
+      resolve: function (parts, depth) {
+        var ret = this.resolveOuter(parts, depth);
+        if (ret.length === 1) {
+          return ret[0];
+        }
+        return ret[1].resolveInternal(parts);
       }
     };
     exports = Scope;
@@ -541,8 +598,8 @@ _xtemplateRuntime_ = function (exports) {
             var newScope = new Scope(paramValues);
             buffer = macro.fn.call(self, newScope, buffer);
           } else {
-            var error = 'in file: ' + self.name + ' can not find macro: ' + name + '" at line ' + self.pos.line + ', col ' + self.pos.col;
-            throw new Error(error);
+            var error = 'can not find macro: ' + name;
+            buffer.error(error);
           }
         }
         return buffer;
@@ -653,7 +710,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '3.1.1',
+      version: '3.2.0',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,

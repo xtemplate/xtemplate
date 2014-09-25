@@ -10,6 +10,7 @@ html(lang="en")
                 bar(1 + 5)
             }
     body
+        x.y.z
         h1 Jade - node template engine
         #container.col
         if using
@@ -30,6 +31,9 @@ html(lang="en")
 
 
 
+
+
+
 </script>
 <script type="xtpl" id="testXtpl">
 <!DOCTYPE html>
@@ -43,6 +47,7 @@ html(lang="en")
     &lt;/script>
 </head>
 <body>
+    {{x.y.z}}
     <h1>Jade - node template engine</h1>
     <div id="container" class="col"></div>
     {{#if (this.using)}}
@@ -59,11 +64,6 @@ html(lang="en")
 </body>
 </html>
 
-
-
-
-
-
 </script>
 <script type="handlebars" id="testHandlebars">
 <!DOCTYPE html>
@@ -77,8 +77,10 @@ html(lang="en")
     &lt;/script>
 </head>
 <body>
+    {{x.y.z}}
     <h1>Jade - node template engine</h1>
     <div id="container" class="col"></div>
+    {{x.y.z}}
     {{#if using}}
         <p>You are amazing</p>
     {{else}}
@@ -92,7 +94,6 @@ html(lang="en")
      </ul>
 </body>
 </html>
-
 
 </script>
 
@@ -108,6 +109,7 @@ html(lang="en")
     &lt;/script>
 </head>
 <body>
+{{x.y.z}}
     <h1>Jade - node template engine</h1>
     <div id="container" class="col"></div>
     {?using}
@@ -123,9 +125,6 @@ html(lang="en")
      </ul>
 </body>
 </html>
-
-
-
 
 </script>
 
@@ -157,6 +156,23 @@ html(lang="en")
             return document.getElementById(str);
         }
 
+        function getData() {
+            return {
+                title: 'Template Demo',
+                x: {
+                    y:{
+
+                    }
+                },
+                using: true,
+                lis: [
+                    {d: 'one'},
+                    {d: 'two'},
+                    {d: 'three'}
+                ]
+            };
+        }
+
         (function () {
             // Compile a function
             var fn = jade.compile(getElementById('testJade').innerHTML.trim());
@@ -167,15 +183,7 @@ html(lang="en")
                     if (debug) {
                         debugger;
                     }
-                    var html = fn({
-                        title: 'Jade Demo',
-                        using: true,
-                        lis: [
-                            {d: 'one'},
-                            {d: 'two'},
-                            {d: 'three'}
-                        ]
-                    });
+                    var html = fn(getData());
                     if (debug) {
                         break;
                     }
@@ -187,15 +195,7 @@ html(lang="en")
 
         (function () {
             var fn = Handlebars.compile(getElementById('testHandlebars').innerHTML.trim());
-            fn({
-                title: 'Jade Demo',
-                using: true,
-                lis: [
-                    {d: 'one'},
-                    {d: 'two'},
-                    {d: 'three'}
-                ]
-            });
+            fn(getData());
             getElementById('startHandlebars').onclick = function () {
                 console.time('handleBars');
                 for (var i = 0; i < 10000; i++) {
@@ -203,15 +203,7 @@ html(lang="en")
                     if (debug) {
                         debugger;
                     }
-                    var html = fn({
-                        title: 'Jade Demo',
-                        using: true,
-                        lis: [
-                            {d: 'one'},
-                            {d: 'two'},
-                            {d: 'three'}
-                        ]
-                    });
+                    var html = fn(getData());
                     if (debug) {
                         break;
                     }
@@ -231,15 +223,7 @@ html(lang="en")
                     if (debug) {
                         debugger;
                     }
-                    dust.render("intro", {
-                        title: 'Jade Demo',
-                        using: true,
-                        lis: [
-                            {d: 'one'},
-                            {d: 'two'},
-                            {d: 'three'}
-                        ]
-                    }, function (err, out) {
+                    dust.render("intro", getData(), function (err, out) {
                         html = out;
                     });
                     if (debug) {
@@ -253,22 +237,22 @@ html(lang="en")
 
         modulex.use('xtemplate', function (XTemplate) {
             var str = getElementById('testXtpl').innerHTML.trim();
+            var fn;
             getElementById('startXtpl').onclick = function () {
-                var tpl = new XTemplate(str);
+                var tpl = new XTemplate(str, {
+                    // catchError: true,
+                    name: 'xtpl'
+                });
                 console.time('xtpl');
                 for (var i = 0; i < 10000; i++) {
                     if (debug) {
                         debugger;
                     }
-                    var html = tpl.render({
-                        title: 'Jade Demo',
-                        using: true,
-                        lis: [
-                            {d: 'one'},
-                            {d: 'two'},
-                            {d: 'three'}
-                        ]
-                    });
+                    var html = tpl.render(getData());
+                    if (!fn) {
+                        fn = tpl.fn;
+                        console.log(fn);
+                    }
                     if (debug) {
                         break;
                     }

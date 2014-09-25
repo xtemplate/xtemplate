@@ -1,6 +1,16 @@
 modulex.add(function(require,exports,module){
 module.exports = function a(tpl,undefined){
 var t;
+var t0;
+var t1;
+var t2;
+var t3;
+var t4;
+var t5;
+var t6;
+var t7;
+var t8;
+var t9;
 var root = tpl.root;
 var buffer = tpl.buffer;
 var scope = tpl.scope;
@@ -28,7 +38,7 @@ var debuggerCommand = nativeCommands["debugger"];
 
 
 buffer.data += '';
-var id0 = ((t=(affix.x)) !== undefined ? t:((t = data.x) !== undefined ? t :scope.resolveUp(["x"])));
+var id0 = ((t=(affix.x)) !== undefined ? t:((t = data.x) !== undefined ? t :scope.resolveLooseUp(["x"])));
 buffer = buffer.writeEscaped(id0);
 buffer.data += '';
 var callRet1
