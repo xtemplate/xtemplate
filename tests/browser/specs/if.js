@@ -141,4 +141,11 @@ describe('if', function () {
         });
         expect(render).to.equal(' ! ');
     });
+
+    it('can if deep absent property', function () {
+        var tpl = '{{#if(x.y.z.q === 1)}}1{{else}}0{{/if}}';
+        var render = new XTemplate(tpl).render({
+        });
+        expect(render).to.equal('0');
+    });
 });
