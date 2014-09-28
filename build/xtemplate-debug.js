@@ -5883,6 +5883,7 @@ xtemplateCompiler = function (exports) {
     TMP_DECLARATION.push('var t' + i + ';');
   }
   var TOP_DECLARATION = TMP_DECLARATION.concat([
+    'var tpl = this;',
     'var root = tpl.root;',
     'var buffer = tpl.buffer;',
     'var scope = tpl.scope;',
@@ -6023,10 +6024,7 @@ xtemplateCompiler = function (exports) {
       source.push('}');
     }
     return {
-      params: [
-        'tpl',
-        'undefined'
-      ],
+      params: ['undefined'],
       source: source.join('\n')
     };
   }
@@ -6436,7 +6434,7 @@ xtemplate = function (exports) {
   };
   exports = util.mix(XTemplate, {
     compile: compile,
-    version: '3.2.0',
+    version: '3.2.1',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

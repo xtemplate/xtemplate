@@ -5,6 +5,9 @@ xtpl.config({
 var app = require('express')();
 var path = require('path');
 
+var totalCount = 100000000;
+var mainXtplFilePath = path.resolve(__dirname, './views/includes/main.xtpl');
+
 function getData() {
     return {
         cache: true,
@@ -28,7 +31,7 @@ function getData() {
     };
 }
 
-xtpl.renderFile(path.resolve(__dirname,'./views/includes/main.xtpl'), getData(), function (err, content) {
+xtpl.renderFile(mainXtplFilePath, getData(), function (err, content) {
     console.log(err || content);
 });
 
@@ -37,16 +40,25 @@ function fn(count, callback) {
         callback();
         return;
     }
-    xtpl.renderFile('./views/includes/main.xtpl', getData(), function () {
+    xtpl.renderFile(mainXtplFilePath, getData(), function (e, content) {
+        if (e) {
+            callback(e);
+        } else {
+            setTimeout(function () {
+                fn(--count, callback);
+            }, 0);
+        }
     });
-    setTimeout(function () {
-        fn(--count, callback);
-    }, 0);
+
 }
 
 app.get('/', function (req, res) {
-    fn(100000000, function () {
-        res.send('ok');
+    var count = parseInt(req.param('totalCount')) || totalCount;
+    fn(count, function (e) {
+        if (e) {
+            console.log(e);
+        }
+        res.send(e && e.message || 'ok');
     })
 });
 

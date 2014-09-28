@@ -315,7 +315,7 @@ _xtemplateRuntime_ = function (exports) {
         }
         return this;
       },
-      async: function (fn) {
+      insert: function () {
         var self = this;
         var list = self.list;
         var tpl = self.tpl;
@@ -323,6 +323,11 @@ _xtemplateRuntime_ = function (exports) {
         var asyncFragment = new Buffer(list, nextFragment, tpl);
         self.next = asyncFragment;
         self.ready = true;
+        return asyncFragment;
+      },
+      async: function (fn) {
+        var asyncFragment = this.insert();
+        var nextFragment = asyncFragment.next;
         fn(asyncFragment);
         return nextFragment;
       },
@@ -619,7 +624,7 @@ _xtemplateRuntime_ = function (exports) {
     var commands = {};
     var Scope = xtemplateRuntimeScope;
     var LinkedBuffer = xtemplateRuntimeLinkedBuffer;
-    function TplWrap(name, runtime, root, scope, buffer, originalName) {
+    function TplWrap(name, runtime, root, scope, buffer, originalName, fn) {
       this.name = name;
       this.originalName = originalName;
       this.runtime = runtime;
@@ -627,6 +632,7 @@ _xtemplateRuntime_ = function (exports) {
       this.pos = { line: 1 };
       this.scope = scope;
       this.buffer = buffer;
+      this.fn = fn;
     }
     function findCommand(runtimeCommands, instanceCommands, parts) {
       var name = parts[0];
@@ -710,7 +716,7 @@ _xtemplateRuntime_ = function (exports) {
     }
     util.mix(XTemplateRuntime, {
       loader: loader,
-      version: '3.2.0',
+      version: '3.2.1',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
@@ -740,16 +746,18 @@ _xtemplateRuntime_ = function (exports) {
     }
     function includeInternal(self, scope, escape, buffer, tpl, originalName) {
       var name = resolve(self, originalName, tpl.name);
-      return buffer.async(function (newBuffer) {
-        loadInternal(self, name, tpl.runtime, scope, newBuffer, originalName, escape);
-      });
+      var newBuffer = buffer.insert();
+      var next = newBuffer.next;
+      loadInternal(self, name, tpl.runtime, scope, newBuffer, originalName, escape);
+      return next;
     }
     function loadInternal(self, name, runtime, scope, buffer, originalName, escape) {
       var tpl = new TplWrap(name, runtime, self, scope, buffer, originalName);
       buffer.tpl = tpl;
-      self.config.loader.load(tpl, function (error, tplFn) {
+      self.config.loader.load(tpl, function loaderCallback(error, tplFn) {
         if (typeof tplFn === 'function') {
-          renderTpl(self, scope, buffer, tpl, tplFn);
+          tpl.fn = tplFn;
+          renderTpl(tpl);
         } else if (error) {
           buffer.error(error);
         } else if (tplFn) {
@@ -762,14 +770,14 @@ _xtemplateRuntime_ = function (exports) {
         }
       });
     }
-    function renderTpl(self, scope, buffer, tpl, fn) {
-      buffer = fn(tpl);
+    function renderTpl(tpl) {
+      var buffer = tpl.fn();
       if (buffer) {
         var runtime = tpl.runtime;
         var extendTplName = runtime.extendTplName;
         if (extendTplName) {
           runtime.extendTplName = null;
-          buffer = includeInternal(self, scope, 0, buffer, tpl, extendTplName);
+          buffer = includeInternal(tpl.root, tpl.scope, 0, buffer, tpl, extendTplName);
         }
         return buffer.end();
       }
@@ -830,20 +838,20 @@ _xtemplateRuntime_ = function (exports) {
         }
         var scope = new Scope(data);
         var buffer = new XTemplateRuntime.LinkedBuffer(callback, config).head;
-        var tpl = new TplWrap(name, { commands: option.commands }, self, scope, buffer, name);
+        var tpl = new TplWrap(name, { commands: option.commands }, self, scope, buffer, name, fn);
         buffer.tpl = tpl;
         if (!fn) {
           config.loader.load(tpl, function (err, fn) {
             if (fn) {
-              self.fn = fn;
-              renderTpl(self, scope, buffer, tpl, fn);
+              tpl.fn = self.fn = fn;
+              renderTpl(tpl);
             } else if (err) {
               buffer.error(err);
             }
           });
           return html;
         }
-        renderTpl(self, scope, buffer, tpl, fn);
+        renderTpl(tpl);
         return html;
       }
     };

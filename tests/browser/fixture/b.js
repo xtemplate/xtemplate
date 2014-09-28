@@ -1,5 +1,5 @@
 modulex.add(function(require,exports,module){
-module.exports = function b(tpl,undefined){
+module.exports = function b(undefined){
 var t;
 var t0;
 var t1;
@@ -11,6 +11,7 @@ var t6;
 var t7;
 var t8;
 var t9;
+var tpl = this;
 var root = tpl.root;
 var buffer = tpl.buffer;
 var scope = tpl.scope;
