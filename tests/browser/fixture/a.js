@@ -15,6 +15,7 @@ var tpl = this;
 var root = tpl.root;
 var buffer = tpl.buffer;
 var scope = tpl.scope;
+var runtime = tpl.runtime;
 var name = tpl.name;
 var pos = tpl.pos;
 var data = scope.data;
@@ -43,7 +44,7 @@ var id0 = ((t=(affix.x)) !== undefined ? t:((t = data.x) !== undefined ? t :scop
 buffer = buffer.writeEscaped(id0);
 buffer.data += '';
 var callRet1
-buffer = root.include(scope,{params:[require("./b").TPL_NAME]},buffer,tpl);
+buffer = root.includeModule(scope,{params:[require("./b")]},buffer,tpl);
 buffer = buffer.writeEscaped(callRet1);
 return buffer;
 };

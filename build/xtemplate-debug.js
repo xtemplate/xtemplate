@@ -5887,6 +5887,7 @@ xtemplateCompiler = function (exports) {
     'var root = tpl.root;',
     'var buffer = tpl.buffer;',
     'var scope = tpl.scope;',
+    'var runtime = tpl.runtime;',
     'var name = tpl.name;',
     'var pos = tpl.pos;',
     'var data = scope.data;',
@@ -6142,11 +6143,17 @@ xtemplateCompiler = function (exports) {
       functionConfigCode = genOptionFromFunction(self, func, escape, fnName, elseIfsName, inverseName);
       pushToArray(source, functionConfigCode.source);
     }
-    if (self.config.isModule) {
-      if (idString === 'include' || idString === 'extend' || idString === 'parse') {
+    var isModule = self.config.isModule;
+    if (idString === 'include' || idString === 'parse' || idString === 'extend') {
+      if (func.params.length !== 1) {
+        throw new Error('xtemplate: include/parse/extend can only has one parameter!');
+      }
+    }
+    if (isModule) {
+      if (idString === 'include' || idString === 'parse') {
         func.params[0] = {
           type: 'raw',
-          value: 're' + 'quire("' + func.params[0].value + '").TPL_NAME'
+          value: 're' + 'quire("' + func.params[0].value + '")'
         };
       }
     }
@@ -6159,10 +6166,15 @@ xtemplateCompiler = function (exports) {
       source.push('var ' + idName);
     }
     if (idString in nativeCommands) {
-      if (idString === 'include') {
-        source.push('buffer = root.include(scope,' + functionConfigCode.exp + ',buffer,tpl);');
+      if (idString === 'extend') {
+        source.push('runtime.extendTplName = "' + func.params[0].value + '"');
+        if (isModule) {
+          source.push('runtime.extendTplFn = re' + 'quire("' + func.params[0].value + '")');
+        }
+      } else if (idString === 'include') {
+        source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
       } else if (idString === 'parse') {
-        source.push('buffer = root.include(new scope.constructor(),' + functionConfigCode.exp + ',buffer,tpl);');
+        source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(new scope.constructor(),' + functionConfigCode.exp + ',buffer,tpl);');
       } else {
         source.push(substitute(CALL_NATIVE_COMMAND, {
           lhs: block ? 'buffer' : idName,
@@ -6434,7 +6446,7 @@ xtemplate = function (exports) {
   };
   exports = util.mix(XTemplate, {
     compile: compile,
-    version: '3.2.1',
+    version: '3.2.2',
     loader: loader,
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,

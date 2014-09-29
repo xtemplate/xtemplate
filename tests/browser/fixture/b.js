@@ -15,6 +15,7 @@ var tpl = this;
 var root = tpl.root;
 var buffer = tpl.buffer;
 var scope = tpl.scope;
+var runtime = tpl.runtime;
 var name = tpl.name;
 var pos = tpl.pos;
 var data = scope.data;
