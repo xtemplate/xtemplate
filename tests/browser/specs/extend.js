@@ -11,7 +11,6 @@ describe('extend', function () {
 
     afterEach(function () {
         util.each(mods, function (mod) {
-            delete XTemplate.loader.cache[mod];
             delete modulex.Env.mods[mod];
         });
     });

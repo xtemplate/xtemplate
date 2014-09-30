@@ -1,5 +1,5 @@
 modulex.add(function(require,exports,module){
-module.exports = function a(undefined){
+var ret = module.exports = function a(undefined){
 var t;
 var t0;
 var t1;
@@ -48,5 +48,5 @@ buffer = root.includeModule(scope,{params:[require("./b")]},buffer,tpl);
 buffer = buffer.writeEscaped(callRet1);
 return buffer;
 };
-module.exports.TPL_NAME = module.id || module.name;
+ret.TPL_NAME = module.id || module.name;
 });

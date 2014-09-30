@@ -684,35 +684,26 @@ xtemplateRuntime = function (exports) {
       return callFn(tpl, scope, option, buffer, parts);
     }
   };
-  var loader = {
-    cache: {},
-    load: function (tpl, callback) {
-      var cache = this.cache;
-      var name = tpl.name;
-      var cached = cache[name];
-      if (cached !== undefined) {
-        return callback(undefined, cached);
-      }
-      require([name], function (tpl) {
-        cache[name] = tpl;
-        callback(undefined, tpl);
-      }, function () {
-        var error = 'template "' + name + '" does not exist';
-        console.error(error);
-        callback(error);
-      });
-    }
-  };
   function XTemplateRuntime(fn, config) {
     var self = this;
     self.fn = fn;
-    config = self.config = config || {};
-    config.loader = config.loader || XTemplateRuntime.loader;
+    self.config = util.merge(XTemplateRuntime.globalConfig, config);
     this.subNameResolveCache = {};
   }
   util.mix(XTemplateRuntime, {
-    loader: loader,
-    version: '3.2.2',
+    config: function (key, v) {
+      var globalConfig = this.globalConfig = this.globalConfig || {};
+      if (arguments.length) {
+        if (v !== undefined) {
+          globalConfig[key] = v;
+        } else {
+          util.mix(globalConfig, key);
+        }
+      } else {
+        return globalConfig;
+      }
+    },
+    version: '3.3.0',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,

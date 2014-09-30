@@ -6550,35 +6550,26 @@ xtemplateRuntime = function (exports) {
       return callFn(tpl, scope, option, buffer, parts);
     }
   };
-  var loader = {
-    cache: {},
-    load: function (tpl, callback) {
-      var cache = this.cache;
-      var name = tpl.name;
-      var cached = cache[name];
-      if (cached !== undefined) {
-        return callback(undefined, cached);
-      }
-      require([name], function (tpl) {
-        cache[name] = tpl;
-        callback(undefined, tpl);
-      }, function () {
-        var error = 'template "' + name + '" does not exist';
-        console.error(error);
-        callback(error);
-      });
-    }
-  };
   function XTemplateRuntime(fn, config) {
     var self = this;
     self.fn = fn;
-    config = self.config = config || {};
-    config.loader = config.loader || XTemplateRuntime.loader;
+    self.config = util.merge(XTemplateRuntime.globalConfig, config);
     this.subNameResolveCache = {};
   }
   util.mix(XTemplateRuntime, {
-    loader: loader,
-    version: '3.2.2',
+    config: function (key, v) {
+      var globalConfig = this.globalConfig = this.globalConfig || {};
+      if (arguments.length) {
+        if (v !== undefined) {
+          globalConfig[key] = v;
+        } else {
+          util.mix(globalConfig, key);
+        }
+      } else {
+        return globalConfig;
+      }
+    },
+    version: '3.3.0',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -7263,40 +7254,13 @@ xtemplate = function (exports) {
   var util = XTemplateRuntime.util;
   var Compiler = xtemplateCompiler;
   var compile = Compiler.compile;
-  var loader = {
-    cache: {},
-    load: function (tpl, callback) {
-      var cache = this.cache;
-      var name = tpl.name;
-      var cached = cache[name];
-      if (cached !== undefined) {
-        return callback(undefined, cached);
-      }
-      require([name], function (content) {
-        if (typeof content === 'string') {
-          try {
-            content = tpl.root.compile(content, name);
-          } catch (e) {
-            return callback(e);
-          }
-        }
-        cache[name] = content;
-        callback(undefined, content);
-      }, function () {
-        var error = 'template "' + name + '" does not exist';
-        console.error(error);
-        callback(error);
-      });
-    }
-  };
   function XTemplate(tpl, config) {
     var tplType = typeof tpl;
     if (tplType !== 'string' && tplType !== 'function') {
       config = tpl;
       tpl = undefined;
     }
-    config = this.config = config || {};
-    config.loader = config.loader || XTemplate.loader;
+    config = this.config = util.merge(XTemplate.globalConfig, config);
     if (tplType === 'string') {
       tpl = this.compile(tpl, config.name);
     }
@@ -7311,9 +7275,9 @@ xtemplate = function (exports) {
     return compile(content, name, this.config);
   };
   exports = util.mix(XTemplate, {
+    config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.2.2',
-    loader: loader,
+    version: '3.3.0',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

@@ -3,7 +3,6 @@ var XTemplate = require('xtemplate');
 describe('sub template', function () {
     afterEach(function () {
         for (var mod in modulex.Env.mods) {
-            delete XTemplate.loader.cache[mod];
             delete modulex.Env.mods[mod];
         }
     });

@@ -36,11 +36,11 @@
                 }
             }
         });
+
         if (isStandalone) {
             modulex.add('xtemplate', function () {
                 return window.XTemplate;
             });
-            window.require = modulex.use;
         } else {
             modulex.config({
                 packages: {
@@ -51,6 +51,36 @@
                 }
             });
         }
+
+        modulex.config('modules', {
+            'xtemplate': {
+                afterInit: function (mod) {
+                    mod.exports.config('loader', {
+                        cache: {},
+                        load: function (tpl, callback) {
+                            var name = tpl.name;
+                            modulex.use([name],
+                                    function (content) {
+                                        if (typeof content === 'string') {
+                                            try {
+                                                content = tpl.root.compile(content, name);
+                                            } catch (e) {
+                                                return callback(e);
+                                            }
+                                        }
+                                        callback(undefined, content);
+                                    },
+                                    function () {
+                                        var error = 'template "' + name + '" does not exist';
+                                        console.error(error);
+                                        callback(error);
+                                    }
+                            );
+                        }
+                    });
+                }
+            }
+        });
         modulex.use(['specs/'], function () {
             if (window.mochaPhantomJS) {
                 var runner = mochaPhantomJS.run();

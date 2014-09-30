@@ -1,5 +1,5 @@
 modulex.add(function(require,exports,module){
-module.exports = function b(undefined){
+var ret = module.exports = function b(undefined){
 var t;
 var t0;
 var t1;
@@ -44,5 +44,5 @@ var id0 = ((t=(affix.y)) !== undefined ? t:((t = data.y) !== undefined ? t :scop
 buffer = buffer.writeEscaped(id0);
 return buffer;
 };
-module.exports.TPL_NAME = module.id || module.name;
+ret.TPL_NAME = module.id || module.name;
 });
