@@ -28,6 +28,20 @@ gulp.task('clean', function () {
     }).pipe(clean());
 });
 
+gulp.task('tag', function (done) {
+    var cp = require('child_process');
+    var version = packageInfo.version;
+    cp.exec('git tag ' + version + ' | git push origin ' + version + ':' + version + ' | git push origin master:master', done);
+});
+
+var wrapper = require('gulp-wrapper');
+var date = new Date();
+var header = ['/*',
+        'Copyright ' + date.getFullYear() + ', ' + packageInfo.name + '@' + packageInfo.version,
+        packageInfo.license + ' Licensed',
+        'build time: ' + (date.toGMTString()),
+    '*/', ''].join('\n');
+
 gulp.task('xtemplate', ['lint'], function () {
     return gulp.src('./lib/xtemplate.js')
         .pipe(modulex({
@@ -50,6 +64,9 @@ gulp.task('xtemplate', ['lint'], function () {
             ]
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
+        .pipe(wrapper({
+                    header: header
+                }))
         .pipe(gulp.dest(build))
         .pipe(filter('xtemplate-debug.js'))
         .pipe(replace(/@DEBUG@/g, ''))
@@ -78,6 +95,9 @@ gulp.task('xtemplate/runtime', ['lint'], function () {
             ]
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
+        .pipe(wrapper({
+                    header: header
+                }))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
         .pipe(filter('runtime-debug.js'))
         .pipe(replace(/@DEBUG@/g, ''))
@@ -121,6 +141,9 @@ gulp.task('xtemplate-standalone', ['lint'], function () {
             ]
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
+        .pipe(wrapper({
+                    header: header
+                }))
         .pipe(rename('xtemplate-standalone-debug.js'))
         .pipe(gulp.dest(build))
         .pipe(uglify())
@@ -144,6 +167,9 @@ gulp.task('runtime-standalone', ['xtemplate/runtime'], function () {
         }))
         .pipe(rename('runtime-standalone-debug.js'))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
+        .pipe(wrapper({
+                    header: header
+                }))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
         .pipe(replace(/@DEBUG@/g, ''))
         .pipe(uglify())

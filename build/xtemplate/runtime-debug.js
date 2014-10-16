@@ -1,3 +1,8 @@
+/*
+Copyright 2014, xtemplate@3.3.0
+MIT Licensed
+build time: Thu, 16 Oct 2014 07:07:07 GMT
+*/
 modulex.add("xtemplate/runtime", [], function(require, exports, module) {
 
 /*

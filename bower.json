@@ -7,7 +7,7 @@
         "url": "http://github.com/kissyteam/xtemplate.git"
     },
     "dependencies": {
-        "modulex": "modulex#master"
+        "modulex": "*"
     },
     "ignore": [
         "**/*",

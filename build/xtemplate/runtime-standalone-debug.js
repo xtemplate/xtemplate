@@ -1,5 +1,15 @@
+/*
+Copyright 2014, xtemplate@3.3.0
+MIT Licensed
+build time: Thu, 16 Oct 2014 07:07:07 GMT
+*/
 var XTemplateRuntime = (function(){ var module = {};
 
+/*
+Copyright 2014, xtemplate@3.3.0
+MIT Licensed
+build time: Thu, 16 Oct 2014 07:07:07 GMT
+*/
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
   /*
