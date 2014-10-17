@@ -186,7 +186,7 @@ gulp.task('kg', function () {
     stream.append(gulp.src('./build/xtemplate/runtime-debug.js')
         .pipe(rename('runtime.js'))
         .pipe(replace('modulex.add("xtemplate/runtime", [], function(require, exports, module)',
-                'KISSY.add("kg/xtemplate/' + version + '/runtime",[],function(S,require,exports,module)'))
+                'modulex.add("kg/xtemplate/' + version + '/runtime",[],function(require,exports,module)'))
         .pipe(gulp.dest(kgInfo.dest))
         .pipe(replace(/@DEBUG@/g, ''))
         .pipe(uglify())
@@ -196,7 +196,7 @@ gulp.task('kg', function () {
     stream.append(gulp.src('./build/xtemplate-debug.js')
         .pipe(rename('index.js'))
         .pipe(replace('modulex.add("xtemplate", ["xtemplate/runtime"], function(require, exports, module)',
-                'KISSY.add("kg/xtemplate/' + version + '/index",["./runtime"],function(S,require,exports,module)'))
+                'modulex.add("kg/xtemplate/' + version + '/index",["./runtime"],function(require,exports,module)'))
         .pipe(replace('require("xtemplate/runtime")',
             'require("./runtime")'))
         .pipe(gulp.dest(kgInfo.dest))
