@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "3.3.3",
+  "version": "3.4.0",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": ">=0.10"
