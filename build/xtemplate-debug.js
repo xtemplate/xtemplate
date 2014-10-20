@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.4.0
+Copyright 2014, xtemplate@3.4.1
 MIT Licensed
-build time: Mon, 20 Oct 2014 10:28:11 GMT
+build time: Mon, 20 Oct 2014 10:29:17 GMT
 */
 modulex.add("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -6425,7 +6425,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.4.0',
+    version: '3.4.1',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

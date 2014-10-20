@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.4.0
+Copyright 2014, xtemplate@3.4.1
 MIT Licensed
-build time: Mon, 20 Oct 2014 10:28:11 GMT
+build time: Mon, 20 Oct 2014 10:29:17 GMT
 */
 modulex.add("xtemplate/runtime", [], function(require, exports, module) {
 
@@ -708,7 +708,7 @@ xtemplateRuntime = function (exports) {
         return globalConfig;
       }
     },
-    version: '3.4.0',
+    version: '3.4.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
