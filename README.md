@@ -38,6 +38,10 @@ https://github.com/kissyteam/xtpl
 
 https://github.com/kissyteam/xtemplate/blob/master/docs/introduce.md
 
+## on dailyjs
+
+http://dailyjs.com/2014/09/24/node-roundup/
+
 ## changelog
 
 https://github.com/kissyteam/xtemplate/milestones
