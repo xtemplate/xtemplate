@@ -1,0 +1,1 @@
+changelog-md -u kissyteam -r xtemplate -f CHANGELOG.md

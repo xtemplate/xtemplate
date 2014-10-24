@@ -44,7 +44,7 @@ http://dailyjs.com/2014/09/24/node-roundup/
 
 ## changelog
 
-https://github.com/kissyteam/xtemplate/milestones
+https://github.com/kissyteam/xtemplate/blob/master/CHANGELOG.md
 
 ## contribute
 
