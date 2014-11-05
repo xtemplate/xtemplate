@@ -15,7 +15,7 @@ describe('extend', function () {
         });
     });
 
-    it.only('ignore everything except block/extend in extended template', function () {
+    it('ignore everything except block/extend in extended template', function () {
         var base = ' {{#block("a")}}a{{/block}} ';
 
         var sub = ' {{extend("template_extend/base")}} ';

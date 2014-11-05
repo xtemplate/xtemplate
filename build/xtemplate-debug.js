@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.5.0
+Copyright 2014, xtemplate@3.5.1
 MIT Licensed
-build time: Wed, 05 Nov 2014 08:03:06 GMT
+build time: Wed, 05 Nov 2014 08:15:36 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -6017,6 +6017,18 @@ xtemplateCompiler = function (exports) {
     }
     return 0;
   }
+  function isBlockStatement(statement) {
+    if (statement.type === 'blockStatement') {
+      var func = statement.func;
+      if (func && func.type === 'function') {
+        var id = func.id;
+        if (id && id.string === 'block') {
+          return 1;
+        }
+      }
+    }
+    return 0;
+  }
   function hasExtend(statements) {
     for (var i = 0, len = statements.length; i < len; i++) {
       var statement = statements[i];
@@ -6037,7 +6049,7 @@ xtemplateCompiler = function (exports) {
     var hasExtendStatement = hasExtend(statements);
     for (i = 0, len = statements.length; i < len; i++) {
       statement = statements[i];
-      if (hasExtendStatement && !isExtendStatement(statement)) {
+      if (hasExtendStatement && !isExtendStatement(statement) && !isBlockStatement(statement)) {
         continue;
       }
       pushToArray(source, self[statement.type](statement, { top: 1 }).source);
@@ -6450,7 +6462,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.5.0',
+    version: '3.5.1',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,
