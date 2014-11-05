@@ -15,17 +15,17 @@ describe('extend', function () {
         });
     });
 
-    it('ignore everything except block/extend in extended template', function () {
-        var base = ' {{#block("a")}}a{{/block}} ';
+    it('output everything in extended template', function () {
+        var base = '1{{#block("a")}}a{{/block}}2';
 
-        var sub = ' {{extend("template_extend/base")}} ';
+        var sub = '3{{extend("template_extend/base")}}4';
 
         modulex.add('template_extend/base', base);
 
         var result = new XTemplate(sub).render({
         });
 
-        expect(result).to.equal(' a ');
+        expect(result).to.equal('31a24');
     });
 
     it('support block', function () {

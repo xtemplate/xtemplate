@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.5.1
+Copyright 2014, xtemplate@3.5.2
 MIT Licensed
-build time: Wed, 05 Nov 2014 08:15:36 GMT
+build time: Wed, 05 Nov 2014 08:49:15 GMT
 */
 var XTemplate = (function(){ var module = {};
 
@@ -6574,7 +6574,7 @@ xtemplateRuntime = function (exports) {
         return globalConfig;
       }
     },
-    version: '3.5.1',
+    version: '3.5.2',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6638,13 +6638,16 @@ xtemplateRuntime = function (exports) {
       var runtime = tpl.runtime;
       var extendTplName = runtime.extendTplName;
       var extendTplFn = runtime.extendTplFn;
+      var extendTplBuffer = runtime.extendTplBuffer;
       if (extendTplFn) {
         runtime.extendTplName = null;
+        runtime.extendTplBuffer = null;
         runtime.extendTplFn = null;
-        buffer = includeModuleInternal(tpl.root, tpl.scope, buffer, tpl, extendTplFn);
+        includeModuleInternal(tpl.root, tpl.scope, extendTplBuffer, tpl, extendTplFn).end();
       } else if (extendTplName) {
         runtime.extendTplName = null;
-        buffer = includeInternal(tpl.root, tpl.scope, 0, buffer, tpl, extendTplName);
+        runtime.extendTplBuffer = null;
+        includeInternal(tpl.root, tpl.scope, 0, extendTplBuffer, tpl, extendTplName).end();
       }
       return buffer.end();
     }
@@ -6862,39 +6865,6 @@ xtemplateCompiler = function (exports) {
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
-  function isExtendStatement(statement) {
-    if (statement.type === 'expressionStatement') {
-      var value = statement.value;
-      if (value && value.type === 'function') {
-        var id = value.id;
-        if (id && id.string === 'extend') {
-          return 1;
-        }
-      }
-    }
-    return 0;
-  }
-  function isBlockStatement(statement) {
-    if (statement.type === 'blockStatement') {
-      var func = statement.func;
-      if (func && func.type === 'function') {
-        var id = func.id;
-        if (id && id.string === 'block') {
-          return 1;
-        }
-      }
-    }
-    return 0;
-  }
-  function hasExtend(statements) {
-    for (var i = 0, len = statements.length; i < len; i++) {
-      var statement = statements[i];
-      if (isExtendStatement(statement)) {
-        return 1;
-      }
-    }
-    return 0;
-  }
   function genTopFunction(self, statements) {
     var catchError = self.config.catchError;
     var source = [
@@ -6903,12 +6873,8 @@ xtemplateCompiler = function (exports) {
       catchError ? 'try {' : ''
     ];
     var statement, i, len;
-    var hasExtendStatement = hasExtend(statements);
     for (i = 0, len = statements.length; i < len; i++) {
       statement = statements[i];
-      if (hasExtendStatement && !isExtendStatement(statement) && !isBlockStatement(statement)) {
-        continue;
-      }
       pushToArray(source, self[statement.type](statement, { top: 1 }).source);
     }
     source.splice.apply(source, [
@@ -7067,6 +7033,7 @@ xtemplateCompiler = function (exports) {
     if (idString in nativeCommands) {
       if (idString === 'extend') {
         source.push('runtime.extendTplName = "' + func.params[0].value + '"');
+        source.push('buffer = buffer.async(function(newBuffer){runtime.extendTplBuffer = newBuffer;});');
         if (isModule) {
           source.push('runtime.extendTplFn = re' + 'quire("' + func.params[0].value + '")');
         }
@@ -7319,7 +7286,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.5.1',
+    version: '3.5.2',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

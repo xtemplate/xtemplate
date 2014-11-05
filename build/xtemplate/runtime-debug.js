@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.5.1
+Copyright 2014, xtemplate@3.5.2
 MIT Licensed
-build time: Wed, 05 Nov 2014 08:15:36 GMT
+build time: Wed, 05 Nov 2014 08:49:15 GMT
 */
 define("xtemplate/runtime", [], function(require, exports, module) {
 
@@ -708,7 +708,7 @@ xtemplateRuntime = function (exports) {
         return globalConfig;
       }
     },
-    version: '3.5.1',
+    version: '3.5.2',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -772,13 +772,16 @@ xtemplateRuntime = function (exports) {
       var runtime = tpl.runtime;
       var extendTplName = runtime.extendTplName;
       var extendTplFn = runtime.extendTplFn;
+      var extendTplBuffer = runtime.extendTplBuffer;
       if (extendTplFn) {
         runtime.extendTplName = null;
+        runtime.extendTplBuffer = null;
         runtime.extendTplFn = null;
-        buffer = includeModuleInternal(tpl.root, tpl.scope, buffer, tpl, extendTplFn);
+        includeModuleInternal(tpl.root, tpl.scope, extendTplBuffer, tpl, extendTplFn).end();
       } else if (extendTplName) {
         runtime.extendTplName = null;
-        buffer = includeInternal(tpl.root, tpl.scope, 0, buffer, tpl, extendTplName);
+        runtime.extendTplBuffer = null;
+        includeInternal(tpl.root, tpl.scope, 0, extendTplBuffer, tpl, extendTplName).end();
       }
       return buffer.end();
     }
