@@ -26,6 +26,12 @@ describe('extend', function () {
         });
 
         expect(result).to.equal('31a24');
+
+        sub = '3{{extend("template_extend/base")}}4{{#block("a")}}b{{/block}}5';
+        result = new XTemplate(sub).render({
+        });
+
+        expect(result).to.equal('31b245');
     });
 
     it('support block', function () {
