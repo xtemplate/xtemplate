@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": ">=0.10"
@@ -35,7 +35,7 @@
     "gulp-jscs": "^1.1.0",
     "gulp-jshint": "^1.8.4",
     "gulp-kclean": "^0.0.13",
-    "gulp-modulex": "^1.0.0",
+    "gulp-modulex": "^2.0.0",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.4.0",
     "gulp-uglify": "^0.3.1",

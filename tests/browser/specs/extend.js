@@ -15,6 +15,19 @@ describe('extend', function () {
         });
     });
 
+    it.only('ignore everything except block/extend in extended template', function () {
+        var base = ' {{#block("a")}}a{{/block}} ';
+
+        var sub = ' {{extend("template_extend/base")}} ';
+
+        modulex.add('template_extend/base', base);
+
+        var result = new XTemplate(sub).render({
+        });
+
+        expect(result).to.equal(' a ');
+    });
+
     it('support block', function () {
         var base = 'title {{#block ("name")}}{{content}}{{/block}}';
 

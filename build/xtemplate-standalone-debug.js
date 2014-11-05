@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.4.1
+Copyright 2014, xtemplate@3.5.0
 MIT Licensed
-build time: Mon, 20 Oct 2014 10:29:17 GMT
+build time: Wed, 05 Nov 2014 08:03:06 GMT
 */
 var XTemplate = (function(){ var module = {};
 
@@ -6574,7 +6574,7 @@ xtemplateRuntime = function (exports) {
         return globalConfig;
       }
     },
-    version: '3.4.1',
+    version: '3.5.0',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6862,6 +6862,27 @@ xtemplateCompiler = function (exports) {
     pushToArray(self.functionDeclares, source);
     return functionName;
   }
+  function isExtendStatement(statement) {
+    if (statement.type === 'expressionStatement') {
+      var value = statement.value;
+      if (value && value.type === 'function') {
+        var id = value.id;
+        if (id && id.string === 'extend') {
+          return 1;
+        }
+      }
+    }
+    return 0;
+  }
+  function hasExtend(statements) {
+    for (var i = 0, len = statements.length; i < len; i++) {
+      var statement = statements[i];
+      if (isExtendStatement(statement)) {
+        return 1;
+      }
+    }
+    return 0;
+  }
   function genTopFunction(self, statements) {
     var catchError = self.config.catchError;
     var source = [
@@ -6870,8 +6891,12 @@ xtemplateCompiler = function (exports) {
       catchError ? 'try {' : ''
     ];
     var statement, i, len;
+    var hasExtendStatement = hasExtend(statements);
     for (i = 0, len = statements.length; i < len; i++) {
       statement = statements[i];
+      if (hasExtendStatement && !isExtendStatement(statement)) {
+        continue;
+      }
       pushToArray(source, self[statement.type](statement, { top: 1 }).source);
     }
     source.splice.apply(source, [
@@ -7282,7 +7307,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.4.1',
+    version: '3.5.0',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,
