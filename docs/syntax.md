@@ -228,7 +228,7 @@ var x = {
 
 ```
 // declare
-{{#macro("test","param" default=1)}}param is {{param}} {{default}}{{/macro}}
+{{#macro("test","param", default=1)}}param is {{param}} {{default}}{{/macro}}
 
 // call
 {{macro("test","2")}} // => param is 2 1
