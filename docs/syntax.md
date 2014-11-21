@@ -233,7 +233,7 @@ var x = {
 // call
 {{macro("test","2")}} // => param is 2 1
 
-{{macro("test", "2", 2)}} // => param is 2 2
+{{macro("test", "2", default=2)}} // => param is 2 2
 ```
 
 ## include
