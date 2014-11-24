@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 03:50:18 GMT
+build time: Mon, 24 Nov 2014 03:52:01 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");

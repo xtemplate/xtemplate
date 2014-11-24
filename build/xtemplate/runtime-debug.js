@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 03:50:18 GMT
+build time: Mon, 24 Nov 2014 03:52:01 GMT
 */
 define("xtemplate/runtime", [], function(require, exports, module) {
 
@@ -212,6 +212,9 @@ xtemplateRuntimeScope = function (exports) {
       var i;
       var len = parts.length;
       var v = ret[1];
+      if (v === undefined) {
+        return undefined;
+      }
       for (i = 1; i < len; i++) {
         v = v[parts[i]];
       }
