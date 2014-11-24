@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.5.2
+Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Wed, 05 Nov 2014 08:49:15 GMT
+build time: Mon, 24 Nov 2014 03:50:18 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -6384,7 +6384,13 @@ xtemplateCompiler = function (exports) {
     },
     compileToJson: function (param) {
       var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
-      var root = compiler.parse(param.content, name);
+      var content = param.content;
+      var root;
+      if (content) {
+        root = compiler.parse(content, name);
+      } else {
+        root = { statements: [] };
+      }
       return genTopFunction(new AstToJSProcessor(param), root.statements);
     },
     compile: function (tplContent, name, config) {
@@ -6411,7 +6417,20 @@ xtemplate = function (exports) {
     }
     config = this.config = util.merge(XTemplate.globalConfig, config);
     if (tplType === 'string') {
-      tpl = this.compile(tpl, config.name);
+      try {
+        tpl = this.compile(tpl, config.name);
+      } catch (err) {
+        var e;
+        if (err instanceof Error) {
+          e = err;
+        } else {
+          e = new Error(err);
+        }
+        var errorStr = 'XTemplate error ';
+        e.stack = errorStr + e.stack;
+        e.message = errorStr + e.message;
+        this.compileError = e;
+      }
     }
     XTemplateRuntime.call(this, tpl, config);
   }
@@ -6423,10 +6442,25 @@ xtemplate = function (exports) {
   XTemplate.prototype.compile = function (content, name) {
     return compile(content, name, this.config);
   };
+  XTemplate.prototype.render = function (data, option, callback) {
+    if (typeof option === 'function') {
+      callback = option;
+    }
+    var compileError = this.compileError;
+    if (compileError) {
+      if (callback) {
+        callback(compileError);
+      } else {
+        throw compileError;
+      }
+    } else {
+      return XTemplateRuntime.prototype.render.apply(this, arguments);
+    }
+  };
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.5.2',
+    version: '3.6.0',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

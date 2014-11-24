@@ -37,9 +37,9 @@ gulp.task('tag', function (done) {
 var wrapper = require('gulp-wrapper');
 var date = new Date();
 var header = ['/*',
-        'Copyright ' + date.getFullYear() + ', ' + packageInfo.name + '@' + packageInfo.version,
-        packageInfo.license + ' Licensed',
-        'build time: ' + (date.toGMTString()),
+    'Copyright ' + date.getFullYear() + ', ' + packageInfo.name + '@' + packageInfo.version,
+    packageInfo.license + ' Licensed',
+    'build time: ' + (date.toGMTString()),
     '*/', ''].join('\n');
 
 gulp.task('xtemplate', ['lint'], function () {
@@ -65,8 +65,8 @@ gulp.task('xtemplate', ['lint'], function () {
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(wrapper({
-                    header: header
-                }))
+            header: header
+        }))
         .pipe(gulp.dest(build))
         .pipe(filter('xtemplate-debug.js'))
         .pipe(replace(/@DEBUG@/g, ''))
@@ -96,8 +96,8 @@ gulp.task('xtemplate/runtime', ['lint'], function () {
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(wrapper({
-                    header: header
-                }))
+            header: header
+        }))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
         .pipe(filter('runtime-debug.js'))
         .pipe(replace(/@DEBUG@/g, ''))
@@ -111,6 +111,7 @@ gulp.task('precompile-test', function () {
     return gulp.src('tests/browser/fixture/*.xtpl').pipe(gulpXTemplate({
         runtime: 'xtemplate/runtime',
         truncatePrefixLen: process.cwd().length,
+        wrap: 'define',
         XTemplate: require('./')
     })).pipe(gulp.dest('tests/browser/fixture/'));
 });
@@ -142,8 +143,8 @@ gulp.task('xtemplate-standalone', ['lint'], function () {
         }))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(wrapper({
-                    header: header
-                }))
+            header: header
+        }))
         .pipe(rename('xtemplate-standalone-debug.js'))
         .pipe(gulp.dest(build))
         .pipe(uglify())
@@ -168,8 +169,8 @@ gulp.task('runtime-standalone', ['xtemplate/runtime'], function () {
         .pipe(rename('runtime-standalone-debug.js'))
         .pipe(replace(/@VERSION@/g, packageInfo.version))
         .pipe(wrapper({
-                    header: header
-                }))
+            header: header
+        }))
         .pipe(gulp.dest(path.resolve(build, 'xtemplate')))
         .pipe(replace(/@DEBUG@/g, ''))
         .pipe(uglify())
@@ -186,7 +187,7 @@ gulp.task('kg', function () {
     stream.append(gulp.src('./build/xtemplate/runtime-debug.js')
         .pipe(rename('runtime.js'))
         .pipe(replace('define("xtemplate/runtime", [], function(require, exports, module)',
-                'define("kg/xtemplate/' + version + '/runtime",[],function(require,exports,module)'))
+            'define("kg/xtemplate/' + version + '/runtime",[],function(require,exports,module)'))
         .pipe(gulp.dest(kgInfo.dest))
         .pipe(replace(/@DEBUG@/g, ''))
         .pipe(uglify())
@@ -196,7 +197,7 @@ gulp.task('kg', function () {
     stream.append(gulp.src('./build/xtemplate-debug.js')
         .pipe(rename('index.js'))
         .pipe(replace('define("xtemplate", ["xtemplate/runtime"], function(require, exports, module)',
-                'define("kg/xtemplate/' + version + '/index",["./runtime"],function(require,exports,module)'))
+            'define("kg/xtemplate/' + version + '/index",["./runtime"],function(require,exports,module)'))
         .pipe(replace('require("xtemplate/runtime")',
             'require("./runtime")'))
         .pipe(gulp.dest(kgInfo.dest))

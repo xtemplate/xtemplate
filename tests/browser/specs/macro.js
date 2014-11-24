@@ -15,7 +15,7 @@ describe('macro', function () {
         expect(render).to.equal('call macro');
     });
 
-    it('it support default parameter',function(){
+    it('it support default parameter', function () {
         var tpl = '{{#macro ("test", "t", t2=1)}}{{t}}{{t2}}{{/macro}}{{macro ("test", arg)}}' +
             ' {{macro ("test", arg,t2=2)}}';
 
@@ -27,7 +27,7 @@ describe('macro', function () {
 
     it('support sub template macro define', function () {
         var tpl = '{{include ("macro/x")}}call {{macro ("test", arg)}}';
-        modulex.add('macro/x', '{{#macro ("test", "t")}}{{t}}{{/macro}}');
+        define('macro/x', '{{#macro ("test", "t")}}{{t}}{{/macro}}');
         var render = new XTemplate(tpl).render({
             arg: 'macro'
         });
@@ -36,7 +36,7 @@ describe('macro', function () {
 
     it('support use macro from parent template', function () {
         var tpl = '{{#macro( "test", "t")}}{{t}}2{{/macro}}{{include( "macro/x2")}}';
-        modulex.add('macro/x2', 'call {{macro ("test", arg)}}');
+        define('macro/x2', 'call {{macro ("test", arg)}}');
         var render = new XTemplate(tpl).render({
             arg: 'macro'
         });
@@ -44,12 +44,21 @@ describe('macro', function () {
     });
 
     it('support macro override without scope', function () {
-        modulex.add('xtemplate/parent', '{{#macro( "x")}}parent{{/macro}}');
+        define('xtemplate/parent', '{{#macro( "x")}}parent{{/macro}}');
         var render = new XTemplate('{{include( "xtemplate/parent")}}{{#macro ("x")}}{{content}} child{{/macro}}' +
-            '{{macro ("x")}}').render({
+        '{{macro ("x")}}').render({
                 title: 'title',
                 content: 'content'
             });
         expect(render).to.equal(' child');
+    });
+
+    it('support access root in macro', function () {
+        var render = new XTemplate('{{#macro("q","x")}}{{x}}{{root.x}}{{z}}{{/macro}}{{macro("q",z)}}');
+        var ret = render.render({
+            x: 1,
+            z: 2
+        });
+        expect(ret).to.equal('21');
     });
 });

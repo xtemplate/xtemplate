@@ -63,27 +63,24 @@ describe('feature', function () {
 
     it('will output empty for deep absent property', function () {
         var render = new XTemplate('{{x.y.z}}').render({
-            x: {
-            }
+            x: {}
         });
 
         expect(render).to.equal('');
     });
 
-    it('not allow empty content', function () {
+    it('allow empty content', function () {
         var tpl = '';
 
         var data = {
             title: 'o'
         };
 
-        try {
-            new XTemplate(tpl, {
-                name: 'tpl-empty-content'
-            }).render(data);
-        } catch (e) {
-            expect(e.message.indexOf('syntax error') !== -1).to.be(true);
-        }
+        var ret = new XTemplate(tpl, {
+            name: 'tpl-empty-content'
+        }).render(data);
+
+        expect(ret).to.equal('');
     });
 
     it('support {{variable}}', function () {
@@ -401,9 +398,7 @@ describe('feature', function () {
                     return a + b + this.salt;
                 },
                 salt: 1,
-                z: {
-
-                }
+                z: {}
             }
         });
 
@@ -442,8 +437,7 @@ describe('feature', function () {
 
         it('允许汉字参数', function () {
             var tpl = '{{t("出现了")}}';
-            var data = {
-            };
+            var data = {};
 
             var render = new XTemplate(tpl, {
                 commands: {

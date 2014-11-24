@@ -9,7 +9,7 @@ describe('sub template', function () {
 
 
     it('support parse', function () {
-        modulex.add('xtemplate-test/sub-tpl-0', '{{title}}{{title2}}');
+        define('xtemplate-test/sub-tpl-0', '{{title}}{{title2}}');
 
         var tpl = '{{parse ("xtemplate-test/sub-tpl-0", title2="2")}}';
 
@@ -31,7 +31,7 @@ describe('sub template', function () {
             title: '1'
         };
 
-        modulex.add('xtemplate-test/sub-tpl-1', '{{title}}');
+        define('xtemplate-test/sub-tpl-1', '{{title}}');
 
         var render = new XTemplate(tpl).render(data);
 
@@ -54,7 +54,7 @@ describe('sub template', function () {
             title: '1'
         };
 
-        modulex.add('xtemplate-test/sub-tpl-3', '{{title}}');
+        define('xtemplate-test/sub-tpl-3', '{{title}}');
 
         var render = new XTemplate(tpl, {
             name: 'xtemplate-test/main'
@@ -70,7 +70,7 @@ describe('sub template', function () {
             title: '1'
         };
 
-        modulex.add('xtemplate-test/sub-tpl-3-1', '<>{{title}}');
+        define('xtemplate-test/sub-tpl-3-1', '<>{{title}}');
 
         var render = new XTemplate(tpl, {
             name: 'xtemplate-test/main'
@@ -86,8 +86,8 @@ describe('sub template', function () {
             title: '1'
         };
 
-        modulex.add('xtemplate-test/sub-tpl-5', '{{title}}{{../title}}');
-        modulex.add('xtemplate-test/sub-tpl-5-1', '{{title}}');
+        define('xtemplate-test/sub-tpl-5', '{{title}}{{../title}}');
+        define('xtemplate-test/sub-tpl-5-1', '{{title}}');
 
 
         var render = new XTemplate(tpl).render(data);
@@ -102,7 +102,7 @@ describe('sub template', function () {
             title: '1'
         };
 
-        modulex.add('xtemplate-test/sub-tpl-6', '{{title}}');
+        define('xtemplate-test/sub-tpl-6', '{{title}}');
 
         expect(function () {
             new XTemplate(tpl).render(data);
@@ -112,8 +112,8 @@ describe('sub template', function () {
     });
 
     it('will always use loader', function () {
-        modulex.add('parent-tpl', '{{include("child-tpl")}}');
-        modulex.add('child-tpl', '{{title}}');
+        define('parent-tpl', '{{include("child-tpl")}}');
+        define('child-tpl', '{{title}}');
         var ret = new XTemplate({
             name: 'parent-tpl'
         }).render({title: 1});

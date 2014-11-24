@@ -19,7 +19,7 @@ describe('async', function () {
                 }
             }
         }).render({}, function (error) {
-                expect(error.message).to.contain('report.xtpl:2');
+                expect(error.message).to.contain('report.xtpl at line 2');
                 done();
             })).to.equal('');
     });

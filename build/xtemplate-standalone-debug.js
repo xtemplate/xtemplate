@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.5.2
+Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Wed, 05 Nov 2014 08:49:15 GMT
+build time: Mon, 24 Nov 2014 03:50:18 GMT
 */
 var XTemplate = (function(){ var module = {};
 
@@ -350,7 +350,7 @@ xtemplateRuntimeLinkedBuffer = function (exports) {
           }
           var name = tpl.name;
           var line = tpl.pos.line;
-          var errorStr = 'At ' + name + ':' + line + ': ';
+          var errorStr = 'XTemplate error in file: ' + name + ' at line ' + line + ': ';
           e.stack = errorStr + e.stack;
           e.message = errorStr + e.message;
           e.xtpl = {
@@ -6446,32 +6446,33 @@ xtemplateRuntimeCommands = function (exports) {
       var self = this;
       var runtime = self.runtime;
       var macros = runtime.macros = runtime.macros || {};
+      var macro = macros[macroName];
       if (option.fn) {
         macros[macroName] = {
           paramNames: params1,
           hash: hash,
           fn: option.fn
         };
-      } else {
-        var macro = macros[macroName];
+      } else if (macro) {
         var paramValues = macro.hash || {};
         var paramNames;
-        if (macro && (paramNames = macro.paramNames)) {
+        if (paramNames = macro.paramNames) {
           for (var i = 0, len = paramNames.length; i < len; i++) {
             var p = paramNames[i];
             paramValues[p] = params1[i];
           }
-          if (hash) {
-            for (var h in hash) {
-              paramValues[h] = hash[h];
-            }
-          }
-          var newScope = new Scope(paramValues);
-          buffer = macro.fn.call(self, newScope, buffer);
-        } else {
-          var error = 'can not find macro: ' + name;
-          buffer.error(error);
         }
+        if (hash) {
+          for (var h in hash) {
+            paramValues[h] = hash[h];
+          }
+        }
+        var newScope = new Scope(paramValues);
+        newScope.root = scope.root;
+        buffer = macro.fn.call(self, newScope, buffer);
+      } else {
+        var error = 'can not find macro: ' + macroName;
+        buffer.error(error);
       }
       return buffer;
     }
@@ -6574,7 +6575,7 @@ xtemplateRuntime = function (exports) {
         return globalConfig;
       }
     },
-    version: '3.5.2',
+    version: '3.6.0',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -7244,7 +7245,13 @@ xtemplateCompiler = function (exports) {
     },
     compileToJson: function (param) {
       var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
-      var root = compiler.parse(param.content, name);
+      var content = param.content;
+      var root;
+      if (content) {
+        root = compiler.parse(content, name);
+      } else {
+        root = { statements: [] };
+      }
       return genTopFunction(new AstToJSProcessor(param), root.statements);
     },
     compile: function (tplContent, name, config) {
@@ -7271,7 +7278,20 @@ xtemplate = function (exports) {
     }
     config = this.config = util.merge(XTemplate.globalConfig, config);
     if (tplType === 'string') {
-      tpl = this.compile(tpl, config.name);
+      try {
+        tpl = this.compile(tpl, config.name);
+      } catch (err) {
+        var e;
+        if (err instanceof Error) {
+          e = err;
+        } else {
+          e = new Error(err);
+        }
+        var errorStr = 'XTemplate error ';
+        e.stack = errorStr + e.stack;
+        e.message = errorStr + e.message;
+        this.compileError = e;
+      }
     }
     XTemplateRuntime.call(this, tpl, config);
   }
@@ -7283,10 +7303,25 @@ xtemplate = function (exports) {
   XTemplate.prototype.compile = function (content, name) {
     return compile(content, name, this.config);
   };
+  XTemplate.prototype.render = function (data, option, callback) {
+    if (typeof option === 'function') {
+      callback = option;
+    }
+    var compileError = this.compileError;
+    if (compileError) {
+      if (callback) {
+        callback(compileError);
+      } else {
+        throw compileError;
+      }
+    } else {
+      return XTemplateRuntime.prototype.render.apply(this, arguments);
+    }
+  };
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.5.2',
+    version: '3.6.0',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

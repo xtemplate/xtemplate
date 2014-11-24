@@ -1,4 +1,5 @@
-modulex.add(function(require,exports,module){
+define(function(require,exports,module){
+/*compiled by xtemplate#3.6.0*/
 var ret = module.exports = function a(undefined){
 var t;
 var t0;

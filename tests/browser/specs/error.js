@@ -29,6 +29,13 @@ describe('error detection', function () {
         expect(ret.indexOf("\n    {{ x + '1 222222' }}\n-----------^")).not.to.equal(-1);
     });
 
+    it('can catch compile error in callback', function (done) {
+        new XTemplate("{{'}}").render({}, function (e) {
+            expect(e.message.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
+            done();
+        });
+    });
+
     it('detect lexer error', function () {
         var ret;
         try {
@@ -56,9 +63,9 @@ describe('error detection', function () {
         }
         if (location.search.indexOf('build') === -1) {
             expect(util.startsWith(info, 'Syntax error at line 3:\n' +
-                '{{#if(title)}} shoot\n\n' +
-                '--------------------^\n' +
-                'expect'));
+            '{{#if(title)}} shoot\n\n' +
+            '--------------------^\n' +
+            'expect'));
             // OPEN_END_BLOCK
         }
     });
@@ -81,7 +88,7 @@ describe('error detection', function () {
                 throw e;
             }
         }).to.throwError('Syntax error at line 3, col 7:\n' +
-                'expect {{/if}} not {{/with}}');
+            'expect {{/if}} not {{/with}}');
     });
 
     it('detect unmatched custom command', function () {
@@ -94,7 +101,7 @@ describe('error detection', function () {
                 throw e;
             }
         }).to.throwError('Syntax error at line 2, col 4:\n' +
-                'expect {{/x,y}} not {{/x}}');
+            'expect {{/x,y}} not {{/x}}');
     });
 
     it('detect runtime error', function (done) {
@@ -109,7 +116,7 @@ describe('error detection', function () {
             }).render({x: 1});
         } catch (e) {
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                expect(e.message).to.contain("x.xtpl:6");
+                expect(e.message).to.contain("x.xtpl at line 6");
             }
             expect(e.xtpl).to.eql({
                 pos: {line: 6},
@@ -137,7 +144,7 @@ describe('error detection', function () {
                 catchError: true
             }).render({x: 1}, function (e) {
                     if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                        expect(e.message).to.contain("x.xtpl:6");
+                        expect(e.message).to.contain("x.xtpl at line 6");
                     }
                     expect(e.xtpl).to.eql({
                         pos: {line: 6},
@@ -147,7 +154,7 @@ describe('error detection', function () {
                 });
         } catch (e) {
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                expect(e.message).to.contain("x.xtpl:6");
+                expect(e.message).to.contain("x.xtpl at line 6");
             }
             expect(e.xtpl).to.eql({
                 pos: {line: 6},
@@ -166,7 +173,7 @@ describe('error detection', function () {
     it('detect sub template runtime error', function (done) {
         var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
         var count = 0;
-        modulex.add('detect-runtime-error', tpl);
+        define('detect-runtime-error', tpl);
         try {
             new XTemplate('{{include("detect-runtime-error")}}', {
                 name: 'x.xtpl',
@@ -175,7 +182,7 @@ describe('error detection', function () {
             }).render({x: 1}, function (e, content) {
                     expect(content).to.be(undefined);
                     if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                        expect(e.message).to.contain("detect-runtime-error:6");
+                        expect(e.message).to.contain("detect-runtime-error at line 6");
                     }
                     expect(e.xtpl).to.eql({
                         pos: {line: 6},
@@ -186,7 +193,7 @@ describe('error detection', function () {
                 });
         } catch (e) {
             if (navigator.userAgent.indexOf('Chrome') !== -1) {
-                expect(e.message).to.contain("detect-runtime-error:6");
+                expect(e.message).to.contain("detect-runtime-error at line 6");
             }
             expect(e.xtpl).to.eql({
                 pos: {line: 6},

@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "3.5.2",
+  "version": "3.6.0",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": ">=0.10"
@@ -41,7 +41,7 @@
     "gulp-uglify": "^0.3.1",
     "gulp-util": "^3.0.1",
     "gulp-wrapper": "^0.1.5",
-    "gulp-xtemplate": "^1.2.1",
+    "gulp-xtemplate": "^1.2.2",
     "jshint": "^2.5.5",
     "jshint-stylish": "^0.4.0",
     "kison": "^0.3.3",

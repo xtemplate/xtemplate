@@ -20,7 +20,7 @@ describe('extend', function () {
 
         var sub = '3{{extend("template_extend/base")}}4';
 
-        modulex.add('template_extend/base', base);
+        define('template_extend/base', base);
 
         var result = new XTemplate(sub).render({
         });
@@ -39,7 +39,7 @@ describe('extend', function () {
 
         var sub = '{{extend("template_extend/base")}}{{#block ("name")}}sub {{content}}{{/block}}';
 
-        modulex.add('template_extend/base', base);
+        define('template_extend/base', base);
 
         var result = new XTemplate(sub).render({
             content: 1
@@ -53,9 +53,9 @@ describe('extend', function () {
 
         var base2 = '{{extend ("template_extend/base")}}{{#block ("append", "name")}} append base2 {{/block}}';
 
-        modulex.add('template_extend/base', base);
+        define('template_extend/base', base);
 
-        modulex.add('template_extend/base2', base2);
+        define('template_extend/base2', base2);
 
         var sub = '{{extend ("template_extend/base2")}}{{#block ("append", "name")}} append sub {{/block}}';
 
@@ -71,9 +71,9 @@ describe('extend', function () {
 
         var base2 = '{{extend ("template_extend/base")}}{{#block( "prepend", "name")}} prepend base2 {{/block}}';
 
-        modulex.add('template_extend/base', base);
+        define('template_extend/base', base);
 
-        modulex.add('template_extend/base2', base2);
+        define('template_extend/base2', base2);
 
         var sub = '{{extend ("template_extend/base2")}}{{#block( "prepend", "name")}} prepend sub {{/block}}';
 
@@ -91,11 +91,11 @@ describe('extend', function () {
 
         var base3 = '{{extend ("template_extend/base2")}}{{#block( "append", "name")}} append base3 {{/block}}';
 
-        modulex.add('template_extend/base', base);
+        define('template_extend/base', base);
 
-        modulex.add('template_extend/base2', base2);
+        define('template_extend/base2', base2);
 
-        modulex.add('template_extend/base3', base3);
+        define('template_extend/base3', base3);
 
         var sub = '{{extend( "template_extend/base3")}}{{#block ("prepend", "name")}} prepend sub< {{/block}}';
 
