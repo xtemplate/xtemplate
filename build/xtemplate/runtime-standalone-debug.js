@@ -1,14 +1,14 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 03:52:01 GMT
+build time: Mon, 24 Nov 2014 09:31:00 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 03:52:01 GMT
+build time: Mon, 24 Nov 2014 09:31:00 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -767,7 +767,8 @@ _xtemplateRuntime_ = function (exports) {
           renderTpl(tpl);
         } else if (error) {
           buffer.error(error);
-        } else if (tplFn) {
+        } else {
+          tplFn = tplFn || '';
           if (escape) {
             buffer.writeEscaped(tplFn);
           } else {

@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 03:52:01 GMT
+build time: Mon, 24 Nov 2014 09:31:00 GMT
 */
 define("xtemplate/runtime", [], function(require, exports, module) {
 
@@ -760,7 +760,8 @@ xtemplateRuntime = function (exports) {
         renderTpl(tpl);
       } else if (error) {
         buffer.error(error);
-      } else if (tplFn) {
+      } else {
+        tplFn = tplFn || '';
         if (escape) {
           buffer.writeEscaped(tplFn);
         } else {

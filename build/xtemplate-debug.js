@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 03:52:01 GMT
+build time: Mon, 24 Nov 2014 09:31:00 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -6372,7 +6372,11 @@ xtemplateCompiler = function (exports) {
   var anonymousCount = 0;
   compiler = {
     parse: function (tplContent, name) {
-      return parser.parse(tplContent, name);
+      if (tplContent) {
+        return parser.parse(tplContent, name);
+      } else {
+        return { statements: [] };
+      }
     },
     compileToStr: function (param) {
       var func = compiler.compileToJson(param);
@@ -6385,12 +6389,7 @@ xtemplateCompiler = function (exports) {
     compileToJson: function (param) {
       var name = param.name = param.name || 'xtemplate' + ++anonymousCount;
       var content = param.content;
-      var root;
-      if (content) {
-        root = compiler.parse(content, name);
-      } else {
-        root = { statements: [] };
-      }
+      var root = compiler.parse(content, name);
       return genTopFunction(new AstToJSProcessor(param), root.statements);
     },
     compile: function (tplContent, name, config) {
