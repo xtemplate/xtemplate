@@ -56,7 +56,6 @@
             'xtemplate': {
                 afterInit: function (mod) {
                     mod.exports.config('loader', {
-                        cache: {},
                         load: function (tpl, callback) {
                             var name = tpl.name;
                             modulex.use([name],

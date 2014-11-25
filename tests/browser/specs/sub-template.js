@@ -25,7 +25,7 @@ describe('sub template', function () {
     });
 
     it('support sub template as string', function () {
-        var tpl = '{{include ("xtemplate-test/sub-tpl-1")}}';
+        var tpl = '{{include ("./sub-tpl-1")}}';
 
         var data = {
             title: '1'
@@ -33,7 +33,34 @@ describe('sub template', function () {
 
         define('xtemplate-test/sub-tpl-1', '{{title}}');
 
-        var render = new XTemplate(tpl).render(data);
+        var render = new XTemplate(tpl, {
+            name: 'xtemplate-test/sub-tpl-2',
+            loader: {
+                load: function (tpl, callback) {
+                    var name = tpl.name;
+                    expect(tpl.name).to.equal('xtemplate-test/sub-tpl-1');
+                    expect(tpl.originalName).to.equal('./sub-tpl-1');
+                    expect(tpl.parent.name).to.equal('xtemplate-test/sub-tpl-2');
+                    modulex.use([name],
+                        function (content) {
+                            if (typeof content === 'string') {
+                                try {
+                                    content = tpl.root.compile(content, name);
+                                } catch (e) {
+                                    return callback(e);
+                                }
+                            }
+                            callback(undefined, content);
+                        },
+                        function () {
+                            var error = 'template "' + name + '" does not exist';
+                            console.error(error);
+                            callback(error);
+                        }
+                    );
+                }
+            }
+        }).render(data);
 
         expect(render).to.equal('1');
     });
@@ -107,8 +134,8 @@ describe('sub template', function () {
         expect(function () {
             new XTemplate(tpl).render(data);
         }).to.throwError('parent template does not have name ' +
-                'for relative sub tpl name:' +
-                ' ./sub-tpl-6');
+            'for relative sub tpl name:' +
+            ' ./sub-tpl-6');
     });
 
     it('will always use loader', function () {

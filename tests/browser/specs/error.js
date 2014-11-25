@@ -62,7 +62,6 @@ describe('error detection', function () {
 
         }
         if (location.search.indexOf('build') === -1) {
-            console.log(info);
             expect(info).to.equal(['XTemplate error in file: xtemplate4 syntax error at line 3:',
                 '...{#if(title)}} shoot ',
                 '-----------------------^',
