@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 09:31:00 GMT
+build time: Tue, 25 Nov 2014 06:24:54 GMT
 */
 define("xtemplate/runtime", [], function(require, exports, module) {
 

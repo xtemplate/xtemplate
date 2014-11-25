@@ -16,6 +16,7 @@
                 rhs: ['statements', 'INVERSE', 'statements'],
                 action: function () {
                     return new this.yy.ProgramNode({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$1, this.$3);
@@ -26,6 +27,7 @@
                 rhs: ['statements'],
                 action: function () {
                     return new this.yy.ProgramNode({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$1);
@@ -52,6 +54,7 @@
                 rhs: ['OPEN_BLOCK', 'function', 'CLOSE', 'program', 'OPEN_CLOSE_BLOCK', 'id', 'CLOSE'],
                 action: function () {
                     return new this.yy.BlockStatement({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$2, this.$4, this.$6, this.$1.length !== 4);
@@ -64,6 +67,7 @@
                 rhs: ['OPEN_TPL', 'expression', 'CLOSE'],
                 action: function () {
                     return new this.yy.ExpressionStatement({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$2, this.$1.length !== 3);
@@ -76,6 +80,7 @@
                 rhs: ['CONTENT'],
                 action: function () {
                     return new this.yy.ContentStatement({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$1);
@@ -87,6 +92,7 @@
                 rhs: ['id', 'L_PAREN', 'params', 'COMMA', 'hash', 'R_PAREN'],
                 action: function () {
                     return new this.yy.Function({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$1, this.$3, this.$5);
@@ -98,6 +104,7 @@
                 rhs: ['id', 'L_PAREN', 'params', 'R_PAREN'],
                 action: function () {
                     return new this.yy.Function({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$1, this.$3);
@@ -108,6 +115,7 @@
                 rhs: ['id', 'L_PAREN', 'hash', 'R_PAREN'],
                 action: function () {
                     return new this.yy.Function({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$1, null, this.$3);
@@ -118,6 +126,7 @@
                 rhs: ['id', 'L_PAREN', 'R_PAREN'],
                 action: function () {
                     return new this.yy.Function({
+                        filename: this.lexer.filename,
                         line: this.lexer.firstLine,
                         col: this.lexer.firstColumn
                     }, this.$1);

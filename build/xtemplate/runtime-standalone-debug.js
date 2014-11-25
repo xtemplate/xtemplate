@@ -1,14 +1,14 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 09:31:00 GMT
+build time: Tue, 25 Nov 2014 06:24:54 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 09:31:00 GMT
+build time: Tue, 25 Nov 2014 06:24:54 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {

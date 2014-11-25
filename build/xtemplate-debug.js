@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Mon, 24 Nov 2014 09:31:00 GMT
+build time: Tue, 25 Nov 2014 06:24:54 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -181,12 +181,13 @@ xtemplateCompilerParser = function (exports) {
       var self = this;
       self.rules = [];
       mix(self, cfg);
-      self.resetInput(self.input);
+      self.resetInput(self.input, self.filename);
     };
     Lexer.prototype = {
-      'resetInput': function (input) {
+      'resetInput': function (input, filename) {
         mix(this, {
           input: input,
+          filename: filename,
           matched: '',
           stateStack: [Lexer.STATIC.INITIAL],
           match: '',
@@ -251,14 +252,19 @@ xtemplateCompilerParser = function (exports) {
         }
       },
       'lex': function () {
-        var self = this, input = self.input, i, rule, m, ret, lines, rules = self.getCurrentRules();
+        var self = this;
+        var input = self.input;
+        var rules = self.getCurrentRules();
+        var i, rule, m, ret, lines;
         self.match = self.text = '';
         if (!input) {
           return self.mapSymbol(Lexer.STATIC.END_TAG);
         }
         for (i = 0; i < rules.length; i++) {
           rule = rules[i];
-          var regexp = rule.regexp || rule[1], token = rule.token || rule[0], action = rule.action || rule[2] || undefined;
+          var regexp = rule.regexp || rule[1];
+          var token = rule.token || rule[0];
+          var action = rule.action || rule[2] || undefined;
           if (m = input.match(regexp)) {
             lines = m[0].match(/\n.*/g);
             if (lines) {
@@ -775,6 +781,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         function () {
           return new this.yy.ProgramNode({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1, this.$3);
@@ -785,6 +792,7 @@ xtemplateCompilerParser = function (exports) {
         ['ak'],
         function () {
           return new this.yy.ProgramNode({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1);
@@ -820,6 +828,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         function () {
           return new this.yy.BlockStatement({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$2, this.$4, this.$6, this.$1.length !== 4);
@@ -834,6 +843,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         function () {
           return new this.yy.ExpressionStatement({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$2, this.$1.length !== 3);
@@ -844,6 +854,7 @@ xtemplateCompilerParser = function (exports) {
         ['b'],
         function () {
           return new this.yy.ContentStatement({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1);
@@ -861,6 +872,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         function () {
           return new this.yy.Function({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1, this.$3, this.$5);
@@ -876,6 +888,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         function () {
           return new this.yy.Function({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1, this.$3);
@@ -891,6 +904,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         function () {
           return new this.yy.Function({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1, null, this.$3);
@@ -905,6 +919,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         function () {
           return new this.yy.Function({
+            filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1);
@@ -5654,7 +5669,7 @@ xtemplateCompilerParser = function (exports) {
       var valueStack = [];
       var stateStack = [0];
       var symbolStack = [];
-      lexer.resetInput(input);
+      lexer.resetInput(input, filename);
       while (1) {
         state = peekStack(stateStack);
         if (!symbol) {
@@ -5753,7 +5768,7 @@ xtemplateCompilerAst = function (exports) {
   ast.BlockStatement = function (pos, func, program, close, escape) {
     var closeParts = close.parts, self = this, e;
     if (!sameArray(func.id.parts, closeParts)) {
-      e = 'Syntax error at line ' + pos.line + ', col ' + pos.col + ':\n' + 'expect {{/' + func.id.parts + '}} not {{/' + closeParts + '}}';
+      e = 'in file: ' + pos.filename + ' syntax error at line ' + pos.line + ', col ' + pos.col + ':\n' + 'expect {{/' + func.id.parts + '}} not {{/' + closeParts + '}}';
       throw new Error(e);
     }
     self.escape = escape;

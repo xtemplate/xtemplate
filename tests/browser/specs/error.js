@@ -62,11 +62,11 @@ describe('error detection', function () {
 
         }
         if (location.search.indexOf('build') === -1) {
-            expect(util.startsWith(info, 'Syntax error at line 3:\n' +
-            '{{#if(title)}} shoot\n\n' +
-            '--------------------^\n' +
-            'expect'));
-            // OPEN_END_BLOCK
+            console.log(info);
+            expect(info).to.equal(['XTemplate error in file: xtemplate4 syntax error at line 3:',
+                '...{#if(title)}} shoot ',
+                '-----------------------^',
+                'expect shift:OPEN_CLOSE_BLOCK'].join('\n'));
         }
     });
 
@@ -87,7 +87,7 @@ describe('error detection', function () {
                 //S.log('!'+e.replace(/\n/g,'\\n').replace(/\r/g,'\\r')+'!');
                 throw e;
             }
-        }).to.throwError('Syntax error at line 3, col 7:\n' +
+        }).to.throwError('syntax error at line 3, col 7:\n' +
             'expect {{/if}} not {{/with}}');
     });
 
