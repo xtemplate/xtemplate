@@ -1,14 +1,14 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Tue, 25 Nov 2014 06:24:54 GMT
+build time: Wed, 26 Nov 2014 04:41:22 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Tue, 25 Nov 2014 06:24:54 GMT
+build time: Wed, 26 Nov 2014 04:41:22 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -635,7 +635,7 @@ _xtemplateRuntime_ = function (exports) {
     var commands = {};
     var Scope = xtemplateRuntimeScope;
     var LinkedBuffer = xtemplateRuntimeLinkedBuffer;
-    function TplWrap(name, runtime, root, scope, buffer, originalName, fn) {
+    function TplWrap(name, runtime, root, scope, buffer, originalName, fn, parent) {
       this.name = name;
       this.originalName = originalName || name;
       this.runtime = runtime;
@@ -644,6 +644,7 @@ _xtemplateRuntime_ = function (exports) {
       this.scope = scope;
       this.buffer = buffer;
       this.fn = fn;
+      this.parent = parent;
     }
     function findCommand(runtimeCommands, instanceCommands, parts) {
       var name = parts[0];
@@ -747,19 +748,19 @@ _xtemplateRuntime_ = function (exports) {
       var name = resolve(self, originalName, tpl.name);
       var newBuffer = buffer.insert();
       var next = newBuffer.next;
-      loadInternal(self, name, tpl.runtime, scope, newBuffer, originalName, escape);
+      loadInternal(self, name, tpl.runtime, scope, newBuffer, originalName, escape, buffer.tpl);
       return next;
     }
     function includeModuleInternal(self, scope, buffer, tpl, tplFn) {
       var newBuffer = buffer.insert();
       var next = newBuffer.next;
-      var newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime, self, scope, newBuffer, undefined, tplFn);
+      var newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime, self, scope, newBuffer, undefined, tplFn, buffer.tpl);
       newBuffer.tpl = newTpl;
       renderTpl(newTpl);
       return next;
     }
-    function loadInternal(self, name, runtime, scope, buffer, originalName, escape) {
-      var tpl = new TplWrap(name, runtime, self, scope, buffer, originalName);
+    function loadInternal(self, name, runtime, scope, buffer, originalName, escape, parentTpl) {
+      var tpl = new TplWrap(name, runtime, self, scope, buffer, originalName, undefined, parentTpl);
       buffer.tpl = tpl;
       self.config.loader.load(tpl, function (error, tplFn) {
         if (typeof tplFn === 'function') {
@@ -860,7 +861,12 @@ _xtemplateRuntime_ = function (exports) {
         if (!name && fn && fn.TPL_NAME) {
           name = fn.TPL_NAME;
         }
-        var scope = new Scope(data);
+        var scope;
+        if (data instanceof Scope) {
+          scope = data;
+        } else {
+          scope = new Scope(data);
+        }
         var buffer = new XTemplateRuntime.LinkedBuffer(callback, config).head;
         var tpl = new TplWrap(name, { commands: option.commands }, self, scope, buffer, name, fn);
         buffer.tpl = tpl;
