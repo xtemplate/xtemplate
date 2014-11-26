@@ -1,14 +1,14 @@
 /*
-Copyright 2014, xtemplate@3.6.0
+Copyright 2014, xtemplate@3.7.0
 MIT Licensed
-build time: Wed, 26 Nov 2014 05:16:02 GMT
+build time: Wed, 26 Nov 2014 09:58:25 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
-Copyright 2014, xtemplate@3.6.0
+Copyright 2014, xtemplate@3.7.0
 MIT Licensed
-build time: Wed, 26 Nov 2014 05:16:02 GMT
+build time: Wed, 26 Nov 2014 09:58:25 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -720,7 +720,7 @@ _xtemplateRuntime_ = function (exports) {
           return globalConfig;
         }
       },
-      version: '3.6.0',
+      version: '3.7.0',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,

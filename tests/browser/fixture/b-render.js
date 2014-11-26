@@ -1,5 +1,5 @@
 define(function(require,exports,module){
-/*compiled by xtemplate#3.6.0*/
+/*compiled by xtemplate#3.7.0*/
 var tpl = require("./b");
 var XTemplateRuntime = require("xtemplate/runtime");
 var instance = new XTemplateRuntime(tpl);

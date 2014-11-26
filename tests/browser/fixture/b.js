@@ -1,5 +1,5 @@
 define(function(require,exports,module){
-/*compiled by xtemplate#3.6.0*/
+/*compiled by xtemplate#3.7.0*/
 var ret = module.exports = function b(undefined){
 var t;
 var t0;
