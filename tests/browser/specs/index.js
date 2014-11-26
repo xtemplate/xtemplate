@@ -16,3 +16,4 @@ require('./macro');
 require('./sub-template');
 require('./extend');
 require('./async');
+require('./render-with-scope');

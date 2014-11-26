@@ -1,14 +1,14 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Tue, 25 Nov 2014 06:52:10 GMT
+build time: Wed, 26 Nov 2014 05:16:02 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Tue, 25 Nov 2014 06:52:10 GMT
+build time: Wed, 26 Nov 2014 05:16:02 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -861,7 +861,12 @@ _xtemplateRuntime_ = function (exports) {
         if (!name && fn && fn.TPL_NAME) {
           name = fn.TPL_NAME;
         }
-        var scope = new Scope(data);
+        var scope;
+        if (data instanceof Scope) {
+          scope = data;
+        } else {
+          scope = new Scope(data);
+        }
         var buffer = new XTemplateRuntime.LinkedBuffer(callback, config).head;
         var tpl = new TplWrap(name, { commands: option.commands }, self, scope, buffer, name, fn);
         buffer.tpl = tpl;
