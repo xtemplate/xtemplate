@@ -1,3 +1,18 @@
+#3.6.0 / (2014-11-24)
+
+- [33](https://github.com/kissyteam/xtemplate/pull/33) add parentName property in TplWrap   ([@dead-horse](https://github.com/dead-horse))
+- [32](https://github.com/kissyteam/xtemplate/pull/32) add filename into error message in compile   ([@dead-horse](https://github.com/dead-horse))
+- [31](https://github.com/kissyteam/xtemplate/issues/31) ast.js 中 throw Error 没有出错的文件名的信息   ([@dead-horse](https://github.com/dead-horse))
+- [29](https://github.com/kissyteam/xtemplate/issues/29) support access root in macro   ([@yiminghe](https://github.com/yiminghe))
+- [25](https://github.com/kissyteam/xtemplate/pull/25) avoid visit property of undefined   ([@dead-horse](https://github.com/dead-horse))
+- [23](https://github.com/kissyteam/xtemplate/issues/23) include 空模版会报错？   ([@dead-horse](https://github.com/dead-horse))
+- [22](https://github.com/kissyteam/xtemplate/issues/22) 所有的错误都统一处理   ([@dead-horse](https://github.com/dead-horse))
+- [21](https://github.com/kissyteam/xtemplate/pull/21) add missing comma   ([@dead-horse](https://github.com/dead-horse))
+
+#3.5.0 / (2014-11-05)
+
+- [20](https://github.com/kissyteam/xtemplate/issues/20) extended page misbehavior   ([@yiminghe](https://github.com/yiminghe))
+
 #3.4.1 / (2014-10-20)
 
 - [19](https://github.com/kissyteam/xtemplate/issues/19) NPM 3.3.1 的发布 直接改动 kissy.add  =&gt; modulex.add  导致modulex not define   ([@noyobo](https://github.com/noyobo))

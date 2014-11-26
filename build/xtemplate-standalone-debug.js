@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.6.0
 MIT Licensed
-build time: Wed, 26 Nov 2014 04:41:22 GMT
+build time: Wed, 26 Nov 2014 05:16:02 GMT
 */
 var XTemplate = (function(){ var module = {};
 
