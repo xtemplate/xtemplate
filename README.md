@@ -32,7 +32,7 @@ support async control, inheritance, include, logic expression, custom function a
 
 [![xtemplate](https://nodei.co/npm/xtemplate.png)](https://npmjs.org/package/xtemplate)
 
-## resorces
+## resources
 
 - [template syntax](https://github.com/kissyteam/xtemplate/blob/master/docs/syntax.md)
 - [API](https://github.com/kissyteam/xtemplate/blob/master/docs/api.md)
