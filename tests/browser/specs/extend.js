@@ -129,7 +129,7 @@ describe('extend', function () {
         sub = '{{extend(base)}}{{#block("a")}}b{{/block}}';
         expect(function () {
             new XTemplate(sub).render({})
-        }).to.throwException('extend command required a non-empty parameter');
+        }).to.throwException(/extend command required a non-empty parameter/);
     });
 
 });
