@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.7.0
 MIT Licensed
-build time: Wed, 26 Nov 2014 09:58:25 GMT
+build time: Mon, 01 Dec 2014 15:51:38 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -6165,7 +6165,7 @@ xtemplateCompiler = function (exports) {
     }
     var isModule = self.config.isModule;
     if (idString === 'include' || idString === 'parse' || idString === 'extend') {
-      if (func.params.length !== 1) {
+      if (!func.params || func.params.length !== 1) {
         throw new Error('xtemplate: include/parse/extend can only has one parameter!');
       }
     }
