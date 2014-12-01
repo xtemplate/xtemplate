@@ -1,14 +1,14 @@
 /*
 Copyright 2014, xtemplate@3.7.0
 MIT Licensed
-build time: Wed, 26 Nov 2014 09:58:25 GMT
+build time: Mon, 01 Dec 2014 15:29:32 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
 Copyright 2014, xtemplate@3.7.0
 MIT Licensed
-build time: Wed, 26 Nov 2014 09:58:25 GMT
+build time: Mon, 01 Dec 2014 15:29:32 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -784,6 +784,12 @@ _xtemplateRuntime_ = function (exports) {
       if (buffer) {
         var runtime = tpl.runtime;
         var extendTplName = runtime.extendTplName;
+        if (extendTplName && extendTplName.params) {
+          extendTplName = extendTplName.params[0];
+          if (!extendTplName) {
+            return buffer.error('extend command required a non-empty parameter');
+          }
+        }
         var extendTplFn = runtime.extendTplFn;
         var extendTplBuffer = runtime.extendTplBuffer;
         if (extendTplFn) {
