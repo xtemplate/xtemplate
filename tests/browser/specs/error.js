@@ -220,4 +220,10 @@ describe('error detection', function () {
             new XTemplate("{{include(a, b)}}").render();
         }).to.throwException(/xtemplate: include\/parse\/extend can only has one parameter!/);
     });
+
+    it('error when include empty parameter', function () {
+        expect(function () {
+            new XTemplate("{{include(a)}}").render();
+        }).to.throwException(/include command required a non-empty parameter/);
+    });
 });
