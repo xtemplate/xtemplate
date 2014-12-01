@@ -105,4 +105,31 @@ describe('extend', function () {
 
         expect(result).to.equal('title  prepend sub<  prepend base2 1 append base3 ');
     });
+
+    it('support dynamic parameter', function () {
+        var base = '1{{#block("a")}}a{{/block}}2';
+
+        var sub = '3{{set (base="template_extend/base")}}{{extend(base)}}4';
+
+        define('template_extend/base', base);
+
+        var result = new XTemplate(sub).render({
+        });
+
+        expect(result).to.equal('31a24');
+
+        sub = '3{{set (base="template_extend/base")}}{{extend(base)}}4{{#block("a")}}b{{/block}}5';
+        result = new XTemplate(sub).render({
+        });
+
+        expect(result).to.equal('31b245');
+    });
+
+    it('error when dynamic parameter is empty', function () {
+        sub = '{{extend(base)}}{{#block("a")}}b{{/block}}';
+        expect(function () {
+            new XTemplate(sub).render({})
+        }).to.throwException('extend command required a non-empty parameter');
+    });
+
 });
