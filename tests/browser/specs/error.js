@@ -208,4 +208,16 @@ describe('error detection', function () {
             }
         }
     });
+
+    it('error when include without parameter', function () {
+        expect(function () {
+            new XTemplate("{{include()}}").render();
+        }).to.throwException(/xtemplate: include\/parse\/extend can only has one parameter!/);
+    });
+
+    it('error when include more than one parameter', function () {
+        expect(function () {
+            new XTemplate("{{include(a, b)}}").render();
+        }).to.throwException(/xtemplate: include\/parse\/extend can only has one parameter!/);
+    });
 });
