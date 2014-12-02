@@ -1,7 +1,7 @@
 /*
 Copyright 2014, xtemplate@3.7.1
 MIT Licensed
-build time: Tue, 02 Dec 2014 03:33:21 GMT
+build time: Tue, 02 Dec 2014 03:44:52 GMT
 */
 define("xtemplate/runtime", [], function(require, exports, module) {
 
@@ -824,16 +824,21 @@ xtemplateRuntime = function (exports) {
       if (hash) {
         newScope = new Scope(hash, undefined, scope);
       }
+      if (!params[0]) {
+        return buffer.error('include command required a non-empty parameter');
+      }
       buffer = includeInternal(this, newScope, escape, buffer, tpl, params[0]);
       return buffer;
     },
     includeModule: function (scope, option, buffer, tpl) {
       var params = option.params;
-      var newScope;
-      newScope = scope;
+      var newScope = scope;
       var hash = option.hash;
       if (hash) {
         newScope = new Scope(hash, undefined, scope);
+      }
+      if (!params[0]) {
+        return buffer.error('include command required a non-empty parameter');
       }
       buffer = includeModuleInternal(this, newScope, buffer, tpl, params[0]);
       return buffer;
