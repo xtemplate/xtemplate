@@ -1,14 +1,14 @@
 /*
 Copyright 2014, xtemplate@3.7.1
 MIT Licensed
-build time: Tue, 02 Dec 2014 03:33:21 GMT
+build time: Tue, 02 Dec 2014 03:45:08 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
 Copyright 2014, xtemplate@3.7.1
 MIT Licensed
-build time: Tue, 02 Dec 2014 03:33:21 GMT
+build time: Tue, 02 Dec 2014 03:45:08 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -831,6 +831,9 @@ _xtemplateRuntime_ = function (exports) {
         if (hash) {
           newScope = new Scope(hash, undefined, scope);
         }
+        if (!params[0]) {
+          return buffer.error('include command required a non-empty parameter');
+        }
         buffer = includeInternal(this, newScope, escape, buffer, tpl, params[0]);
         return buffer;
       },
@@ -841,6 +844,9 @@ _xtemplateRuntime_ = function (exports) {
         var hash = option.hash;
         if (hash) {
           newScope = new Scope(hash, undefined, scope);
+        }
+        if (!params[0]) {
+          return buffer.error('include command required a non-empty parameter');
         }
         buffer = includeModuleInternal(this, newScope, buffer, tpl, params[0]);
         return buffer;
