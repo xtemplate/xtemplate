@@ -1,3 +1,8 @@
+#v3.7.1 (2014-12-02)
+
+- [#39](https://github.com/kissyteam/xtemplate/pull/39) detect include/extend/parse paramerter error   ([@dead-horse](https://github.com/dead-horse))
+- [#37](https://github.com/kissyteam/xtemplate/issues/37) extend 的参数不能为变量   ([@dead-horse](https://github.com/dead-horse))
+
 #v3.7.0 (2014-11-26)
 
 - [#35](https://github.com/kissyteam/xtemplate/pull/35) 修改了render方法，支持接受Scope实例作为参数   ([@zincli](https://github.com/zincli))

@@ -238,3 +238,14 @@ gulp.task('parser-dev', function (callback) {
             }
         }).on('exit', callback);
 });
+
+gulp.task('gh-changelog', function (done) {
+    var ghChangeLog = require('gh-changelog');
+    ghChangeLog.getChangeLog({
+        user: 'kissyteam',
+        repo: 'xtemplate',
+        mdFilePath: './CHANGELOG.md'
+    }, function () {
+        done();
+    });
+});
