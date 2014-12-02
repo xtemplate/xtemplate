@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.7.0
+Copyright 2014, xtemplate@3.7.1
 MIT Licensed
-build time: Mon, 01 Dec 2014 15:29:32 GMT
+build time: Tue, 02 Dec 2014 03:33:21 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -6187,10 +6187,10 @@ xtemplateCompiler = function (exports) {
     }
     if (idString in nativeCommands) {
       if (idString === 'extend') {
-        source.push('runtime.extendTplName = ' + functionConfigCode.exp);
+        source.push('runtime.extendTpl = ' + functionConfigCode.exp);
         source.push('buffer = buffer.async(function(newBuffer){runtime.extendTplBuffer = newBuffer;});');
         if (isModule) {
-          source.push('runtime.extendTplFn = re' + 'quire(' + functionConfigCode.exp + ')');
+          source.push('runtime.extendTplFn = re' + 'quire(' + functionConfigCode.exp + '.params[0])');
         }
       } else if (idString === 'include') {
         source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
@@ -6474,7 +6474,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.7.0',
+    version: '3.7.1',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

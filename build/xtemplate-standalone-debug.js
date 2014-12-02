@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.7.0
+Copyright 2014, xtemplate@3.7.1
 MIT Licensed
-build time: Mon, 01 Dec 2014 15:29:32 GMT
+build time: Tue, 02 Dec 2014 03:33:21 GMT
 */
 var XTemplate = (function(){ var module = {};
 
@@ -6445,7 +6445,7 @@ xtemplateRuntimeCommands = function (exports) {
           prev.next = current;
         }
       }
-      if (!runtime.extendTplName) {
+      if (!runtime.extendTpl) {
         cursor = blocks[blockName];
         while (cursor) {
           if (cursor.fn) {
@@ -6594,7 +6594,7 @@ xtemplateRuntime = function (exports) {
         return globalConfig;
       }
     },
-    version: '3.7.0',
+    version: '3.7.1',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -6657,9 +6657,10 @@ xtemplateRuntime = function (exports) {
     var buffer = tpl.fn();
     if (buffer) {
       var runtime = tpl.runtime;
-      var extendTplName = runtime.extendTplName;
-      if (extendTplName && extendTplName.params) {
-        extendTplName = extendTplName.params[0];
+      var extendTpl = runtime.extendTpl;
+      var extendTplName;
+      if (extendTpl) {
+        extendTplName = extendTpl.params[0];
         if (!extendTplName) {
           return buffer.error('extend command required a non-empty parameter');
         }
@@ -6667,12 +6668,12 @@ xtemplateRuntime = function (exports) {
       var extendTplFn = runtime.extendTplFn;
       var extendTplBuffer = runtime.extendTplBuffer;
       if (extendTplFn) {
-        runtime.extendTplName = null;
+        runtime.extendTpl = null;
         runtime.extendTplBuffer = null;
         runtime.extendTplFn = null;
         includeModuleInternal(tpl.root, tpl.scope, extendTplBuffer, tpl, extendTplFn).end();
       } else if (extendTplName) {
-        runtime.extendTplName = null;
+        runtime.extendTpl = null;
         runtime.extendTplBuffer = null;
         includeInternal(tpl.root, tpl.scope, 0, extendTplBuffer, tpl, extendTplName).end();
       }
@@ -7064,10 +7065,10 @@ xtemplateCompiler = function (exports) {
     }
     if (idString in nativeCommands) {
       if (idString === 'extend') {
-        source.push('runtime.extendTplName = ' + functionConfigCode.exp);
+        source.push('runtime.extendTpl = ' + functionConfigCode.exp);
         source.push('buffer = buffer.async(function(newBuffer){runtime.extendTplBuffer = newBuffer;});');
         if (isModule) {
-          source.push('runtime.extendTplFn = re' + 'quire(' + functionConfigCode.exp + ')');
+          source.push('runtime.extendTplFn = re' + 'quire(' + functionConfigCode.exp + '.params[0])');
         }
       } else if (idString === 'include') {
         source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
@@ -7351,7 +7352,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.7.0',
+    version: '3.7.1',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

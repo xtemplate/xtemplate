@@ -1,14 +1,14 @@
 /*
-Copyright 2014, xtemplate@3.7.0
+Copyright 2014, xtemplate@3.7.1
 MIT Licensed
-build time: Mon, 01 Dec 2014 15:29:32 GMT
+build time: Tue, 02 Dec 2014 03:33:21 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
-Copyright 2014, xtemplate@3.7.0
+Copyright 2014, xtemplate@3.7.1
 MIT Licensed
-build time: Mon, 01 Dec 2014 15:29:32 GMT
+build time: Tue, 02 Dec 2014 03:33:21 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -571,7 +571,7 @@ _xtemplateRuntime_ = function (exports) {
             prev.next = current;
           }
         }
-        if (!runtime.extendTplName) {
+        if (!runtime.extendTpl) {
           cursor = blocks[blockName];
           while (cursor) {
             if (cursor.fn) {
@@ -720,7 +720,7 @@ _xtemplateRuntime_ = function (exports) {
           return globalConfig;
         }
       },
-      version: '3.7.0',
+      version: '3.7.1',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
@@ -783,9 +783,10 @@ _xtemplateRuntime_ = function (exports) {
       var buffer = tpl.fn();
       if (buffer) {
         var runtime = tpl.runtime;
-        var extendTplName = runtime.extendTplName;
-        if (extendTplName && extendTplName.params) {
-          extendTplName = extendTplName.params[0];
+        var extendTpl = runtime.extendTpl;
+        var extendTplName;
+        if (extendTpl) {
+          extendTplName = extendTpl.params[0];
           if (!extendTplName) {
             return buffer.error('extend command required a non-empty parameter');
           }
@@ -793,12 +794,12 @@ _xtemplateRuntime_ = function (exports) {
         var extendTplFn = runtime.extendTplFn;
         var extendTplBuffer = runtime.extendTplBuffer;
         if (extendTplFn) {
-          runtime.extendTplName = null;
+          runtime.extendTpl = null;
           runtime.extendTplBuffer = null;
           runtime.extendTplFn = null;
           includeModuleInternal(tpl.root, tpl.scope, extendTplBuffer, tpl, extendTplFn).end();
         } else if (extendTplName) {
-          runtime.extendTplName = null;
+          runtime.extendTpl = null;
           runtime.extendTplBuffer = null;
           includeInternal(tpl.root, tpl.scope, 0, extendTplBuffer, tpl, extendTplName).end();
         }
