@@ -1,14 +1,14 @@
 /*
 Copyright 2014, xtemplate@3.7.0
 MIT Licensed
-build time: Mon, 01 Dec 2014 15:51:38 GMT
+build time: Tue, 02 Dec 2014 03:43:52 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
 Copyright 2014, xtemplate@3.7.0
 MIT Licensed
-build time: Mon, 01 Dec 2014 15:51:38 GMT
+build time: Tue, 02 Dec 2014 03:43:52 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -832,8 +832,7 @@ _xtemplateRuntime_ = function (exports) {
       },
       includeModule: function (scope, option, buffer, tpl) {
         var params = option.params;
-        var newScope;
-        newScope = scope;
+        var newScope = scope;
         var hash = option.hash;
         if (hash) {
           newScope = new Scope(hash, undefined, scope);
