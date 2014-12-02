@@ -52,26 +52,8 @@ support [requirejs](https://github.com/jrburke/requirejs) [modulex](https://gith
 
 Please use [xtpl](https://github.com/kissyteam/xtpl)
 
-## contribute
-
-### fork and clone
-
-### prepare environment
-```
-npm install bower -g
-npm install
-bower install
-node server
-```
-
-then open http://localhost:8002/tests/runner.html
-
-### open issue
-
-### modify code at lib
-
-### commit and pull request
+## [contribute](https://github.com/kissyteam/xtemplate/blob/master/CONTRIBUTING.md)
 
 ## License
 
-xtemplate is released under the MIT license.
+xtemplate is released under the [MIT license](http://opensource.org/licenses/MIT).
