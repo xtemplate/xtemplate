@@ -34,7 +34,7 @@ support async control, inheritance, include, logic expression, custom function a
 
 ## resources
 
-- [template syntax](https://github.com/kissyteam/xtemplate/blob/master/docs/syntax.md)
+- [template syntax](https://github.com/kissyteam/xtemplate/blob/master/docs/syntax.md)([模板语法中文版](https://github.com/kissyteam/xtemplate/blob/master/docs/syntax-cn.md))
 - [API](https://github.com/kissyteam/xtemplate/blob/master/docs/api.md)
 - [中文介绍](https://github.com/kissyteam/xtemplate/blob/master/docs/tutorial/introduce.md)
 - [dailyjs](http://dailyjs.com/2014/09/24/node-roundup/)

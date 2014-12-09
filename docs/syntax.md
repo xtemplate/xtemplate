@@ -129,7 +129,7 @@ foo bar
 
 ## Methods and Logics
 
-You can use
+You can call javascript's methods in variables.
 
 ```javascript
 var x = [1, 2, 3];
@@ -207,7 +207,7 @@ If you have passed a javascript method to your template, you can call it like no
 
 #### range(start, end, [step])
 
-If you need to iterate over a fixed set of numbers, range generates the set for you. The numbers begin at start (default 0) and incremeny by step (default 1) until it reaches stop, not including it.
+If you need to iterate over a fixed set of numbers, range generates the set for you. The numbers begin at start and incremeny by step (default 1) until it reaches stop, not including it.
 
 ```
 {{#each(range(0,3))}}{{this}}{{/each}}
@@ -240,9 +240,9 @@ Render this template will output:
 5
 ```
 
-## Tags
+## Commands
 
-Tags are special blocks that perform operations on sections of the template. XTemplate comes with several builtin, but you can add your own.
+Commands are special blocks that perform operations on sections of the template. XTemplate comes with several builtin, but you can add your own.
 
 ### if
 
@@ -270,7 +270,7 @@ You can specify alternate conditions with elseif and else:
 
 ### with
 
-with tag works like javascript's `with`:
+with command works like javascript's `with`:
 
 ```javascript
 var a = {
@@ -366,7 +366,7 @@ include pulls in other templates in place. It's useful when you need to share sm
 
 Template inheritance is a way to make it easy to reuse templates. When writing a template, you can define "blocks" that child templates can override. The inheritance chain can be as long as you like.
 
-If we have a template parent.html that looks like this:
+If we have a template parent.xtpl that looks like this:
 
 ```html
 <!doctype html>
@@ -382,7 +382,7 @@ If we have a template parent.html that looks like this:
 </html>
 ```
 
-And we render this template with data: `{ title: "XTemplate" }`:
+And a template child.xtpl that looks like this:
 
 ```html
 {{extend ("./parent")}}
@@ -395,6 +395,8 @@ And we render this template with data: `{ title: "XTemplate" }`:
     <h2>{{title}}</h2>
 {{/block}}
 ```
+
+And we render child.xtpl with data: `{ title: "XTemplate" }`:
 
 The output would be:
 
