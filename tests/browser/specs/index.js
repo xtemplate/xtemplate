@@ -3,6 +3,7 @@
  * @author yiminghe@gmail.com
  */
 
+require('./data-function');
 require('./error');
 require('./escape');
 require('./feature');

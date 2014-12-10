@@ -1,5 +1,5 @@
 define(function(require,exports,module){
-/*compiled by xtemplate#3.7.1*/
+/*compiled by xtemplate#@VERSION@*/
 var ret = module.exports = function a(undefined){
 var t;
 var t0;
@@ -24,6 +24,7 @@ var affix = scope.affix;
 var nativeCommands = root.nativeCommands;
 var utils = root.utils;
 var callFnUtil = utils["callFn"];
+var callDataFnUtil = utils["callDataFn"];
 var callCommandUtil = utils["callCommand"];
 var rangeCommand = nativeCommands["range"];
 var foreachCommand = nativeCommands["foreach"];
@@ -44,9 +45,10 @@ buffer.data += '';
 var id0 = ((t=(affix.x)) !== undefined ? t:((t = data.x) !== undefined ? t :scope.resolveLooseUp(["x"])));
 buffer = buffer.writeEscaped(id0);
 buffer.data += '';
-var callRet1
+var callRet2
 buffer = root.includeModule(scope,{params:[require("./b")]},buffer,tpl);
-buffer = buffer.writeEscaped(callRet1);
+var id1 = callRet2;
+buffer = buffer.writeEscaped(id1);
 return buffer;
 };
 ret.TPL_NAME = module.id || module.name;

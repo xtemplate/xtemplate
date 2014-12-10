@@ -386,45 +386,6 @@ describe('feature', function () {
         expect(new XTemplate(tpl).render({})).to.equal('1');
     });
 
-    describe('support call function in data', function () {
-        it('support function as property value', function () {
-            var tpl = '{{x.y(1,2)}}' +
-                '{{#with(x)}}{{#with(z)}}{{../y(3,4)}}{{/with}}{{/with}}' +
-                '{{#with(x)}}{{#with(z)}}{{../../x["y"](3,4)}}{{/with}}{{/with}}';
-
-
-            var render = new XTemplate(tpl).render({
-                x: {
-                    y: function (a, b) {
-                        return a + b + this.salt;
-                    },
-                    salt: 1,
-                    z: {}
-                }
-            });
-
-            expect(render).to.equal('488');
-        });
-
-        it('support model object with function', function () {
-            function Adder(cfg) {
-                util.mix(this, cfg);
-            }
-
-            Adder.prototype.add = function (a, b) {
-                return a + b + this.salt;
-            };
-            var tpl = '{{x.add(1,2)}}';
-
-            var render = new XTemplate(tpl).render({
-                x: new Adder({
-                    salt: 10
-                })
-            });
-            expect(render).to.equal('13');
-        });
-    });
-
     describe('汉字', function () {
         it('允许汉字内容', function () {
             var tpl = '{{t}}出现了';

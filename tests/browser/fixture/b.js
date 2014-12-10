@@ -1,5 +1,5 @@
 define(function(require,exports,module){
-/*compiled by xtemplate#3.7.1*/
+/*compiled by xtemplate#@VERSION@*/
 var ret = module.exports = function b(undefined){
 var t;
 var t0;
@@ -24,6 +24,7 @@ var affix = scope.affix;
 var nativeCommands = root.nativeCommands;
 var utils = root.utils;
 var callFnUtil = utils["callFn"];
+var callDataFnUtil = utils["callDataFn"];
 var callCommandUtil = utils["callCommand"];
 var rangeCommand = nativeCommands["range"];
 var foreachCommand = nativeCommands["foreach"];

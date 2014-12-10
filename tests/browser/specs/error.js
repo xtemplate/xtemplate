@@ -56,7 +56,9 @@ describe('error detection', function () {
 
 
         try {
-            new XTemplate(tpl).render(data);
+            new XTemplate(tpl,{
+              name:'xtemplate4'
+            }).render(data);
         } catch (e) {
             info = e.message;
 

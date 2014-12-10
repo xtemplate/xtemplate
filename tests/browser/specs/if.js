@@ -124,7 +124,9 @@ describe('if', function () {
 
     it('support elseif', function () {
         var tpl = '{{#if(x===1)}} 1 {{elseif (x===2)}} 2 {{elseif (x===3)}} 3 {{else}} ! {{/if}}';
-        var render = new XTemplate(tpl).render({
+        var render = new XTemplate(tpl,{
+          name:'elseif'
+        }).render({
             x: 1
         });
         expect(render).to.equal(' 1 ');

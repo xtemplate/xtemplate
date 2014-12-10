@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@3.7.1
+Copyright 2014, xtemplate@4.0.0
 MIT Licensed
-build time: Tue, 02 Dec 2014 03:44:52 GMT
+build time: Wed, 10 Dec 2014 15:17:01 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -24,6 +24,10 @@ xtemplateCompilerTools = function (exports) {
   var globals = {};
   globals['undefined'] = globals['null'] = globals['true'] = globals['false'] = 1;
   function genStackJudge(parts, data, count) {
+    if (!parts.length) {
+      return data;
+    }
+    count = count || 0;
     var part0 = parts[0];
     if (parts.length === 1) {
       return '(' + data + part0 + ')';
@@ -32,6 +36,7 @@ xtemplateCompilerTools = function (exports) {
     return '((' + variable + '=' + data + part0 + ') != null?' + genStackJudge(parts.slice(1), variable, ++count) + ':' + variable + ')';
   }
   var tools = exports = {
+    genStackJudge: genStackJudge,
     isGlobalId: function (node) {
       if (globals[node.string]) {
         return 1;
@@ -58,13 +63,13 @@ xtemplateCompilerTools = function (exports) {
         ret = ret.concat([
           '(',
           '(t = ' + data + part0 + ') !== undefined ? ',
-          idParts.length > 1 ? loose ? genStackJudge(parts.slice(1), 't', 0) : data + strs.str : 't',
+          idParts.length > 1 ? loose ? genStackJudge(parts.slice(1), 't') : data + strs.str : 't',
           ' :',
           loose ? 'scope.resolveLooseUp(' + strs.arr + ')' : 'scope.resolveUp(' + strs.arr + ')',
           ')'
         ]);
       } else {
-        ret.push(loose ? genStackJudge(parts, data, 0) : data + strs.str);
+        ret.push(loose ? genStackJudge(parts, data) : data + strs.str);
       }
       ret.push(')');
       return ret.join('');
@@ -73,12 +78,16 @@ xtemplateCompilerTools = function (exports) {
       var i, l, idPart, idPartType, nextIdNameCode;
       var parts = [];
       var ret = [];
+      var funcRet = '';
       for (i = 0, l = idParts.length; i < l; i++) {
         idPart = idParts[i];
         idPartType = idPart.type;
         if (idPartType) {
           nextIdNameCode = self[idPartType](idPart);
           tools.pushToArray(source, nextIdNameCode.source);
+          if (idPartType === 'function') {
+            funcRet = 1;
+          }
           ret.push('[' + nextIdNameCode.exp + ']');
           parts.push(nextIdNameCode.exp);
         } else {
@@ -89,7 +98,9 @@ xtemplateCompilerTools = function (exports) {
       return {
         str: ret.join(''),
         arr: '[' + parts.join(',') + ']',
-        parts: ret
+        parts: ret,
+        funcRet: funcRet,
+        resolvedParts: parts
       };
     },
     wrapByDoubleQuote: function (str) {
@@ -343,7 +354,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         [
           'c',
-          /^{{{?(?:#|@)/,
+          /^{{\{?(?:#|@)/,
           function () {
             var self = this, text = self.text;
             if (text.length === 4) {
@@ -356,7 +367,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         [
           'd',
-          /^{{{?\//,
+          /^{{\{?\//,
           function () {
             var self = this, text = self.text;
             if (text.length === 4) {
@@ -394,7 +405,7 @@ xtemplateCompilerParser = function (exports) {
         ],
         [
           'f',
-          /^{{{?/,
+          /^{{\{?/,
           function () {
             var self = this, text = self.text;
             if (text.length === 3) {
@@ -1230,10 +1241,6 @@ xtemplateCompilerParser = function (exports) {
       ],
       [
         'bc',
-        ['am']
-      ],
-      [
-        'bc',
         ['y'],
         function () {
           return new this.yy.String({
@@ -1313,6 +1320,13 @@ xtemplateCompilerParser = function (exports) {
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
           }, this.$1);
+        }
+      ],
+      [
+        'be',
+        ['am'],
+        function () {
+          return [this.$1];
         }
       ],
       [
@@ -1622,6 +1636,7 @@ xtemplateCompilerParser = function (exports) {
         },
         '74': { 'av': 99 },
         '89': {
+          'am': 18,
           'an': 100,
           'be': 10
         },
@@ -1895,6 +1910,18 @@ xtemplateCompilerParser = function (exports) {
           ]
         },
         '8': {
+          'i': [
+            2,
+            54
+          ],
+          'ac': [
+            2,
+            54
+          ],
+          'ad': [
+            2,
+            54
+          ],
           'h': [
             1,
             undefined,
@@ -1911,79 +1938,79 @@ xtemplateCompilerParser = function (exports) {
         '10': {
           'i': [
             2,
-            54
+            53
           ],
           'h': [
             2,
-            54
+            53
           ],
           'k': [
             2,
-            54
+            53
           ],
           'l': [
             2,
-            54
+            53
           ],
           'm': [
             2,
-            54
+            53
           ],
           'n': [
             2,
-            54
+            53
           ],
           'o': [
             2,
-            54
+            53
           ],
           'p': [
             2,
-            54
+            53
           ],
           'q': [
             2,
-            54
+            53
           ],
           'r': [
             2,
-            54
+            53
           ],
           's': [
             2,
-            54
+            53
           ],
           't': [
             2,
-            54
+            53
           ],
           'u': [
             2,
-            54
+            53
           ],
           'v': [
             2,
-            54
+            53
           ],
           'w': [
             2,
-            54
+            53
           ],
           'j': [
             2,
-            54
+            53
           ],
           'ae': [
             2,
-            54
+            53
           ],
           'g': [
             2,
-            54
+            53
           ],
           'ah': [
             2,
-            54
+            53
           ],
           'ac': [
             1,
@@ -2105,149 +2132,149 @@ xtemplateCompilerParser = function (exports) {
         '14': {
           'h': [
             2,
-            47
+            46
           ],
           'k': [
             2,
-            47
+            46
           ],
           'l': [
             2,
-            47
+            46
           ],
           'm': [
             2,
-            47
+            46
           ],
           'n': [
             2,
-            47
+            46
           ],
           'o': [
             2,
-            47
+            46
           ],
           'p': [
             2,
-            47
+            46
           ],
           'q': [
             2,
-            47
+            46
           ],
           'r': [
             2,
-            47
+            46
           ],
           's': [
             2,
-            47
+            46
           ],
           't': [
             2,
-            47
+            46
           ],
           'u': [
             2,
-            47
+            46
           ],
           'v': [
             2,
-            47
+            46
           ],
           'w': [
             2,
-            47
+            46
           ],
           'j': [
             2,
-            47
+            46
           ],
           'ae': [
             2,
-            47
+            46
           ],
           'g': [
             2,
-            47
+            46
           ],
           'ah': [
             2,
-            47
+            46
           ]
         },
         '15': {
           'h': [
             2,
-            48
+            47
           ],
           'k': [
             2,
-            48
+            47
           ],
           'l': [
             2,
-            48
+            47
           ],
           'm': [
             2,
-            48
+            47
           ],
           'n': [
             2,
-            48
+            47
           ],
           'o': [
             2,
-            48
+            47
           ],
           'p': [
             2,
-            48
+            47
           ],
           'q': [
             2,
-            48
+            47
           ],
           'r': [
             2,
-            48
+            47
           ],
           's': [
             2,
-            48
+            47
           ],
           't': [
             2,
-            48
+            47
           ],
           'u': [
             2,
-            48
+            47
           ],
           'v': [
             2,
-            48
+            47
           ],
           'w': [
             2,
-            48
+            47
           ],
           'j': [
             2,
-            48
+            47
           ],
           'ae': [
             2,
-            48
+            47
           ],
           'g': [
             2,
-            48
+            47
           ],
           'ah': [
             2,
-            48
+            47
           ]
         },
         '16': {
@@ -2307,149 +2334,161 @@ xtemplateCompilerParser = function (exports) {
         '18': {
           'h': [
             2,
-            46
+            54
           ],
           'k': [
             2,
-            46
+            54
+          ],
+          'i': [
+            2,
+            54
           ],
           'l': [
             2,
-            46
+            54
           ],
           'm': [
             2,
-            46
+            54
           ],
           'n': [
             2,
-            46
+            54
           ],
           'o': [
             2,
-            46
+            54
           ],
           'p': [
             2,
-            46
+            54
           ],
           'q': [
             2,
-            46
+            54
           ],
           'r': [
             2,
-            46
+            54
           ],
           's': [
             2,
-            46
+            54
           ],
           't': [
             2,
-            46
+            54
           ],
           'u': [
             2,
-            46
+            54
           ],
           'v': [
             2,
-            46
+            54
           ],
           'w': [
             2,
-            46
+            54
+          ],
+          'ac': [
+            2,
+            54
+          ],
+          'ad': [
+            2,
+            54
           ],
           'j': [
             2,
-            46
+            54
           ],
           'ae': [
             2,
-            46
+            54
           ],
           'g': [
             2,
-            46
+            54
           ],
           'ah': [
             2,
-            46
+            54
           ]
         },
         '19': {
           'h': [
             2,
-            49
+            48
           ],
           'k': [
             2,
-            49
+            48
           ],
           'l': [
             2,
-            49
+            48
           ],
           'm': [
             2,
-            49
+            48
           ],
           'n': [
             2,
-            49
+            48
           ],
           'o': [
             2,
-            49
+            48
           ],
           'p': [
             2,
-            49
+            48
           ],
           'q': [
             2,
-            49
+            48
           ],
           'r': [
             2,
-            49
+            48
           ],
           's': [
             2,
-            49
+            48
           ],
           't': [
             2,
-            49
+            48
           ],
           'u': [
             2,
-            49
+            48
           ],
           'v': [
             2,
-            49
+            48
           ],
           'w': [
             2,
-            49
+            48
           ],
           'j': [
             2,
-            49
+            48
           ],
           'ae': [
             2,
-            49
+            48
           ],
           'g': [
             2,
-            49
+            48
           ],
           'ah': [
             2,
-            49
+            48
           ],
           'i': [
             1,
@@ -3757,6 +3796,18 @@ xtemplateCompilerParser = function (exports) {
             2,
             11
           ],
+          'i': [
+            2,
+            11
+          ],
+          'ac': [
+            2,
+            11
+          ],
+          'ad': [
+            2,
+            11
+          ],
           'k': [
             2,
             11
@@ -3952,11 +4003,11 @@ xtemplateCompilerParser = function (exports) {
         '66': {
           'j': [
             2,
-            52
+            51
           ],
           'g': [
             2,
-            52
+            51
           ]
         },
         '67': {
@@ -4055,75 +4106,75 @@ xtemplateCompilerParser = function (exports) {
         '69': {
           'h': [
             2,
-            50
+            49
           ],
           'k': [
             2,
-            50
+            49
           ],
           'l': [
             2,
-            50
+            49
           ],
           'm': [
             2,
-            50
+            49
           ],
           'n': [
             2,
-            50
+            49
           ],
           'o': [
             2,
-            50
+            49
           ],
           'p': [
             2,
-            50
+            49
           ],
           'q': [
             2,
-            50
+            49
           ],
           'r': [
             2,
-            50
+            49
           ],
           's': [
             2,
-            50
+            49
           ],
           't': [
             2,
-            50
+            49
           ],
           'u': [
             2,
-            50
+            49
           ],
           'v': [
             2,
-            50
+            49
           ],
           'w': [
             2,
-            50
+            49
           ],
           'j': [
             2,
-            50
+            49
           ],
           'ae': [
             2,
-            50
+            49
           ],
           'g': [
             2,
-            50
+            49
           ],
           'ah': [
             2,
-            50
+            49
           ]
         },
         '70': {
@@ -5223,6 +5274,18 @@ xtemplateCompilerParser = function (exports) {
             2,
             9
           ],
+          'i': [
+            2,
+            9
+          ],
+          'ac': [
+            2,
+            9
+          ],
+          'ad': [
+            2,
+            9
+          ],
           'k': [
             2,
             9
@@ -5301,6 +5364,18 @@ xtemplateCompilerParser = function (exports) {
         },
         '94': {
           'h': [
+            2,
+            10
+          ],
+          'i': [
+            2,
+            10
+          ],
+          'ac': [
+            2,
+            10
+          ],
+          'ad': [
             2,
             10
           ],
@@ -5504,16 +5579,21 @@ xtemplateCompilerParser = function (exports) {
             1,
             undefined,
             106
+          ],
+          'i': [
+            1,
+            undefined,
+            32
           ]
         },
         '101': {
           'j': [
             2,
-            53
+            52
           ],
           'g': [
             2,
-            53
+            52
           ]
         },
         '102': {
@@ -5548,11 +5628,11 @@ xtemplateCompilerParser = function (exports) {
         '105': {
           'j': [
             2,
-            51
+            50
           ],
           'g': [
             2,
-            51
+            50
           ]
         },
         '106': {
@@ -5583,6 +5663,18 @@ xtemplateCompilerParser = function (exports) {
         },
         '107': {
           'h': [
+            2,
+            8
+          ],
+          'i': [
+            2,
+            8
+          ],
+          'ac': [
+            2,
+            8
+          ],
+          'ad': [
             2,
             8
           ],
@@ -5918,6 +6010,7 @@ xtemplateCompiler = function (exports) {
   var CALL_NATIVE_COMMAND = '{lhs} = {name}Command.call(tpl, scope, {option}, buffer);';
   var CALL_CUSTOM_COMMAND = 'buffer = callCommandUtil(tpl, scope, {option}, buffer, {idParts});';
   var CALL_FUNCTION = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts});';
+  var CALL_DATA_FUNCTION = '{lhs} = callDataFnUtil([{params}], {idParts});';
   var CALL_FUNCTION_DEPTH = '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts}, {depth});';
   var ASSIGN_STATEMENT = 'var {lhs} = {value};';
   var SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve({idParts},{depth});';
@@ -6100,6 +6193,7 @@ xtemplateCompiler = function (exports) {
     }
     return {
       exp: exp || '{}',
+      funcParams: funcParams,
       source: source
     };
   }
@@ -6130,7 +6224,7 @@ xtemplateCompiler = function (exports) {
       var thenStatements = [];
       for (i = 0; i < statements.length; i++) {
         statement = statements[i];
-        if (statement.type === 'expressionStatement' && (functionValue = statement.value) && functionValue.type === 'function' && functionValue.id.string === 'elseif') {
+        if (statement.type === 'expressionStatement' && (functionValue = statement.value) && (functionValue = functionValue.parts) && functionValue.length === 1 && (functionValue = functionValue[0]) && functionValue.type === 'function' && functionValue.id.string === 'elseif') {
           if (elseIf) {
             elseIfs.push(elseIf);
           }
@@ -6209,12 +6303,22 @@ xtemplateCompiler = function (exports) {
         idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr
       }));
     } else {
-      source.push(substitute(id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION, {
-        lhs: idName,
-        option: functionConfigCode.exp,
-        idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr,
-        depth: id.depth
-      }));
+      var resolveParts = compilerTools.convertIdPartsToRawAccessor(self, source, idParts);
+      if (resolveParts.funcRet) {
+        source.push(substitute(CALL_DATA_FUNCTION, {
+          lhs: idName,
+          params: functionConfigCode.funcParams.join(','),
+          idParts: resolveParts.arr,
+          depth: id.depth
+        }));
+      } else {
+        source.push(substitute(id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION, {
+          lhs: idName,
+          option: functionConfigCode.exp,
+          idParts: resolveParts.arr,
+          depth: id.depth
+        }));
+      }
     }
     return {
       exp: idName,
@@ -6343,10 +6447,21 @@ xtemplateCompiler = function (exports) {
             source: source
           };
         } else {
-          source.push(substitute(ASSIGN_STATEMENT, {
-            lhs: idName,
-            value: compilerTools.chainedVariableRead(self, source, idParts, false, true, loose)
-          }));
+          if (idParts[0].type === 'function') {
+            var resolvedParts = compilerTools.convertIdPartsToRawAccessor(self, source, idParts).resolvedParts;
+            for (var i = 1; i < resolvedParts.length; i++) {
+              resolvedParts[i] = '[' + resolvedParts[i] + ']';
+            }
+            source.push(substitute(ASSIGN_STATEMENT, {
+              lhs: idName,
+              value: compilerTools.genStackJudge(resolvedParts.slice(1), resolvedParts[0])
+            }));
+          } else {
+            source.push(substitute(ASSIGN_STATEMENT, {
+              lhs: idName,
+              value: compilerTools.chainedVariableRead(self, source, idParts, false, true, loose)
+            }));
+          }
           return {
             exp: idName,
             source: source
@@ -6474,7 +6589,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '3.7.1',
+    version: '4.0.0',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

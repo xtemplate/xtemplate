@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "3.7.1",
+  "version": "4.0.0",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": ">=0.10"
@@ -9,19 +9,6 @@
   "repository": {
     "type": "git",
     "url": "http://github.com/kissyteam/xtemplate.git"
-  },
-  "testling": {
-    "server": "server.js",
-    "html": "tests/runner.html",
-    "browsers": [
-      "ie/6..latest",
-      "chrome/latest",
-      "firefox/latest",
-      "safari/latest",
-      "iphone/6..lastest",
-      "ipad/6..latest",
-      "android-browser/latest"
-    ]
   },
   "devDependencies": {
     "body-parser": "^1.6.5",

@@ -1,14 +1,14 @@
 /*
-Copyright 2014, xtemplate@3.7.1
+Copyright 2014, xtemplate@4.0.0
 MIT Licensed
-build time: Tue, 02 Dec 2014 03:44:52 GMT
+build time: Wed, 10 Dec 2014 15:17:01 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
-Copyright 2014, xtemplate@3.7.1
+Copyright 2014, xtemplate@4.0.0
 MIT Licensed
-build time: Tue, 02 Dec 2014 03:44:52 GMT
+build time: Wed, 10 Dec 2014 15:17:01 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -697,6 +697,20 @@ _xtemplateRuntime_ = function (exports) {
     }
     var utils = {
       callFn: callFn,
+      callDataFn: function (params, parts) {
+        var caller = parts[0];
+        var fn = caller;
+        for (var i = 1; i < parts.length; i++) {
+          var name = parts[i];
+          if (fn && fn[name] != null) {
+            caller = fn;
+            fn = fn[name];
+          } else {
+            return '';
+          }
+        }
+        return fn.apply(caller, params);
+      },
       callCommand: function (tpl, scope, option, buffer, parts) {
         return callFn(tpl, scope, option, buffer, parts);
       }
@@ -720,7 +734,7 @@ _xtemplateRuntime_ = function (exports) {
           return globalConfig;
         }
       },
-      version: '3.7.1',
+      version: '4.0.0',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
