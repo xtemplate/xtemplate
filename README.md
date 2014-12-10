@@ -26,8 +26,6 @@ support async control, inheritance, include, logic expression, custom function a
 [download-image]: https://img.shields.io/npm/dm/xtemplate.svg?style=flat-square
 [download-url]: https://npmjs.org/package/xtemplate
 
-[![browser support](https://ci.testling.com/kissyteam/xtemplate.png)](https://ci.testling.com/kissyteam/xtemplate)
-
 ## install
 
 [![xtemplate](https://nodei.co/npm/xtemplate.png)](https://npmjs.org/package/xtemplate)

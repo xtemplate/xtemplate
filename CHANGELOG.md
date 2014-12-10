@@ -1,5 +1,9 @@
 #v3.7.1 (2014-12-02)
 
+- [#28](https://github.com/kissyteam/xtemplate/issues/28) 支持链式调用数据中的方法
+
+#v3.7.1 (2014-12-02)
+
 - [#39](https://github.com/kissyteam/xtemplate/pull/39) detect include/extend/parse paramerter error   ([@dead-horse](https://github.com/dead-horse))
 - [#37](https://github.com/kissyteam/xtemplate/issues/37) extend 的参数不能为变量   ([@dead-horse](https://github.com/dead-horse))
 
