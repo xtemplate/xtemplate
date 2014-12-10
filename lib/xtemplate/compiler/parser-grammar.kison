@@ -501,7 +501,7 @@
                     state: ['t'],
                     // support Inverted Sections in mustache
                     // support {{@
-                    regexp: /^{{{?(?:#|@)/,
+                    regexp: /^{{\{?(?:#|@)/,
                     token: 'OPEN_BLOCK',
                     action: function () {
                         var self = this,
@@ -515,7 +515,7 @@
                 },
                 {
                     state: ['t'],
-                    regexp: /^{{{?\//,
+                    regexp: /^{{\{?\//,
                     token: 'OPEN_CLOSE_BLOCK',
                     action: function () {
                         var self = this,
@@ -552,7 +552,7 @@
                 },
                 {
                     state: ['t'],
-                    regexp: /^{{{?/,
+                    regexp: /^{{\{?/,
                     token: 'OPEN_TPL',
                     action: function () {
                         var self = this,
