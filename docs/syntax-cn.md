@@ -39,7 +39,7 @@ XTemplate 支持 javascript 中所有的基本数据类型。
 
 ```html
 escaped: {{ foo }}
-unescaped: {{ foo }}
+unescaped: {{{ foo {}}
 ```
 
 使用数据 `{ foo: "<script>" }` 渲染这个模板，将会得到下面的结果：
