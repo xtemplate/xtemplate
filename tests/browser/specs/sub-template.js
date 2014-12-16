@@ -7,7 +7,6 @@ describe('sub template', function () {
         }
     });
 
-
     it('support parse', function () {
         define('xtemplate-test/sub-tpl-0', '{{title}}{{title2}}');
 
