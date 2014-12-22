@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@4.0.1
+Copyright 2014, xtemplate@4.0.2
 MIT Licensed
-build time: Mon, 22 Dec 2014 08:04:14 GMT
+build time: Mon, 22 Dec 2014 08:20:32 GMT
 */
 define("xtemplate", ["xtemplate/runtime"], function(require, exports, module) {
 var xtemplateRuntime = require("xtemplate/runtime");
@@ -6503,7 +6503,22 @@ xtemplateCompiler = function (exports) {
   compiler = {
     parse: function (tplContent, name) {
       if (tplContent) {
-        return parser.parse(tplContent, name);
+        var ret;
+        try {
+          ret = parser.parse(tplContent, name);
+        } catch (err) {
+          var e;
+          if (err instanceof Error) {
+            e = err;
+          } else {
+            e = new Error(err);
+          }
+          var errorStr = 'XTemplate error ';
+          e.stack = errorStr + e.stack;
+          e.message = errorStr + e.message;
+          throw e;
+        }
+        return ret;
       } else {
         return { statements: [] };
       }
@@ -6560,22 +6575,7 @@ xtemplate = function (exports) {
   XTemplate.prototype = new Noop();
   XTemplate.prototype.constructor = XTemplate;
   XTemplate.prototype.compile = function (content, name) {
-    var tpl;
-    try {
-      tpl = compile(content, name, this.config);
-    } catch (err) {
-      var e;
-      if (err instanceof Error) {
-        e = err;
-      } else {
-        e = new Error(err);
-      }
-      var errorStr = 'XTemplate error ';
-      e.stack = errorStr + e.stack;
-      e.message = errorStr + e.message;
-      throw e;
-    }
-    return tpl;
+    return compile(content, name, this.config);
   };
   XTemplate.prototype.render = function (data, option, callback) {
     if (typeof option === 'function') {
@@ -6595,7 +6595,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '4.0.1',
+    version: '4.0.2',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,

@@ -1,7 +1,7 @@
 /*
-Copyright 2014, xtemplate@4.0.0
+Copyright 2014, xtemplate@4.0.2
 MIT Licensed
-build time: Wed, 10 Dec 2014 15:17:01 GMT
+build time: Mon, 22 Dec 2014 08:20:32 GMT
 */
 var XTemplate = (function(){ var module = {};
 
@@ -6700,7 +6700,7 @@ xtemplateRuntime = function (exports) {
         return globalConfig;
       }
     },
-    version: '4.0.0',
+    version: '4.0.2',
     nativeCommands: nativeCommands,
     utils: utils,
     util: util,
@@ -7400,7 +7400,22 @@ xtemplateCompiler = function (exports) {
   compiler = {
     parse: function (tplContent, name) {
       if (tplContent) {
-        return parser.parse(tplContent, name);
+        var ret;
+        try {
+          ret = parser.parse(tplContent, name);
+        } catch (err) {
+          var e;
+          if (err instanceof Error) {
+            e = err;
+          } else {
+            e = new Error(err);
+          }
+          var errorStr = 'XTemplate error ';
+          e.stack = errorStr + e.stack;
+          e.message = errorStr + e.message;
+          throw e;
+        }
+        return ret;
       } else {
         return { statements: [] };
       }
@@ -7446,16 +7461,7 @@ xtemplate = function (exports) {
       try {
         tpl = this.compile(tpl, config.name);
       } catch (err) {
-        var e;
-        if (err instanceof Error) {
-          e = err;
-        } else {
-          e = new Error(err);
-        }
-        var errorStr = 'XTemplate error ';
-        e.stack = errorStr + e.stack;
-        e.message = errorStr + e.message;
-        this.compileError = e;
+        this.compileError = err;
       }
     }
     XTemplateRuntime.call(this, tpl, config);
@@ -7486,7 +7492,7 @@ xtemplate = function (exports) {
   exports = util.mix(XTemplate, {
     config: XTemplateRuntime.config,
     compile: compile,
-    version: '4.0.0',
+    version: '4.0.2',
     Compiler: Compiler,
     Scope: XTemplateRuntime.Scope,
     Runtime: XTemplateRuntime,
