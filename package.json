@@ -55,15 +55,18 @@
   "precommit": [
     "lint"
   ],
+  "config": {
+    "port": 8002
+  },
   "scripts": {
     "start": "node --harmony server",
     "publish": "gulp tag",
     "lint": "gulp lint",
     "saucelabs": "DEBUG=saucelabs-runner gulp saucelabs",
     "test": "node --harmony ./node_modules/mocha/bin/mocha -R list tests/node/specs",
-    "browser-test": "mocha-phantomjs http://localhost:8002/tests/runner.html",
-    "browser-test-build": "mocha-phantomjs http://localhost:8002/tests/runner.html?build",
-    "browser-test-cover": "mocha-phantomjs -R node_modules/node-jscover/lib/reporters/mocha/console http://localhost:8002/tests/runner.html?coverage",
-    "browser-test-standalone": "mocha-phantomjs http://localhost:8002/tests/runner.html?standalone"
+    "browser-test": "mocha-phantomjs http://localhost:$npm_package_config_port/tests/runner.html",
+    "browser-test-build": "mocha-phantomjs http://localhost:$npm_package_config_port/tests/runner.html?build",
+    "browser-test-cover": "mocha-phantomjs -R node_modules/node-jscover/lib/reporters/mocha/console http://localhost:$npm_package_config_port/tests/runner.html?coverage",
+    "browser-test-standalone": "mocha-phantomjs http://localhost:$npm_package_config_port/tests/runner.html?standalone"
   }
 }
