@@ -10,6 +10,10 @@ support async control, inheritance, include, logic expression, custom function a
 [![gemnasium deps][gemnasium-image]][gemnasium-url]
 [![node version][node-image]][node-url]
 [![npm download][download-image]][download-url]
+[![Sauce Test Status](https://saucelabs.com/buildstatus/xtemplate)](https://saucelabs.com/u/xtemplate)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/xtemplate.svg)](https://saucelabs.com/u/xtemplate)
+
 
 [npm-image]: http://img.shields.io/npm/v/xtemplate.svg?style=flat-square
 [npm-url]: http://npmjs.org/package/xtemplate

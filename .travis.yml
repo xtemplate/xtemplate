@@ -5,8 +5,8 @@ notifications:
 node_js:
 - 0.11
 before_script:
-- node --harmony server &
-- npm install gulp bower mocha-phantomjs -g
+- npm start &
+- npm install bower mocha-phantomjs -g
 - bower install
 - phantomjs --version
 script:
@@ -15,3 +15,8 @@ script:
 - npm run-script browser-test-build
 - npm run-script browser-test-standalone
 - npm run-script browser-test-cover
+- npm run saucelabs
+env:
+  global:
+  - secure: DsINTQgLCxcnk2oEUmsFWDTVDskPzKqwuccKIASOhE47rOv/ApfHUlw3IkqQ5N9w75qVPpJ9FbNNCF0QjzSZKeDQ8Cd0iheGiO8hDCvSXIp9qg1Gpga8e80Y/E49NVi+hzOySiOiV7/xRvLKdMjHw9L4LfBsqfOD2zZ2B/LvKAQ=
+  - secure: cm560FHnfiaARjLdtPqBd61GDKPeuSejbZ3HJOd3XcljuibZ+Ur4LQmRzgCZAhh823T2dTdK5NpKkPpjWJZNJ02jrJ4Titjfhs0q5OzJYLtPqCEkDHdPaMcFYgi8a9psuGxg/2hi/EHhHoZJO4kCMoCdPltp1I7NXW6WUk9MN1c=

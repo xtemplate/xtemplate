@@ -87,7 +87,7 @@
                     window.nodeJsCoverCoveralls(runner);
                 }
             } else {
-                mocha.run();
+                window.mochaRunner = mocha.run();
             }
         });
     })();

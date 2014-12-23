@@ -59,6 +59,7 @@
     "start": "node --harmony server",
     "publish": "gulp tag",
     "lint": "gulp lint",
+    "saucelabs": "DEBUG=saucelabs-runner gulp saucelabs",
     "test": "node --harmony ./node_modules/mocha/bin/mocha -R list tests/node/specs",
     "browser-test": "mocha-phantomjs http://localhost:8002/tests/runner.html",
     "browser-test-build": "mocha-phantomjs http://localhost:8002/tests/runner.html?build",
