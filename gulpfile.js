@@ -255,8 +255,6 @@ gulp.task('saucelabs', function (done) {
     browsers: [
       {browserName: 'chrome'},
       {browserName: 'firefox'},
-      {browserName: 'internet explorer', version: 6},
-      {browserName: 'internet explorer', version: 7},
       {browserName: 'internet explorer', version: 8},
       {browserName: 'internet explorer', version: 9},
       {browserName: 'internet explorer', version: 10},
