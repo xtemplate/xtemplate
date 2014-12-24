@@ -82,7 +82,7 @@
         });
         modulex.use(['specs/'], function () {
             if (window.mochaPhantomJS) {
-                var runner = mochaPhantomJS.run();
+                var runner = window.mochaRunner = mochaPhantomJS.run();
                 if (isCoverage) {
                     window.nodeJsCoverCoveralls(runner);
                 }
