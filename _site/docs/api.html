@@ -1,0 +1,375 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>xtemplate - XTemplate API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="nico 0.5.1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link type="image/x-icon" href="/favicon.ico" rel="icon">
+    <link rel="stylesheet" href="../static/css/normalize.css" />
+    <link rel="stylesheet" href="../static/css/site.css" />
+    <link rel="stylesheet" href="../static/css/solarized.css" />
+<script>
+if (!location.port) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-50522089-2', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+<script src="../static/js/sea.js?nowrap"></script>
+
+<script>
+  seajs.config({
+    base: "../",
+    alias: {}
+  });
+</script>
+    <!--[if lt IE 9]>
+    <script src="../static/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body class="spmjs">
+    <div class="body-wrapper">
+      <aside class="sidebar-wrapper">
+      <h1>
+          <a href="../">Xtemplate</a>
+      </h1>
+      <p class="sidebar-version">Version: <a href="http://spmjs.io/package/xtemplate" title="">4.0.3</a></p>
+        <p class="sidebar-description" data-keyword="template"></p>
+        <a class="sidebar-source" href="http://github.com/kissyteam/xtemplate" target="_blank">View the Project</a>
+        <ul class="sidebar-navigation" role="navigation">
+          <li><a href="../">Doc</a></li>
+          <li><a class="test-link" href="../tests/runner.html" target="_blank">Test</a></li>
+          <li><a class="issue-link" href="http://github.com/kissyteam/xtemplate/issues" target="_blank">Issues</a></li>
+        </ul>
+        
+<ol class="sidenav">
+  <li><a href="../">xtemplate</a></li>
+  <li><a href="api.html">XTemplate API</a></li>
+  <li><a href="syntax-cn.html">XTemplate 模板语法</a></li>
+  <li><a href="syntax.html">XTemplate Syntax</a></li>
+</ol>
+
+        <div class="qrcode-wrapper">
+          <i class="icon iconfont">
+            &#x3433;
+            <div class="qrcode" id="qrcode"></div>
+          </i>
+        </div>
+      </aside>
+      <div class="content-wrapper">
+        
+<article class="hentry">
+  <h1 class="entry-title">XTemplate API</h1>
+  <div class="entry-content">
+    <h2 id="class">Class<a href="#class" class="anchor">¶</a></h2><p>XTemplate/XTemplateRuntime</p>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>content</td>
+        <td>String</td>
+        <td>template content string</td>
+    </tr>
+    <tr>
+            <td>config</td>
+            <td>Object</td>
+            <td>
+            <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px;">name</th>
+                        <th style="width: 50px;">type</th>
+                        <th>description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>name</td>
+                        <td>String</td>
+                        <td>name of template for error report</td>
+                    </tr>
+                    <tr>
+                        <td>loader</td>
+                        <td>Object</td>
+                        <td>contains a load function to load included template</td>
+                    </tr>
+                    <tr>
+                        <td>commands</td>
+                        <td>Object</td>
+                        <td>command definition</td>
+                        </tr>
+                    </tbody>
+                </table></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h2 id="methods">Methods<a href="#methods" class="anchor">¶</a></h2><div class="highlight"><pre><code class="javascript">String render(data:Object, [option:Object, callback:Function]) <span class="comment">// render data</span></code></pre></div><table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr>
+          <td>data</td>
+          <td>Object</td>
+          <td>data object to be rendered</td>
+      </tr>
+      <tr>
+          <td>option</td>
+          <td>Object</td>
+          <td>support runtime commands. for example: {commands: {}}</td>
+      </tr>
+      <tr>
+          <td>callback</td>
+          <td>Function</td>
+          <td>callback function after render</td>
+      </tr>
+    </tbody>
+</table>
+
+<h2 id="tplwrap">TplWrap<a href="#tplwrap" class="anchor">¶</a></h2><table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>scope</td>
+        <td>Scope</td>
+        <td>scope object when loader is invoked</td>
+    </tr>
+    <tr>
+        <td>name</td>
+        <td>String</td>
+        <td>full name of template to be loaded</td>
+    </tr>
+    <tr>
+        <td>originalName</td>
+        <td>String</td>
+        <td>originalName name of template to be loaded. for example: {{include('./a')}}; name is maybe /code/a, originalName is ./a</td>
+    </tr>
+</table>
+
+<h3 id="members">Members<a href="#members" class="anchor">¶</a></h3><h2 id="buffer">Buffer<a href="#buffer" class="anchor">¶</a></h2><h3 id="members">Members<a href="#members" class="anchor">¶</a></h3><table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>data</td>
+        <td>String</td>
+        <td>string to be written into buffer</td>
+    </tr>
+    <tr>
+        <td>tpl</td>
+        <td>Object</td>
+        <td>TplWrap object belonged to this buffer</td>
+    </tr>
+</table>
+
+<h3 id="methods">Methods<a href="#methods" class="anchor">¶</a></h3><div class="highlight"><pre><code class="javascript">Buffer write(data:String)</code></pre></div><table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>data</td>
+        <td>String</td>
+        <td>string to be written into buffer</td>
+    </tr>
+</table>
+
+<div class="highlight"><pre><code class="javascript">Buffer writeEscaped(data:String)</code></pre></div><table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>data</td>
+        <td>String</td>
+        <td>first escape string, then write it into buffer</td>
+    </tr>
+</table>
+
+<div class="highlight"><pre><code class="javascript">Buffer async(fn:Function) <span class="comment">// generate a new buffer as the first parameter of callback</span>
+
+Buffer end() <span class="comment">// mark escape of current buffer</span>
+
+Buffer error(reason) <span class="comment">// mark error of current render</span></code></pre></div><h2 id="scope">Scope<a href="#scope" class="anchor">¶</a></h2><h3 id="members">Members<a href="#members" class="anchor">¶</a></h3><div class="highlight"><pre><code class="javascript">parent <span class="comment">// parent scope</span>
+
+root <span class="comment">// topmost scope</span></code></pre></div><h3 id="methods">Methods<a href="#methods" class="anchor">¶</a></h3><div class="highlight"><pre><code class="javascript"><span class="keyword">void</span> setParent(scope: Scope)
+
+<span class="keyword">void</span> setData(data) <span class="comment">// set data of current scope</span>
+
+<span class="keyword">var</span> getData()
+
+<span class="keyword">void</span> set(name, value) <span class="comment">// set kv value of current scope</span>
+
+<span class="keyword">void</span> get(name)</code></pre></div><h2 id="custom-command">custom command<a href="#custom-command" class="anchor">¶</a></h2><h3 id="global-command">global command<a href="#global-command" class="anchor">¶</a></h3><p>sync inline command</p>
+<div class="highlight"><pre><code class="javascript">XTemplate.addCommand(<span class="string">'xInline'</span>,<span class="function"><span class="keyword">function</span><span class="params">(scope, option)</span>{</span>
+  <span class="keyword">return</span> option.params[<span class="number">0</span>]+<span class="string">'1'</span>;
+});</code></pre></div><p>use buffer</p>
+<div class="highlight"><pre><code class="javascript">XTemplate.addCommand(<span class="string">'xInline'</span>,<span class="function"><span class="keyword">function</span><span class="params">(scope, option, buffer)</span>{</span>
+  <span class="keyword">return</span> buffer.write(option.params[<span class="number">0</span>] + <span class="number">1</span>);
+});</code></pre></div><pre>{{xInline(1)}} // =&gt; 2</pre><p>sync block command</p>
+<div class="highlight"><pre><code class="javascript">XTemplate.addCommand(<span class="string">'xBlock'</span>,<span class="function"><span class="keyword">function</span><span class="params">(scope, option, buffer)</span>{</span>
+  <span class="keyword">return</span> option.fn(scope, buffer).write(option.params[<span class="number">0</span>]);
+});</code></pre></div><pre>{{#xBlock(1)}}
+2
+{{/xBlock}}
+// =&gt; 21</pre><p>async inline command</p>
+<div class="highlight"><pre><code class="javascript">XTemplate.addCommand(<span class="string">'xInline'</span>,<span class="function"><span class="keyword">function</span><span class="params">(scope, option,buffer)</span>{</span>
+  buffer = buffer.async(<span class="function"><span class="keyword">function</span><span class="params">(newBuffer)</span>{</span>
+    setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
+        newBuffer.write(option.params[<span class="number">0</span>] + <span class="number">1</span>).end();
+    },<span class="number">10</span>);
+  });
+  <span class="keyword">return</span> buffer;
+});</code></pre></div><pre>{{xInline(1)}} // =&gt; 2</pre><p>async block command</p>
+<div class="highlight"><pre><code class="javascript">XTemplate.addCommand(<span class="string">'xInline'</span>,<span class="function"><span class="keyword">function</span><span class="params">(scope, option,buffer)</span>{</span>
+  buffer = buffer.async(<span class="function"><span class="keyword">function</span><span class="params">(newBuffer)</span>{</span>
+    setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
+        <span class="keyword">var</span> newScope = xtpl.XTemplate.Scope({ret:<span class="number">2</span>});
+        newScope.setParent(scope);
+        option.fn(newScope, newBuffer);
+    },<span class="number">10</span>);
+  });
+  buffer.write(option.params[<span class="number">0</span>]);
+  <span class="keyword">return</span> buffer;
+});</code></pre></div><pre>{{#xBlock(1)}}
+{{ret}}
+{{/xBlock}}
+// =&gt; 21</pre><h2 id="loader">loader<a href="#loader" class="anchor">¶</a></h2><p>a object which contains a load function (called when user invoke native include command) and passed to XTemplate config</p>
+<div class="highlight"><pre><code class="javascript"><span class="keyword">void</span> load(tpl:TplWrap, callback:Function)</code></pre></div><p>for example, XTemplate load precompiled template by require from modulex:</p>
+<div class="highlight"><pre><code class="javascript"><span class="keyword">var</span> loader = {
+    cache: {},
+    load: <span class="function"><span class="keyword">function</span> <span class="params">(tpl, callback)</span> {</span>
+        <span class="keyword">var</span> name = tpl.name;
+        <span class="keyword">var</span> cache = <span class="keyword">this</span>.cache;
+        <span class="keyword">if</span> (cache[name]) {
+            <span class="keyword">return</span> callback(<span class="literal">undefined</span>, cache[name]);
+        }
+        require([name], {
+            success: <span class="function"><span class="keyword">function</span> <span class="params">(tpl)</span> {</span>
+                cache[name] = tpl;
+                callback(<span class="literal">undefined</span>, tpl);
+            },
+            error: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+                <span class="keyword">var</span> error = <span class="string">'template "'</span> + params.name + <span class="string">'" does not exist'</span>;
+                util.log(error, <span class="string">'error'</span>);
+                callback(error);
+            }
+        });
+    }
+};</code></pre></div><h2 id="compiler">compiler<a href="#compiler" class="anchor">¶</a></h2><p>XTemplate.Compiler</p>
+<h3 id="methods">Methods<a href="#methods" class="anchor">¶</a></h3><h4 id="compile">compile<a href="#compile" class="anchor">¶</a></h4><pre>Object compile(content, name): get compiled function of template whose content is content and name is name</pre><h4 id="parse">parse<a href="#parse" class="anchor">¶</a></h4><pre>Object parse(content, name): get compiled ast of template whose content is content and name is name</pre><h4 id="compiletostr">compileToStr<a href="#compiletostr" class="anchor">¶</a></h4><pre>String compileToStr(param:Object): get function string of template whose content is content and name is name</pre><p>param 包含:</p>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th style="width: 100px;">name</th>
+        <th style="width: 50px;">type</th>
+        <th style="width: 50px;">default</th>
+        <th>description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>name</td>
+        <td>String</td>
+        <td></td>
+        <td>name of template</td>
+    </tr>
+    <tr>
+        <td>content</td>
+        <td>String</td>
+        <td></td>
+        <td>content of template</td>
+    </tr>
+    <tr>
+        <td>isModule</td>
+        <td>Boolean</td>
+        <td>false</td>
+        <td>whether generate module require</td>
+    </tr>
+    </tbody>
+</table>
+  </div>
+</article>
+
+      </div>
+      
+    </div>
+    <div class="footer-wrapper">
+      <footer>
+        <p class="footer-powered"><a href="http://spmjs.io">spmjs.io</a> •
+<a href="https://github.com/spmjs/spm">spm</a> •
+<a href="http://seajs.org">Sea.js</a> •
+<a href="http://lab.lepture.com/nico/">nico</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+  <script src="../static/js/nprogress.js?nowrap"></script>
+  <script>
+  (function() {
+    NProgress.start();
+    window.onload = NProgress.done;
+    var ready = function(fn) {
+      var doc = document;
+      if(doc.addEventListener) {
+        doc.addEventListener('DOMContentLoaded', fn, false);
+      } else {
+        doc.attachEvent('onreadystatechange', fn);
+      }
+    };
+    ready(function() {
+      NProgress.inc(0.6);
+
+      seajs.use("../static/js/arale-qrcode.js?nowrap", function(QRCode) {
+        var url = location.href;
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          url = url.replace(location.hostname, '192.168.1.15');
+        }
+        var el = new QRCode({
+          text: url,
+          render: 'canvas',
+          width: 120,
+          height: 120
+        });
+        document.getElementById('qrcode').appendChild(el);
+      });
+    }, false);
+  })();
+  </script>
+</html>

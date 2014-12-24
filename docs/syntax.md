@@ -1,4 +1,5 @@
 # XTemplate Syntax
+---
 
 This is an overview of the templating features available in XTemplate.
 

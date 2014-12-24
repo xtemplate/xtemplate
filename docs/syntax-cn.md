@@ -1,4 +1,5 @@
 # XTemplate 模板语法
+---
 
 本文档是 XTemplate 支持的语法功能的一个整体简介。
 

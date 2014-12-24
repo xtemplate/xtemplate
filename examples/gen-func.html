@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <link rel="stylesheet" href="//g.tbcdn.cn/kissy/k/1.4.2/css/dpl/base.css"/>
+    <link rel="stylesheet" href="//g.tbcdn.cn/kissy/k/1.4.2/css/dpl/forms.css"/>
+    <link rel="stylesheet" href="//g.tbcdn.cn/kissy/k/1.4.2/button/assets/dpl.css"/>
+    <script src="//g.alicdn.com/kissy/third-party/0.1.0/syntaxhighlighter/scripts/shCore.js"></script>
+    <script src="//g.alicdn.com/kissy/third-party/0.1.0/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+    <link type="text/css" rel="stylesheet"
+          href="//g.alicdn.com/kissy/third-party/0.1.0/syntaxhighlighter/styles/shCoreDefault.css"/>
+    <script src="//g.alicdn.com/kissy/third-party/0.1.0/beautify.js"></script>
+    <script src="//g.tbcdn.cn/kissy/edge/2014.07.16/seed-debug.js"></script>
+    <script src="/node_modules/modulex/build/modulex-debug.js?nowrap"></script>
+    <script>
+        function js_beauty(str) {
+            var opts = {"indent_size": "4", "indent_char": ' ',
+                "preserve_newlines": true, "brace_style": "collapse",
+                "keep_array_indentation": false, "space_after_anon_function": true};
+            return js_beautify(str, opts);
+        }
+    </script>
+    <title> simple xtemplate </title>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="span8">
+            <h2>模板代码</h2>
+
+            <div>
+                <textarea style="width: 350px;height: 400px;" id="tpl">
+                    {{x.y.z.q}}
+
+                    my first {{tpl(name ,'0', file=3)}} o
+
+                    {{include('./y')}}
+
+                    {{#each(this)}}
+                    {{xindex}} {{name}}
+                    {{/each}}
+
+                    {{{ noEscapeO}}}
+
+                    {{!
+
+                    haha
+
+                    }}
+
+                    {{#if (cond)}}
+
+                    y
+
+                    {{#each (my)}}
+
+                    {{escapeName}}
+
+                    {{#if (cond2)}}
+
+                    {{break}}
+
+                    {{else}}
+
+                    {{../../z}}
+
+                    {{/if}}
+
+                    {{/each}}
+
+                    {{else}}
+
+                    z
+
+                    {{/if}}
+
+                </textarea>
+            </div>
+            <br/>
+            <button id='parse' class="ks-button">parse</button>
+            <span><label style="display: inline">isModule: <input type="checkbox" id="isModule"/></label></span>
+            <span><label style="display: inline">useNativeRequire: <input type="checkbox"
+                                                                          id="useNativeRequire"/></label></span>
+            <span><label style="display: inline">catchError: <input type="checkbox" id="catchError"/></label></span>
+            <span><label style="display: inline">strict: <input type="checkbox" id="strict"/></label></span>
+        </div>
+
+        <div class="span15">
+            <h2>Generated Template Function</h2>
+
+            <div>
+                <div id="gen">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    require('./gen-func');
+</script>
+</body>
+</html>

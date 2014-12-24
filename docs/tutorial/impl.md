@@ -1,4 +1,5 @@
 # 构建前端 DSL template
+---
 
 目前在传统的软件开发领域 [DSL](http://en.wikipedia.org/wiki/Domain-specific_language) 已经比较普遍，
 特别是 [Martin Fowler](http://martinfowler.com/) 的突出贡献。

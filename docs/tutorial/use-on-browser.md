@@ -1,4 +1,5 @@
 # use XTemplate on browser
+---
 
 [xtemplate](https://github.com/kissyteam/xtemplate) 经过独立化而摆脱了对 kissy 的依赖，从而可以在 kissy 升级时仍然使用老的 xtemplate，或者单独升级 xtemplate，本文介绍浏览器端单独使用 xtemplate 的几种方案
 

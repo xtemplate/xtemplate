@@ -19,3 +19,5 @@ Thumbs.db
 *.swp
 out/
 node_modules/
+build/
+spm_modules

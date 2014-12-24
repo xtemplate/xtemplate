@@ -1,3 +1,6 @@
+# xtemplate on server
+---
+
 By minghe36@126.com
 
 xtemplate除了在浏览器端使用外，还可以在服务器端使用，比如结合Node.js的express或koa框架使用。

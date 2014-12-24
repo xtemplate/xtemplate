@@ -1,3 +1,6 @@
+# xtemplate on kg
+---
+
 By minghe36@126.com
 
 本文提到的xtemplate不是KISSY1.4.X内置的xtemplate模块，而是kissy gallery中的xtemplate模块，即kg/xtemplate，这是承玉将xtemplate剥离出kissy后，针对kissy的版本，由于相对于1.4.X的xtemplate模块变动太多，建议看成全新的模板引擎来看待。

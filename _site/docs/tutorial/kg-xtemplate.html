@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>xtemplate - xtemplate on kg</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="nico 0.5.1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link type="image/x-icon" href="/favicon.ico" rel="icon">
+    <link rel="stylesheet" href="../../static/css/normalize.css" />
+    <link rel="stylesheet" href="../../static/css/site.css" />
+    <link rel="stylesheet" href="../../static/css/solarized.css" />
+<script>
+if (!location.port) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-50522089-2', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+<script src="../../static/js/sea.js?nowrap"></script>
+
+<script>
+  seajs.config({
+    base: "../../",
+    alias: {}
+  });
+</script>
+    <!--[if lt IE 9]>
+    <script src="../../static/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body class="spmjs">
+    <div class="body-wrapper">
+      <aside class="sidebar-wrapper">
+      <h1>
+          <a href="../../">Xtemplate</a>
+      </h1>
+      <p class="sidebar-version">Version: <a href="http://spmjs.io/package/xtemplate" title="">4.0.3</a></p>
+        <p class="sidebar-description" data-keyword="template"></p>
+        <a class="sidebar-source" href="http://github.com/kissyteam/xtemplate" target="_blank">View the Project</a>
+        <ul class="sidebar-navigation" role="navigation">
+          <li><a href="../../">Doc</a></li>
+          <li><a class="test-link" href="../../tests/runner.html" target="_blank">Test</a></li>
+          <li><a class="issue-link" href="http://github.com/kissyteam/xtemplate/issues" target="_blank">Issues</a></li>
+        </ul>
+        
+<ol class="sidenav">
+  <li><a href="impl.html">构建前端 DSL template</a></li>
+  <li><a href="introduce.html">introduce xtemplate</a></li>
+  <li><a href="kg-xtemplate.html">xtemplate on kg</a></li>
+  <li><a href="performance-hint.html">performance hint</a></li>
+  <li><a href="server-xtemplate.html">xtemplate on server</a></li>
+  <li><a href="use-on-browser.html">use XTemplate on browser</a></li>
+</ol>
+
+        <div class="qrcode-wrapper">
+          <i class="icon iconfont">
+            &#x3433;
+            <div class="qrcode" id="qrcode"></div>
+          </i>
+        </div>
+      </aside>
+      <div class="content-wrapper">
+        
+<article class="hentry">
+  <h1 class="entry-title">xtemplate on kg</h1>
+  <div class="entry-content">
+    <p>By minghe36@126.com</p>
+<p>本文提到的xtemplate不是KISSY1.4.X内置的xtemplate模块，而是kissy gallery中的xtemplate模块，即kg/xtemplate，这是承玉将xtemplate剥离出kissy后，针对kissy的版本，由于相对于1.4.X的xtemplate模块变动太多，建议看成全新的模板引擎来看待。</p>
+<p>有看过KISSY5文档的同学，会发现xtemplate模块没有了，模板需要使用kg/xtemplate。</p>
+<p>而 kg/xtemplate 不是只支持KISSY5，KISSY1.4.X也是可以使用的，所以建议大家使用 kg/xtemplate 代替原来xtemplate，方便日后升级KISSY5，同时 kg/xtemplate 性能更强，语法更强大易用。</p>
+<p>xtemplate（新）也支持作为服务器端模板引擎（比如Node.js ，支持express和koa，下一篇会讲解）。</p>
+<h2 id="如何使用-kg-xtemplate">如何使用 kg/xtemplate<a href="#如何使用-kg-xtemplate" class="anchor">¶</a></h2><p><a href="http://gallery.kissyui.com/xtemplate/doc/guide/index.html">《kg/xtemplate 文档》</a> 。</p>
+<p>KISSY1.4.X使用的是3.3.3版本的xtemplate，带KISSY.add()包裹，3.3.3以上的版本是KISSY5使用的，带modulex.add()，比如3.4.1。</p>
+<p>来看一个简单的demo：<a href="http://jsfiddle.net/minghe36/8g4crh71/。">http://jsfiddle.net/minghe36/8g4crh71/。</a></p>
+<p>模板未编译的情况下，需要使用 kg/xtemplate/3.3.3/index ，如果模板已经编译，直接使用xtemplate的渲染器runtime.js。</p>
+<p>初看demo，貌似跟旧的xtemplate模块并没有分别，别急后面会有一篇专门讲解xtemplate的语法。</p>
+<h2 id="编译模板">编译模板<a href="#编译模板" class="anchor">¶</a></h2><p>严重建议模板编译后再使用，对性能有非常大的帮助。</p>
+<p>编译器模块为xtemplate，kissy1.4.x请使用3.3.3的版本：</p>
+<p>package.json</p>
+<div class="highlight"><pre><code class="javascript"><span class="string">"devDependencies"</span>: {
+    <span class="string">"xtemplate"</span>: <span class="string">"3.3.3"</span>
+}</code></pre></div><p>（需要留意xtemplate版本的一致性。）</p>
+<p>如果你使用gulp构建（建议使用），请使用gulp插件：gulp-xtemplate。</p>
+<p>gulpfile.js的写法参考 bee：</p>
+<div class="highlight"><pre><code class="javascript"><span class="keyword">var</span> XTemplate = require(<span class="string">'xtemplate'</span>);
+<span class="keyword">var</span> gulpXTemplate = require(<span class="string">'gulp-xtemplate'</span>);
+<span class="keyword">var</span> src = <span class="string">"./src"</span>;
+gulp.task(<span class="string">'xtpl'</span>,<span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
+    <span class="keyword">return</span> gulp.src(src+<span class="string">'/**/*.xtpl'</span>)
+        .pipe(gulpXTemplate({
+            wrap: <span class="string">'kissy'</span>,
+            XTemplate: XTemplate
+        }))
+        .on(<span class="string">'error'</span>,<span class="function"><span class="keyword">function</span><span class="params">(e)</span>{</span>
+            console.log(e);
+        })
+        .pipe(gulp.dest(src));
+});</code></pre></div><p>xtpl 任务会构建src目录下所有.xtpl文件，所以xtemplate模板文件必须是xtpl后缀。</p>
+<p>wrap: &#39;kissy&#39; 会给编译后的模块js文件加上KISSY.add() 包裹，如果是KISSY5的代码，不用传参。</p>
+<p>wrap: &#39;none&#39; 将不带任何包裹函数。</p>
+<p>任务运行后，会生成2个文件，参考 bee
+，content.xtpl生成 content.js 和content-render.js，content.js是编译后模板模块，而content-render.js是快速渲染模板的门面方法。</p>
+<p>请看 <a href="http://jsfiddle.net/minghe36/0onzL1La/">demo</a>，只需要使用门面方法渲染模板：</p>
+<div class="highlight"><pre><code class="javascript"><span class="comment">//使用模块</span>
+KISSY.use(<span class="string">'bee-demo/mods/content-render,node'</span>,<span class="function"><span class="keyword">function</span><span class="params">(S,contentRender,Node)</span>{</span>
+    <span class="keyword">var</span> html = contentRender({
+        title:<span class="string">'this is article'</span>,
+        content:<span class="string">'render by kg/xtemplate'</span>
+    });
+    Node.all(<span class="string">'body'</span>).html(html);
+})</code></pre></div><p>当然render不是必须的，你也可以自己new XTemplate()实例，比如。</p>
+<div class="highlight"><pre><code class="javascript">KISSY.use(<span class="string">'bee-demo/mods/content,kg/xtemplate/3.3.3/runtime,node'</span>,<span class="function"><span class="keyword">function</span><span class="params">(S,contentXtpl,XTemplate,Node)</span>{</span>
+    <span class="keyword">var</span> html = <span class="keyword">new</span> XTemplate(contentXtpl).render({
+        title:<span class="string">'this is article'</span>,
+        content:<span class="string">'render by kg/xtemplate'</span>
+    });
+    Node.all(<span class="string">'body'</span>).html(html);
+})</code></pre></div><p>这样使用更自由些。</p>
+<p>下一篇我们讨论 xtemplate 在服务器端的使用~</p>
+
+  </div>
+</article>
+
+      </div>
+      
+    </div>
+    <div class="footer-wrapper">
+      <footer>
+        <p class="footer-powered"><a href="http://spmjs.io">spmjs.io</a> •
+<a href="https://github.com/spmjs/spm">spm</a> •
+<a href="http://seajs.org">Sea.js</a> •
+<a href="http://lab.lepture.com/nico/">nico</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+  <script src="../../static/js/nprogress.js?nowrap"></script>
+  <script>
+  (function() {
+    NProgress.start();
+    window.onload = NProgress.done;
+    var ready = function(fn) {
+      var doc = document;
+      if(doc.addEventListener) {
+        doc.addEventListener('DOMContentLoaded', fn, false);
+      } else {
+        doc.attachEvent('onreadystatechange', fn);
+      }
+    };
+    ready(function() {
+      NProgress.inc(0.6);
+
+      seajs.use("../../static/js/arale-qrcode.js?nowrap", function(QRCode) {
+        var url = location.href;
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          url = url.replace(location.hostname, '192.168.1.15');
+        }
+        var el = new QRCode({
+          text: url,
+          render: 'canvas',
+          width: 120,
+          height: 120
+        });
+        document.getElementById('qrcode').appendChild(el);
+      });
+    }, false);
+  })();
+  </script>
+</html>

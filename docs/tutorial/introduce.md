@@ -1,4 +1,5 @@
 # introduce xtemplate
+---
 
 最近随着 nodejs 的流行，各个团队都在进行着探索，其中虽然不是最优，但是最传统，最流行的架构仍然是 mvc，而 v(template) 作为选型的重要一环在前端为主的团队中受到了格外的关注。
 大家或许还在迷茫，或许已经坚定得做出了选择，希望这里有机会让我给大家介绍一个 kissy 团队自主研发并得到广泛应用的前后端通用模板引擎 xtemplate(eXtensible template).

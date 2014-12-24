@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>xtemplate - </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="nico 0.5.1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link type="image/x-icon" href="/favicon.ico" rel="icon">
+    <link rel="stylesheet" href="../../static/css/normalize.css" />
+    <link rel="stylesheet" href="../../static/css/site.css" />
+    <link rel="stylesheet" href="../../static/css/solarized.css" />
+<script>
+if (!location.port) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-50522089-2', 'auto');
+  ga('send', 'pageview');
+}
+</script>
+<script src="../../static/js/sea.js?nowrap"></script>
+
+<script>
+  seajs.config({
+    base: "../../",
+    alias: {}
+  });
+</script>
+    <!--[if lt IE 9]>
+    <script src="../../static/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body class="spmjs">
+    <div class="body-wrapper">
+      <aside class="sidebar-wrapper">
+      <h1>
+          <a href="../../">Xtemplate</a>
+      </h1>
+      <p class="sidebar-version">Version: <a href="http://spmjs.io/package/xtemplate" title="">4.0.3</a></p>
+        <p class="sidebar-description" data-keyword="template"></p>
+        <a class="sidebar-source" href="http://github.com/kissyteam/xtemplate" target="_blank">View the Project</a>
+        <ul class="sidebar-navigation" role="navigation">
+          <li><a href="../../">Doc</a></li>
+          <li><a class="test-link" href="../../tests/runner.html" target="_blank">Test</a></li>
+          <li><a class="issue-link" href="http://github.com/kissyteam/xtemplate/issues" target="_blank">Issues</a></li>
+        </ul>
+        
+<ol class="sidenav">
+  <li><a href="2014-06-27-benchmark.html"></a></li>
+  <li><a href="2014-07-03-benchmark.html"></a></li>
+  <li><a href="2014-08-21-benchmark.html"></a></li>
+  <li><a href="2014-09-18-benchmark.html"></a></li>
+  <li><a href="2014-09-22-benchmark.html"></a></li>
+</ol>
+
+        <div class="qrcode-wrapper">
+          <i class="icon iconfont">
+            &#x3433;
+            <div class="qrcode" id="qrcode"></div>
+          </i>
+        </div>
+      </aside>
+      <div class="content-wrapper">
+        
+<article class="hentry">
+  <h1 class="entry-title">null</h1>
+  <div class="entry-content">
+    
+  </div>
+</article>
+
+      </div>
+      
+    </div>
+    <div class="footer-wrapper">
+      <footer>
+        <p class="footer-powered"><a href="http://spmjs.io">spmjs.io</a> •
+<a href="https://github.com/spmjs/spm">spm</a> •
+<a href="http://seajs.org">Sea.js</a> •
+<a href="http://lab.lepture.com/nico/">nico</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+  <script src="../../static/js/nprogress.js?nowrap"></script>
+  <script>
+  (function() {
+    NProgress.start();
+    window.onload = NProgress.done;
+    var ready = function(fn) {
+      var doc = document;
+      if(doc.addEventListener) {
+        doc.addEventListener('DOMContentLoaded', fn, false);
+      } else {
+        doc.attachEvent('onreadystatechange', fn);
+      }
+    };
+    ready(function() {
+      NProgress.inc(0.6);
+
+      seajs.use("../../static/js/arale-qrcode.js?nowrap", function(QRCode) {
+        var url = location.href;
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          url = url.replace(location.hostname, '192.168.1.15');
+        }
+        var el = new QRCode({
+          text: url,
+          render: 'canvas',
+          width: 120,
+          height: 120
+        });
+        document.getElementById('qrcode').appendChild(el);
+      });
+    }, false);
+  })();
+  </script>
+</html>

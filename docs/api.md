@@ -1,4 +1,5 @@
 # XTemplate API
+---
 
 ## Class
 

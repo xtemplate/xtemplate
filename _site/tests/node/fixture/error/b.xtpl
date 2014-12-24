@@ -1,0 +1,4 @@
+title {{#block ("body")}}b{{/block}}
+{{#if(true)}}
+123
+{{ /if }}
