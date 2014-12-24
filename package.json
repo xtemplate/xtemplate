@@ -50,6 +50,7 @@
     "node-jscover": "^0.6.8",
     "node-jscover-coveralls": "^1.0.10",
     "precommit-hook": "^1.0.7",
+    "saucelabs-runner": "~2.0.11",
     "xtpl": "^3.0.0"
   },
   "precommit": [
