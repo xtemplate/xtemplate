@@ -1,14 +1,14 @@
 /*
-Copyright 2014, xtemplate@4.0.2
+Copyright 2014, xtemplate@4.0.3
 MIT Licensed
-build time: Mon, 22 Dec 2014 08:20:32 GMT
+build time: Wed, 24 Dec 2014 08:11:25 GMT
 */
 var XTemplateRuntime = (function(){ var module = {};
 
 /*
-Copyright 2014, xtemplate@4.0.2
+Copyright 2014, xtemplate@4.0.3
 MIT Licensed
-build time: Mon, 22 Dec 2014 08:20:32 GMT
+build time: Wed, 24 Dec 2014 08:11:25 GMT
 */
 var _xtemplateRuntime_;
 _xtemplateRuntime_ = function (exports) {
@@ -689,7 +689,7 @@ _xtemplateRuntime_ = function (exports) {
         caller = scope.resolve(parts.slice(0, -1), depth);
         fn = caller[parts[parts.length - 1]];
         if (fn) {
-          return fn.apply(caller, option.params);
+          return fn.apply(caller, option.params || []);
         }
       }
       buffer.error('Command Not Found: ' + parts.join('.'));
@@ -709,7 +709,7 @@ _xtemplateRuntime_ = function (exports) {
             return '';
           }
         }
-        return fn.apply(caller, params);
+        return fn.apply(caller, params || []);
       },
       callCommand: function (tpl, scope, option, buffer, parts) {
         return callFn(tpl, scope, option, buffer, parts);
@@ -734,7 +734,7 @@ _xtemplateRuntime_ = function (exports) {
           return globalConfig;
         }
       },
-      version: '4.0.2',
+      version: '4.0.3',
       nativeCommands: nativeCommands,
       utils: utils,
       util: util,
