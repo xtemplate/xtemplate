@@ -71,10 +71,18 @@ unescaped: <script>
 
 
 ```
-{{! This is commnet }}
+output before comment
+{{! This is comment }}
+output after comment
 ```
 
 渲染这个模板，将会得到下面的结果：
+
+```
+output before comment
+
+output after comment
+```
 
 ### 作用域
 

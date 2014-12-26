@@ -71,10 +71,18 @@ To add some comments for your template, use `{{! comment }}`:
 
 
 ```
-{{! This is commnet }}
+output before comment
+{{! This is comment }}
+output after comment
 ```
 
 Render this template, the output will be empty.
+
+```
+output before comment
+
+output after comment
+```
 
 ### Scope
 
