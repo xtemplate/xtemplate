@@ -71,10 +71,14 @@ unescaped: <script>
 
 
 ```
-{{! This is commnet }}
+{{! This is comment }}
 ```
 
 渲染这个模板，将会得到下面的结果：
+
+```html
+<!--This is comment-->
+```
 
 ### 作用域
 
