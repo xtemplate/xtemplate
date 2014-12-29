@@ -2,14 +2,11 @@
  * TC for XTemplate
  * @author yiminghe@gmail.com
  */
-if (window.seajs) {
-  window.require = window.seajs.use;
-}
 var XTemplate = require('../');
 XTemplate.config('loader', {
   load: function (tpl, callback) {
     var name = tpl.name;
-    window.require([name],
+    (require.async||require)([name],
       function (content) {
         if (typeof content === 'string') {
           try {
