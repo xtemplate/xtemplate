@@ -19,7 +19,7 @@
   "devDependencies": {
     "combined-stream": "0.0.5",
     "expect.js": "^0.3.1",
-    "gh-changelog": "^1.0.5",
+    "gh-history": "^1.0.0",
     "gulp": "^3.8.7",
     "gulp-clean": "^0.3.1",
     "gulp-filter": "^1.0.0",
@@ -54,7 +54,12 @@
   "config": {
     "port": 8002
   },
-  "spm":{},
+  "spm": {
+    "devDependencies": {
+      "expect.js": "0.3.1",
+      "node-uuid": "1.4.3"
+    }
+  },
   "scripts": {
     "start": "node --harmony node_modules/.bin/rc-server",
     "publish": "spm publish && gulp tag",

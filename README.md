@@ -41,7 +41,10 @@ support async control, inheritance, include, logic expression, custom function a
 - [API](https://github.com/kissyteam/xtemplate/blob/master/docs/api.md)
 - [中文介绍](https://github.com/kissyteam/xtemplate/blob/master/docs/tutorial/introduce.md)
 - [dailyjs](http://dailyjs.com/2014/09/24/node-roundup/)
-- [change log](https://github.com/kissyteam/xtemplate/blob/master/CHANGELOG.md)
+- [change log](https://github.com/kissyteam/xtemplate/blob/master/HISTORY.md)
+- [docs at spm](http://spmjs.io/docs/xtemplate/)
+- [history at spm](http://spmjs.io/docs/xtemplate/history.html)
+- [demo at spm](http://spmjs.io/docs/xtemplate/examples/)
 
 ## use on browser
 

@@ -239,12 +239,12 @@ gulp.task('parser-dev', function (callback) {
         }).on('exit', callback);
 });
 
-gulp.task('gh-changelog', function (done) {
-    var ghChangeLog = require('gh-changelog');
-    ghChangeLog.getChangeLog({
+gulp.task('gh-history', function (done) {
+    var ghChangeLog = require('gh-history');
+    ghChangeLog.generateHistoryMD({
         user: 'kissyteam',
         repo: 'xtemplate',
-        mdFilePath: './CHANGELOG.md'
+        mdFilePath: './HISTORY.md'
     }, function () {
         done();
     });

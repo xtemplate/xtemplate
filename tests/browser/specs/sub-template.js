@@ -39,7 +39,7 @@ describe('sub template', function () {
           expect(tpl.name).to.equal('xtemplate-test/' + tplName);
           expect(tpl.originalName).to.equal('./' + tplName);
           expect(tpl.parent.name).to.equal('xtemplate-test/' + tplName2);
-          modulex.use([name],
+          window.require([name],
             function (content) {
               if (typeof content === 'string') {
                 try {
