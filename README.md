@@ -6,6 +6,7 @@ support async control, inheritance, include, logic expression, custom function a
 
 [![NPM version][npm-image]][npm-url]
 [![Bower version][bower-image]][bower-url]
+[![SPM version](http://spmjs.io/badge/xtemplate)](http://spmjs.io/package/xtemplate)
 [![build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
 [![gemnasium deps][gemnasium-image]][gemnasium-url]
