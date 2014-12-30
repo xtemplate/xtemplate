@@ -297,26 +297,45 @@ var a = {
 
 `each` 可以对 arrays 和 dictionaries 进行迭代：
 
-```
-{{#each(x)}}
-    {{xindex}} {{this}}
-{{/each}}
+#### arrays
 
-{{#each(y,"value","key")}}
+```
+{{set (array = [{
+    name: "foo"
+}, {
+    name: "bar"
+}])}}
+
+{{#each(array)}}
+    {{xindex}} {{this.name}}
+{{/each}}
+```
+
+渲染这个模版，将会得到结果：
+
+```
+0 foo
+1 bar
+```
+
+#### dictionaries
+
+```
+{{set (dictionary = {
+    foo: "bar",
+    hello: "world"
+})}}
+
+{{#each(dictionary,"value","key")}}
     {{key}} {{value}}
 {{/each}}
 ```
 
-使用数据 `{x: [1, 2, 3], y: {a: 1, b: 2, c: 3}}` 渲染上面的页面，将会得到结果：
+渲染这个模版，将会得到结果：
 
 ```
-0 1
-1 2
-2 3
-
-a 1
-b 2
-c 3
+foo bar
+hello world
 ```
 
 #### 访问上层变量

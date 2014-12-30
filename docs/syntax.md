@@ -297,26 +297,45 @@ var a = {
 
 `each` iterates over arrays and dictionaries.
 
-```
-{{#each(x)}}
-    {{xindex}} {{this}}
-{{/each}}
+#### arrays
 
-{{#each(y,"value","key")}}
+```
+{{set (array = [{
+    name: "foo"
+}, {
+    name: "bar"
+}])}}
+
+{{#each(array)}}
+    {{xindex}} {{this.name}}
+{{/each}}
+```
+
+Render this template, the output will be:
+
+```
+0 foo
+1 bar
+```
+
+#### dictionaries
+
+```
+{{set (dictionary = {
+    foo: "bar",
+    hello: "world"
+})}}
+
+{{#each(dictionary,"value","key")}}
     {{key}} {{value}}
 {{/each}}
 ```
 
-Render this template with data `{x: [1, 2, 3], y: {a: 1, b: 2, c: 3}}`, the output will be:
+Render this template, the output will be:
 
 ```
-0 1
-1 2
-2 3
-
-a 1
-b 2
-c 3
+foo bar
+hello world
 ```
 
 #### level access
