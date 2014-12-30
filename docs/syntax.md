@@ -384,11 +384,68 @@ Notice: In macro, you can't visit parent's scope, but you can visit root data th
 
 ### include
 
-include pulls in other templates in place. It's useful when you need to share smaller chunks across several templates that already inherit other templates:
+`include` pulls in other templates in place. It's useful when you need to share smaller chunks across several templates that already inherit other templates:
 
 ```
 {{ include ("item.html") }}
 ```
+
+If you want to pull in other templates and set more contexts, you can pass them by `include`'s arguments.
+
+In `parent.html`:
+
+```
+{{ set (x = "x", y = "y") }}
+{{ include ("sub.html", xx = x, yy = x)}}
+```
+
+In `sub.html`:
+
+```
+x: {{x}}
+y: {{y}}
+xx: {{xx}}
+yy: {{yy}}
+```
+
+Render `parent.html`, the output will be:
+
+```
+x: x
+y: y
+xx: x
+yy: x
+```
+
+### parse
+
+If you want sub templates have an independent scope, please use `parse`.
+
+In `parent.html`:
+
+```
+{{ set (x = "x", y = "y") }}
+{{ parse ("sub.html", xx = x, yy = x)}}
+```
+
+In `sub.html` 中:
+
+```
+x: {{x}}
+y: {{y}}
+xx: {{xx}}
+yy: {{yy}}
+```
+
+Render `parent.html`, the output will be:
+
+```
+x:
+y:
+xx: x
+yy: x
+```
+
 
 ## Template Inheritance
 
