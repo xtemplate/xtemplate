@@ -390,6 +390,62 @@ include 引入其他的模板。它在你想要共享不同的小的区块时非
 {{ include ("item.html") }}
 ```
 
+如果希望在引入子模版的时候同时在子模版的上下文上设置其他的值，可以通过 `include` 后面的参数传入。
+
+在 `parent.html` 中：
+
+```
+{{ set (x = "x", y = "y") }}
+{{ include ("sub.html", xx = x, yy = x)}}
+```
+
+在 `sub.html` 中：
+
+```
+x: {{x}}
+y: {{y}}
+xx: {{xx}}
+yy: {{yy}}
+```
+
+渲染 `parent.html` 将会得到结果：
+
+```
+x: x
+y: y
+xx: x
+yy: x
+```
+
+### parse
+
+如果希望能够让子模版拥有一个完全独立的上下文，不需要父级作用域，则可以使用 `parse`。
+
+在 `parent.html` 中：
+
+```
+{{ set (x = "x", y = "y") }}
+{{ parse ("sub.html", xx = x, yy = x)}}
+```
+
+在 `sub.html` 中：
+
+```
+x: {{x}}
+y: {{y}}
+xx: {{xx}}
+yy: {{yy}}
+```
+
+渲染 `parent.html` 将会得到结果：
+
+```
+x:
+y:
+xx: x
+yy: x
+```
+
 ## 模板继承
 
 模板继承可以让你更容易的来复用模板。当编写一个 template 的时候，你可以定义 `blocks`，这样在子模板中可以重写掉这些 block。
