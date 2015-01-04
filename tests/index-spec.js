@@ -25,6 +25,7 @@ XTemplate.config('loader', {
     );
   }
 });
+
 require('./browser/specs/data-function');
 require('./browser/specs/error');
 require('./browser/specs/escape');
