@@ -1,1 +1,1 @@
-module.exports = require('./lib/xtemplate');
+module.exports = require('./lib/');

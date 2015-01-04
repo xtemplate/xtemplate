@@ -1,10 +1,8 @@
-<script src="/build/xtemplate/runtime-standalone.js"></script>
+<script src="/build/index-standalone-debug.js?nowrap"></script>
 <script>
     (function () {
-        var x = XTemplateRuntime;
-        console.log(new XTemplateRuntime(function b(scope,buffer,undefined){
-            buffer.writeEscaped(1);
-            return buffer;
-        }).render());
+        console.log(new XTemplate('Hello {{you}}!').render({
+            you:'world'
+        }));
     })();
 </script>

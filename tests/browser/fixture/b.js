@@ -1,4 +1,4 @@
-/*compiled by xtemplate#@VERSION@*/
+/*compiled by xtemplate#*/
 var ret = module.exports = function b(undefined){
 var t;
 var t0;
