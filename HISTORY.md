@@ -1,6 +1,11 @@
 # History
 ----
 
+## 4.0.4 (2014-01-13)
+
+`fixed` [#53](https://github.com/kissyteam/xtemplate/issues/53) fix set empty array and object
+
+
 ## 4.0.2 (2014-12-22)
 
 `improved` [#48](https://github.com/kissyteam/xtemplate/pull/48) Compile error   ([@dead-horse](https://github.com/dead-horse))
