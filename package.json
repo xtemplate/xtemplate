@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": ">=0.10"
@@ -55,10 +55,6 @@
     "port": 8002
   },
   "spm": {
-    "devDependencies": {
-      "expect.js": "0.3.1",
-      "node-uuid": "1.4.3"
-    }
   },
   "scripts": {
     "start": "node --harmony node_modules/.bin/rc-server",

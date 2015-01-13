@@ -355,37 +355,6 @@ describe('feature', function () {
         expect(render).to.equal('my  oo');
     });
 
-    it('support set', function () {
-        var tpl = '{{#each (data)}}' +
-            '{{set (n2 = this*2, n3 = this*3)}}' +
-            '{{n2}}-{{n3}}|' +
-            '{{/each}}';
-
-        var data = {
-            data: [1, 2]
-        };
-
-        expect(new XTemplate(tpl).render(data)).to.equal('2-3|4-6|');
-    });
-
-    it('support set for this', function () {
-        var tpl = '{{#each (data)}}' +
-            '{{set (n2 = this*2, n3 = this*3)}}' +
-            '{{this.n2}}-{{this.n3}}|' +
-            '{{/each}}';
-
-        var data = {
-            data: [1, 2]
-        };
-
-        expect(new XTemplate(tpl).render(data)).to.equal('2-3|4-6|');
-    });
-
-    it('support set on top', function () {
-        var tpl = '{{set(n=1)}}{{n}}';
-        expect(new XTemplate(tpl).render({})).to.equal('1');
-    });
-
     describe('汉字', function () {
         it('允许汉字内容', function () {
             var tpl = '{{t}}出现了';

@@ -166,37 +166,53 @@
           return new this.yy.ArrayExpression(this.$2);
         }
       },
+      // empty array
       {
         symbol: 'expression',
-        rhs: ['L_BRACE', 'jsonExpression', 'R_BRACE'],
+        rhs: ['L_BRACKET', 'R_BRACKET'],
         action: function () {
-          return new this.yy.JsonExpression(this.$2);
+          return new this.yy.ArrayExpression([]);
         }
       },
       {
-        symbol: 'jsonPart',
+        symbol: 'expression',
+        rhs: ['L_BRACE', 'objectExpression', 'R_BRACE'],
+        action: function () {
+          return new this.yy.ObjectExpression(this.$2);
+        }
+      },
+      // empty object
+      {
+        symbol: 'expression',
+        rhs: ['L_BRACE', 'R_BRACE'],
+        action: function () {
+          return new this.yy.ObjectExpression([]);
+        }
+      },
+      {
+        symbol: 'objectPart',
         rhs: ['STRING', 'COLON', 'expression'],
         action: function () {
           return [this.$1, this.$3];
         }
       },
       {
-        symbol: 'jsonPart',
+        symbol: 'objectPart',
         rhs: ['ID', 'COLON', 'expression'],
         action: function () {
           return [this.$1, this.$3];
         }
       },
       {
-        symbol: 'jsonExpression',
-        rhs: ['jsonPart'],
+        symbol: 'objectExpression',
+        rhs: ['objectPart'],
         action: function () {
           return [this.$1];
         }
       },
       {
-        symbol: 'jsonExpression',
-        rhs: ['jsonExpression', 'COMMA', 'jsonPart'],
+        symbol: 'objectExpression',
+        rhs: ['objectExpression', 'COMMA', 'objectPart'],
         action: function () {
           this.$1.push(this.$3);
         }

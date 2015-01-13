@@ -181,7 +181,7 @@ gulp.task('kg', function () {
 });
 
 gulp.task('parser', function (callback) {
-  require('child_process').exec('node node_modules/kison/bin/kison -g lib/xtemplate/compiler/parser-grammar.kison',
+  require('child_process').exec('node node_modules/kison/bin/kison -g lib/compiler/parser-grammar.kison',
     function (error, stdout, stderr) {
       if (stdout) {
         console.log('stdout: ' + stdout);
@@ -196,7 +196,7 @@ gulp.task('parser', function (callback) {
 });
 
 gulp.task('parser-dev', function (callback) {
-  require('child_process').exec('node node_modules/kison/bin/kison -g lib/xtemplate/compiler/parser-grammar.kison --no-compressSymbol',
+  require('child_process').exec('node node_modules/kison/bin/kison -g lib/compiler/parser-grammar.kison --no-compressSymbol',
     function (error, stdout, stderr) {
       if (stdout) {
         console.log('stdout: ' + stdout);

@@ -30,6 +30,7 @@ require('./browser/specs/data-function');
 require('./browser/specs/error');
 require('./browser/specs/escape');
 require('./browser/specs/feature');
+require('./browser/specs/set');
 require('./browser/specs/precompile');
 require('./browser/specs/each');
 require('./browser/specs/if');

@@ -1,5 +1,30 @@
-# performance hint
+# hints
 ---
+
+## ignore function call result
+
+```js
+{{set(n=[])}}
+{{n.push(2)}} // => 1
+{{n.push(4 && undefined)}} // =>
+```
+
+## modify reference
+
+```js
+{{set(n=['x'])}}
+{{set(str='x')}}
+{{set(data=[1,2,3])}}
+{{#each(data)}}
+  {{set(str = str+this)}}
+  {{n.push(this) && undefined}}
+{{/each}}
+
+{{str}} // => x
+{{n.join('')}} //=> x123
+```
+
+## performance hint
 
 ### variable render hint
 
