@@ -27,6 +27,7 @@ XTemplate.config('loader', {
 });
 
 require('./browser/specs/data-function');
+require('./browser/specs/data-null');
 require('./browser/specs/error');
 require('./browser/specs/escape');
 require('./browser/specs/feature');
