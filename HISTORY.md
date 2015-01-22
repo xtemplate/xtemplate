@@ -1,7 +1,12 @@
 # History
 ----
 
-## 4.0.4 (2014-01-13)
+## 4.0.5 (2015-01-22)
+
+`fixed` [#55](https://github.com/kissyteam/xtemplate/pull/55) fix variable is null
+
+
+## 4.0.4 (2015-01-13)
 
 `fixed` [#53](https://github.com/kissyteam/xtemplate/issues/53) fix set empty array and object
 
