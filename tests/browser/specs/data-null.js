@@ -44,7 +44,7 @@ describe('support when data is null', function () {
         new XTemplate(tpl, {strict: true}).render({
           x: null
         });
-      }).to.throwError(TypeError);
+      }).to.throwError();
     });
 
     it('should render throw when sub property of data is null', function () {
@@ -53,21 +53,21 @@ describe('support when data is null', function () {
         new XTemplate(tpl, {strict: true}).render({
           x: {y: null}
         });
-      }).to.throwError(TypeError);
+      }).to.throwError();
     });
 
     it('should render throw when property of affix is null', function () {
       expect(function () {
         var tpl='{{set(x=null)}}{{x.y}}';
         new XTemplate(tpl, {strict: true}).render();
-      }).to.throwError(TypeError);
+      }).to.throwError();
     });
 
     it('should render throw when sub property of affix is null', function () {
       expect(function () {
         var tpl='{{set(x={y:null})}}{{x.y.z}}';
         new XTemplate(tpl, {strict: true}).render();
-      }).to.throwError(TypeError);
+      }).to.throwError();
     });
   });
 });
