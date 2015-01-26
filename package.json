@@ -52,7 +52,7 @@
   "spm": {},
   "scripts": {
     "start": "node --harmony node_modules/.bin/rc-server",
-    "publish": "spm publish && gulp tag",
+    "publish": "spm publish && rc-tools run tag",
     "lint": "rc-tools run lint",
     "saucelabs": "rc-tools run saucelabs",
     "test": "node --harmony ./node_modules/rc-server/node_modules/mocha/bin/mocha -R list tests/node/specs",
