@@ -1,6 +1,11 @@
 # History
 ----
 
+## 4.1.0 (2015-01-26)
+
+`fixed` [#54](https://github.com/kissyteam/xtemplate/pull/54) support set array/object member
+
+
 ## 4.0.5 (2015-01-22)
 
 `fixed` [#55](https://github.com/kissyteam/xtemplate/pull/55) fix variable is null
