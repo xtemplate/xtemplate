@@ -80,4 +80,18 @@ describe('set', function () {
     var tpl = '{{set(n=1)}}{{n}}';
     expect(new XTemplate(tpl).render({})).to.equal('1');
   });
+
+  it('support property refer as key',function(){
+    var tpl = '{{set(x=[0])}}{{#each(data)}}{{set(x[0] = 1 + x[0])}}{{/each}}{{x[0]}}';
+    expect(new XTemplate(tpl).render({
+      data:[1,2,3]
+    })).to.equal('3');
+  });
+
+  it('support modify parent scope data',function(){
+    var tpl='{{set(d1=1,d2=2)}}{{#with(data)}}{{set(d1=2,../d2=4)}}{{/with}}{{d1}}{{d2}}';
+    expect(new XTemplate(tpl).render({
+      data:{}
+    })).to.equal('14');
+  });
 });

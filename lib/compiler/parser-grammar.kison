@@ -402,27 +402,22 @@
         symbol: 'hash',
         rhs: ['hash', 'COMMA', 'hashSegment'],
         action: function () {
-          var hash = this.$1,
-            seg = this.$3;
-          hash.value[seg[0]] = seg[1];
+          this.$1.value.push(this.$3);
         }
       },
       {
         symbol: 'hash',
         rhs: ['hashSegment'],
         action: function () {
-          var hash = new this.yy.Hash({
-              line: this.lexer.firstLine,
-              col: this.lexer.firstColumn
-            }),
-            $1 = this.$1;
-          hash.value[$1[0]] = $1[1];
-          return hash;
+          return new this.yy.Hash({
+            line: this.lexer.firstLine,
+            col: this.lexer.firstColumn
+          }, [this.$1]);
         }
       },
       {
         symbol: 'hashSegment',
-        rhs: ['ID', 'EQUALS', 'expression'],
+        rhs: ['id', 'EQUALS', 'expression'],
         action: function () {
           return [this.$1, this.$3];
         }

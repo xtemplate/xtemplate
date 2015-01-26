@@ -14,25 +14,6 @@ var stylish = require('jshint-stylish');
 var jscs = require('gulp-jscs');
 var replace = require('gulp-replace');
 
-gulp.task('lint', function () {
-  return gulp.src('./lib/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter(stylish))
-    .pipe(jshint.reporter('fail'))
-    .pipe(jscs());
-});
-
-gulp.task('clean', function () {
-  return gulp.src(build, {
-    read: false
-  }).pipe(clean());
-});
-
-gulp.task('tag', function (done) {
-  var cp = require('child_process');
-  var version = packageInfo.version;
-  cp.exec('git tag ' + version + ' | git push origin ' + version + ':' + version + ' | git push origin master:master', done);
-});
 
 var wrapper = require('gulp-wrapper');
 var date = new Date();
@@ -208,33 +189,4 @@ gulp.task('parser-dev', function (callback) {
         console.log('exec error: ' + error);
       }
     }).on('exit', callback);
-});
-
-gulp.task('gh-history', function (done) {
-  var ghChangeLog = require('gh-history');
-  ghChangeLog.generateHistoryMD({
-    user: 'kissyteam',
-    repo: 'xtemplate',
-    mdFilePath: './HISTORY.md'
-  }, function () {
-    done();
-  });
-});
-
-gulp.task('saucelabs', function (done) {
-  require('saucelabs-runner')({
-    browsers: [
-      {browserName: 'chrome'},
-      {browserName: 'firefox'},
-      {browserName: 'internet explorer', version: 8},
-      {browserName: 'internet explorer', version: 9},
-      {browserName: 'internet explorer', version: 10},
-      {browserName: 'internet explorer', version: 11, platform: 'Windows 8.1'}
-    ]
-  }).fin(function () {
-    done();
-    setTimeout(function () {
-      process.exit(0);
-    }, 1000);
-  });
 });
