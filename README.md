@@ -5,7 +5,6 @@ High Speed, eXtensible Template Engine lib on browser and nodejs.
 support async control, inheritance, include, logic expression, custom function and more.
 
 [![NPM version][npm-image]][npm-url]
-[![Bower version][bower-image]][bower-url]
 [![SPM version](http://spmjs.io/badge/xtemplate)](http://spmjs.io/package/xtemplate)
 [![build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
@@ -19,8 +18,6 @@ support async control, inheritance, include, logic expression, custom function a
 
 [npm-image]: http://img.shields.io/npm/v/xtemplate.svg?style=flat-square
 [npm-url]: http://npmjs.org/package/xtemplate
-[bower-image]: http://img.shields.io/bower/v/xtemplate.svg?style=flat-square
-[bower-url]: https://github.com/yiminghe/xtemplate
 [travis-image]: https://img.shields.io/travis/yiminghe/xtemplate.svg?style=flat-square
 [travis-url]: https://travis-ci.org/yiminghe/xtemplate
 [coveralls-image]: https://img.shields.io/coveralls/yiminghe/xtemplate.svg?style=flat-square
