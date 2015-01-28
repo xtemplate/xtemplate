@@ -23,7 +23,7 @@ var header = ['/*',
   'build time: ' + (date.toGMTString()),
   '*/', ''].join('\n');
 
-gulp.task('xtemplate', ['lint'], function () {
+gulp.task('xtemplate', function () {
   var CombinedStream = require('combined-stream');
   var combinedStream = CombinedStream.create();
   var packages = {};
@@ -81,7 +81,7 @@ gulp.task('precompile-test', function () {
 
 gulp.task('default', ['xtemplate', 'xtemplate-standalone', 'precompile-test']);
 
-gulp.task('xtemplate-standalone', ['lint'], function () {
+gulp.task('xtemplate-standalone', function () {
   var CombinedStream = require('combined-stream');
   var combinedStream = CombinedStream.create();
   var packages = {};

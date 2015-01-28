@@ -41,7 +41,7 @@ var debuggerCommand = nativeCommands["debugger"];
 
 
 buffer.data += '';
-var id0 = ((t=(affix.y)) !== undefined ? t:((t = data.y) !== undefined ? t :scope.resolveLooseUp(["y"])));
+var id0 = ((t=(affix.y)) !== undefined ? t : ((t = data.y) !== undefined ? t  : scope.resolveLooseUp(["y"])));
 buffer = buffer.writeEscaped(id0);
 return buffer;
 };
