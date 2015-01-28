@@ -5,29 +5,16 @@
 特别是 [Martin Fowler](http://martinfowler.com/) 的突出贡献。
 而在前端领域尚较少涉及，而如果在前端开发中合理使用 DSL 同样也可以有效得**减少代码数量，提高可读性**，常见的一个应用场景即前端模板的构建。
 本质上说模板也是一个微型语言，因此可以从DSL的角度着手，使用工具快速构建一个适合于特定前端框架的模板引擎。
-本文将以 [KISSY XTemplate](http://docs.kissyui.com/docs/html/demo/component/xtemplate/index.html)
-为例介绍如何构建前端的 DSL。
+本文将以 xtemplate 为例介绍如何构建前端的 DSL。
 
 注：
 本文持续更新地址：
-[xtemplate at github](https://github.com/kissyteam/kissy/blob/master/src/xtemplate/impl.md).
-[xtemplate at docs.kissyui.com](http://docs.kissyui.com/docs/html/tutorials/kissy/component/xtemplate/impl.html).
+[xtemplate at github](https://github.com/xtemplate/xtemplate/blob/master/docs/tutorial/impl.md).
 
-
-
-## 首先 npm 安装 kissy
-
-     npm install -g kissy
-
-通常测试版不会发送到 npm，这时推荐下载指定的 git 版本到本地目录安装，例如下载 [主干](https://github.com/kissyteam/kissy/archive/master.zip) 到 d:/code
-  
-    cd d:/code
-    npm link
-  	
 
 ## xtemplate 示例代码
 
-    this is kissy xtemplate: {{date}}
+    this is xtemplate: {{date}}
     {{#if n > n*2}}
         {{{no escape}}}
         {{each array}}
@@ -54,9 +41,9 @@
 由于本文关注前端技术，
 故词法以及语法都采用 json 格式描述，词法直接采用正则表达式，
 语法采用变形的 [BNF](http://en.wikipedia.org/wiki/Backus%E2%80%93Naur_Form) 形式，
-例如 xtemplate 的 [词法语法文件](https://github.com/kissyteam/kissy/blob/master/src/xtemplate/src/parser-grammar.kison)
+例如 xtemplate 的 [词法语法文件](https://github.com/xtemplate/xtemplate/blob/master/lib/compiler/parser-grammar.kison)
 
-工具采用 kissy 开发的 [LALR](http://en.wikipedia.org/wiki/LALR) 语法解析器生成器 [kison](https://github.com/kissyteam/kissy/tree/master/src/kison).
+工具采用 [LALR](http://en.wikipedia.org/wiki/LALR) 语法解析器生成器 [kison](https://github.com/yiminghe/kison).
 
 词法关注如何从输入代码中解析出最基本的代码单元（关键词，字符串，数字...），例如 xtemplate 的部分词法
 
@@ -138,18 +125,13 @@ kison 支持在每个语法规则项中添加动作函数，通过工具在识�
 
 其中 最基本的表达式(PrimaryExpression)可以直接是变量词法单元的值，而复杂的比较表达式以及整个程序则是自底向上由子树构建起来.
 
-最后使用 **kison** 命令
-
-    kison -k -g parser.kison
 
 就可以生成模板解析函数模块，大致为：
 
-    KISSY.add(function(){
-        function parse(code){
-            // ...
-        }
-        return {parse:parse};
-    });
+    function parse(code){
+        // ...
+    }
+    module.exports = {parse:parse};
 
 ## 模板编译
 
@@ -184,8 +166,8 @@ kison 支持在每个语法规则项中添加动作函数，通过工具在识�
     visitor.command=function(node){
 
         if(node.escapeHtml){
-            codes.push("if("+node.id+" in data) { ret.push(KISSY.escapeHtml(data."+node.js+");) }"+
-            " else { KISSY.warn('not found')!; }");
+            codes.push("if("+node.id+" in data) { ret.push(escapeHtml(data."+node.js+");) }"+
+            " else { warn('not found')!; }");
         }else{
         }
 
@@ -197,26 +179,18 @@ kison 支持在每个语法规则项中添加动作函数，通过工具在识�
 
 大多数 DSL 都是推荐在使用前就转换成目标语言，而客户端在不太注重性能的情况下也可以在终端用户使用时在线编译。
 
-xtemplate 通过 **kissy-xtemplate** 命令支持将模板代码离线编译为模板函数模块，这样客户端可以直接require该模块，
+xtemplate 通过 gulp-xtemplate 支持将模板代码离线编译为模板函数模块，这样客户端可以直接require该模块，
 省去了客户端编译过程，同时开发中直接面对 html 类似的模板代码，省去了字符串嵌入模板的繁琐。
 
 例如 t.xtpl.html
 
     {{ offline }} compile
 
-运行
-
-    kissy-xtemplate -n tests -p ./ -w
-    
-(-w 表示监控包目录内的 tpl 文件变化, -n 表示包名, -p 表示对应包所在的目录) 
-
 可得到 t.js
 
-    KISSY.add(function(){
-        function render(data){
-        }
-        return render;
-    });
+    function render(data){
+    }
+    module.exports = render;
 
 离线编译的一个缺点是编译出来的代码肯定比原生模板大很多，这也正体现了 DSL 节省代码，易读的特性（代码肯定不可读了）。
 
@@ -238,11 +212,9 @@ xtemplate 通过 **kissy-xtemplate** 命令支持将模板代码离线编译为�
 
 ## xtemplate 文档
 
-[api](http://docs.kissyui.com/docs/html/api/component/xtemplate/index.html)
+[api](../api.md)
 
-[demo](http://docs.kissyui.com/docs/html/demo/component/xtemplate/index.html)
-
-[tutorial](http://docs.kissyui.com/docs/html/tutorials/kissy/component/xtemplate/index.html)
+[demo](../../examples)
 
 
 ## 推荐书籍

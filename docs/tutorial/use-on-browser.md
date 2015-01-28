@@ -1,14 +1,14 @@
 # use XTemplate on browser
 ---
 
-[xtemplate](https://github.com/kissyteam/xtemplate) 经过独立化而摆脱了对 kissy 的依赖，从而可以在 kissy 升级时仍然使用老的 xtemplate，或者单独升级 xtemplate，本文介绍浏览器端单独使用 xtemplate 的几种方案
+[xtemplate](https://github.com/xtemplate/xtemplate) 经过独立化而摆脱了对 kissy 的依赖，从而可以在 kissy 升级时仍然使用老的 xtemplate，或者单独升级 xtemplate，本文介绍浏览器端单独使用 xtemplate 的几种方案
 
 ## 依赖库与工具
 
 * [gulp](https://github.com/gulpjs/gulp/) 项目构建工具
-* [xtemplate](https://github.com/kissyteam/xtemplate) 应用于 nodejs 构建工具以及浏览器端的模板引擎库
-* [gulp-xtemplate](https://github.com/kissyteam/gulp-xtemplate) 将指定后缀的模板文件（默认 .xtpl）编译为可加载的模块.
-* [modulex](https://github.com/kissyteam/modulex) 下一代独立的 kissy 模块加载器
+* [xtemplate](https://github.com/xtemplate/xtemplate) 应用于 nodejs 构建工具以及浏览器端的模板引擎库
+* [gulp-xtemplate](https://github.com/xtemplate/gulp-xtemplate) 将指定后缀的模板文件（默认 .xtpl）编译为可加载的模块.
+* [modulex](https://github.com/modulex/modulex) 下一代独立的模块加载器
 * [requirejs](https://github.com/jrburke/requirejs) 流行的模块加载器
 
 ## 浏览器端使用
@@ -152,45 +152,8 @@ var modulex = {
 </script>
 ```
 
-### 通过 kissy gallery 使用
-
-kissy 是一个整体的解决方案，如果你选择使用 kissy，那么客户端将极其简单，离线编译部分同理，不过不需要再 bower install xtemplate 了，
-只需要 npm install 指定版本的 xtemplate (npm install xtemplate@1.2.4)，然后编译即可，gulpfile:
-
-```
-var gulpXTemplate = require('gulp-xtemplate');
-var gulp = require('gulp');
-var xtemplate = require('xtemplate');
-gulp.task('default', function () {
-    gulp.src('xtpl/**/*').pipe(gulpXTemplate({
-        XTemplate: xtemplate
-    })).pipe(gulp.dest('build'))
-});
-```
-
-在使用时只需载入 kissy seed 即可 (1.4.x 从 1.4.8 支持):
-
-```
-<script src="//g.alicdn.com/kissy/k/1.4.8/seed.js"></script>
-<script>
-    KISSY.config({
-        packages: {
-            xtpl: {
-                base: './build'
-            }
-        }
-    });
-    KISSY.use('xtpl/a-render', function (S, aRender) {
-        console.log(aRender({
-            x: 1,
-            y: 2
-        })); // 12
-    });
-</script>
-```
-
 上述例子详见: [xtemplate-on-browser](https://github.com/yiminghe/xtemplate-on-browser)
 
 ## 建议
 
-欢迎提建议到：https://github.com/kissyteam/xtemplate/issues/new
+欢迎提建议到：https://github.com/xtemplate/xtemplate/issues/new
