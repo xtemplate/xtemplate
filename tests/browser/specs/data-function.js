@@ -98,4 +98,22 @@ describe('support call function in data', function () {
     });
     expect(render).to.equal('13');
   });
+
+  it('support catch error in function', function () {
+    function error() {
+      throw new Error('mock error');
+    }
+
+    expect(function () {
+      var tpl = '{{obj.error}}\n{{obj.error()}}';
+      new XTemplate(tpl).render({
+        obj: {
+          error: error
+        }
+      });
+    }).to.throwException(function (e) {
+      expect(e.message).to.match(/Execute function `obj.error` Error: mock error/);
+      expect(e.message).to.match(/line 2/);
+    });
+  });
 });
