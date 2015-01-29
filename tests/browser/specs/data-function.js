@@ -2,15 +2,15 @@ var XTemplate = require('../../../');
 var util = require('./util');
 var expect = require('expect.js');
 describe('support call function in data', function () {
-  it('support chained function call in data',function(){
-    var tpl='{{x.y.z().q.a()}}';
+  it('support chained function call in data', function () {
+    var tpl = '{{x.y.z().q.a()}}';
     var render = new XTemplate(tpl).render({
       x: {
         y: {
-          z:function(){
+          z: function () {
             return {
-              q:{
-                a:function(){
+              q: {
+                a: function () {
                   return 1;
                 }
               }
@@ -23,15 +23,15 @@ describe('support call function in data', function () {
     expect(render).to.equal('1');
   });
 
-  it('support chained function call in data with bracket',function(){
-    var tpl='{{x["y"].z()["q"]["a"](2)}}';
+  it('support chained function call in data with bracket', function () {
+    var tpl = '{{x["y"].z()["q"]["a"](2)}}';
     var render = new XTemplate(tpl).render({
       x: {
         y: {
-          z:function(){
+          z: function () {
             return {
-              q:{
-                a:function(d){
+              q: {
+                a: function (d) {
                   return d;
                 }
               }
@@ -44,14 +44,14 @@ describe('support call function in data', function () {
     expect(render).to.equal('2');
   });
 
-  it('support chained function and property in data',function(){
-    var tpl='{{x.y.z().q}}';
+  it('support chained function and property in data', function () {
+    var tpl = '{{x.y.z().q}}';
     var render = new XTemplate(tpl).render({
       x: {
         y: {
-          z:function(){
+          z: function () {
             return {
-              q:1
+              q: 1
             }
           }
         }
@@ -112,8 +112,8 @@ describe('support call function in data', function () {
         }
       });
     }).to.throwException(function (e) {
-      expect(e.message).to.match(/Execute function `obj.error` Error: mock error/);
-      expect(e.message).to.match(/line 2/);
-    });
+        expect(e.message).to.match(/Execute function `obj.error` Error: mock error/);
+        expect(e.message).to.match(/line 2/);
+      });
   });
 });

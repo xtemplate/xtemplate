@@ -1,6 +1,11 @@
 # History
 ----
 
+## 4.1.2 (2015-01-26)
+
+`fixed` [#56](https://github.com/xtemplate/xtemplate/pull/56) try catch runtime function call error
+
+
 ## 4.1.0 (2015-01-26)
 
 `fixed` [#54](https://github.com/xtemplate/xtemplate/pull/54) support set array/object member
