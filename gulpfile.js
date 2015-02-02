@@ -7,14 +7,8 @@ var rename = require('gulp-rename');
 var packageInfo = require('./package.json');
 var src = path.resolve(process.cwd(), 'lib');
 var build = path.resolve(process.cwd(), 'build');
-var clean = require('gulp-clean');
 var uglify = require('gulp-uglify');
-var jshint = require('gulp-jshint');
-var stylish = require('jshint-stylish');
-var jscs = require('gulp-jscs');
 var replace = require('gulp-replace');
-
-
 var wrapper = require('gulp-wrapper');
 var date = new Date();
 var header = ['/*',
