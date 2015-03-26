@@ -1,6 +1,10 @@
 # History
 ----
 
+## 4.2.0 (2015-03-26)
+
+`new` [#57](https://github.com/xtemplate/xtemplate/issues/57) support json parameter for include
+
 ## 4.1.2 (2015-01-26)
 
 `fixed` [#56](https://github.com/xtemplate/xtemplate/pull/56) try catch runtime function call error
