@@ -216,13 +216,13 @@ describe('error detection', function () {
   it('error when include without parameter', function () {
     expect(function () {
       new XTemplate("{{include()}}").render();
-    }).to.throwException(/include\/parse\/extend can only has one parameter!/);
+    }).to.throwException(/include\/parse\/extend can only has at most two parameter!/);
   });
 
   it('error when include more than one parameter', function () {
     expect(function () {
-      new XTemplate("{{include(a, b)}}").render();
-    }).to.throwException(/include\/parse\/extend can only has one parameter!/);
+      new XTemplate("{{include(a, b,c)}}").render();
+    }).to.throwException(/include\/parse\/extend can only has at most two parameter!/);
   });
 
   it('error when include empty parameter', function () {

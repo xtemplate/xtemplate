@@ -39,7 +39,7 @@ describe('sub template', function () {
           expect(tpl.name).to.equal('xtemplate-test/' + tplName);
           expect(tpl.originalName).to.equal('./' + tplName);
           expect(tpl.parent.name).to.equal('xtemplate-test/' + tplName2);
-          (require.async||require)([name],
+          (require.async || require)([name],
             function (content) {
               if (typeof content === 'string') {
                 try {
@@ -152,5 +152,16 @@ describe('sub template', function () {
       name: tplName
     }).render({title: 1});
     expect(ret).to.be('1');
+  });
+
+  it('will support json as second parameter', function () {
+    var tplName = uuid.v4();
+    var tplName2 = uuid.v4();
+    define(tplName, '{{include("' + tplName2 + '",{title:3,title2:2},title=1)}}');
+    define(tplName2, '{{title}}{{title2}}');
+    var ret = new XTemplate({
+      name: tplName
+    }).render({});
+    expect(ret).to.be('12');
   });
 });
