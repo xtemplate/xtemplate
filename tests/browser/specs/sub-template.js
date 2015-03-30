@@ -69,7 +69,8 @@ describe('sub template', function () {
       content: tpl,
       isModule: true
     });
-    expect(code.indexOf('require("./x")')).not.to.equal(-1);
+    // do not use require ...
+    expect(code).to.contain('requ'+'ire("./x")');
   });
 
   it('support relative sub template name', function () {
