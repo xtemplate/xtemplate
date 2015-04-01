@@ -122,7 +122,7 @@ b: 2
 
 通过 `root.foo` 可以放问到渲染的根数据（调用 `render` 方法时传递进去的数据）。
 
-用数据 `{name: "foo", array: [name: "bar"]}` 渲染下面的模板:
+用数据 `{name: "foo", array: [{name: "bar"}]}` 渲染下面的模板:
 
 ```
 {{#each(arr)}}
