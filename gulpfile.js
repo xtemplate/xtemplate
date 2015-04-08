@@ -83,14 +83,17 @@ gulp.task('xtemplate-standalone', function () {
   packages[fullName] = {
     base: path.resolve(src)
   };
+
+  var exportVer = packageInfo.version.replace(/\./g, '');
+
   var wrap = {
     index: {
       start: 'var XTemplate = (function(){ var module = {};\n',
-      end: '\nreturn xtemplate403Index;\n})();'
+      end: '\nreturn xtemplate' + exportVer + 'Index;\n})();'
     },
     runtime: {
       start: 'var XTemplateRuntime = (function(){ var module = {};\n',
-      end: '\nreturn xtemplate403Runtime;\n})();'
+      end: '\nreturn xtemplate' + exportVer + 'Runtime;\n})();'
     }
   };
   ['index', 'runtime'].forEach(function (mod) {
