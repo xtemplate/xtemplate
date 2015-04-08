@@ -19,6 +19,5 @@ Thumbs.db
 .svn/
 *.swp
 out/
-build/
 spm_modules
 _site/

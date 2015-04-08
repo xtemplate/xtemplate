@@ -1,6 +1,10 @@
 # History
 ----
 
+## 4.2.1 (2015-04-08)
+
+`improved` [#60](https://github.com/xtemplate/xtemplate/issues/60) add build dir to npm
+
 ## 4.2.0 (2015-03-26)
 
 `new` [#57](https://github.com/xtemplate/xtemplate/issues/57) support json parameter for include
