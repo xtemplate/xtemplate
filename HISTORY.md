@@ -1,6 +1,10 @@
 # History
 ----
 
+## 4.2.2 (2015-04-20)
+
+`improved` [#63](https://github.com/xtemplate/xtemplate/issues/63) fix call function when null or undefined
+
 ## 4.2.1 (2015-04-08)
 
 `improved` [#60](https://github.com/xtemplate/xtemplate/issues/60) add build dir to npm
