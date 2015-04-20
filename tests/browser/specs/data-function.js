@@ -116,4 +116,16 @@ describe('support call function in data', function () {
         expect(e.message).to.match(/line 2/);
       });
   });
+
+  it('support catch error when call methods in null or undefined', function () {
+    expect(function () {
+      var tpl = '{{obj.error}}\n{{obj.error()}}';
+      new XTemplate(tpl).render({
+        obj: null
+      });
+    }).to.throwException(function (e) {
+        expect(e.message).to.match(/Execute function `obj.error` Error: obj is undefined or null/);
+        expect(e.message).to.match(/line 2/);
+      });
+  });
 });
