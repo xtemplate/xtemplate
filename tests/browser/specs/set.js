@@ -94,4 +94,11 @@ describe('set', function () {
       data:{}
     })).to.equal('14');
   });
+
+  it('should not throw when set to undefined\'s property', function(){
+    var tpl='{{set(a=1)}}{{set(a.b.c.d=1)}}{{a}}{{a.b.c.d}}';
+    expect(new XTemplate(tpl).render({
+      data:{}
+    })).to.equal('1');
+  })
 });
