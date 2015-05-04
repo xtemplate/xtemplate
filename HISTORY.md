@@ -1,6 +1,10 @@
 # History
 ----
 
+## 4.2.4 (2015-05-05)
+
+`improved` [#64](https://github.com/xtemplate/xtemplate/issues/64) reset global variable (lastLine)
+
 ## 4.2.3 (2015-05-04)
 
 `improved` [#65](https://github.com/xtemplate/xtemplate/issues/65) resolve don't throw when value is null or undefined
