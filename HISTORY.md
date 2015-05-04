@@ -1,6 +1,10 @@
 # History
 ----
 
+## 4.2.3 (2015-05-04)
+
+`improved` [#65](https://github.com/xtemplate/xtemplate/issues/65) resolve don't throw when value is null or undefined
+
 ## 4.2.2 (2015-04-20)
 
 `improved` [#63](https://github.com/xtemplate/xtemplate/issues/63) fix call function when null or undefined
