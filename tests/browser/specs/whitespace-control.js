@@ -23,7 +23,7 @@ describe('whitespace control', function () {
   });
 
   describe('block',function(){
-    it.only('works inside block',function(){
+    it('works inside block',function(){
       var tpl=[
         '{{#each(data)~}}',
         '{{this}}',
