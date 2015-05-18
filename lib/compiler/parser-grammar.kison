@@ -44,7 +44,19 @@
         symbol: 'statements',
         rhs: ['statements', 'statement'],
         action: function () {
-          this.$1.push(this.$2);
+          var statements = this.$1;
+          var statement = this.$2;
+          if (statements.length) {
+            var lastStatement = statements[statements.length - 1];
+            if (lastStatement.rtrim && statement && statement.type === 'contentStatement' && !statement.value.trim()) {
+            } else if (statement.ltrim && lastStatement && lastStatement.type === 'contentStatement' && !lastStatement.value.trim()) {
+              statements[statements.length - 1] = statement;
+            } else {
+              statements.push(statement);
+            }
+          } else {
+            statements.push(statement);
+          }
         }
       },
 
@@ -53,11 +65,35 @@
         symbol: 'statement',
         rhs: ['OPEN_BLOCK', 'function', 'CLOSE', 'program', 'OPEN_CLOSE_BLOCK', 'id', 'CLOSE'],
         action: function () {
-          return new this.yy.BlockStatement({
+          var program = this.$4;
+          var openBlock = this.$1;
+          var lastClose = this.$7;
+          var statements = program.statements;
+          var close = this.$3;
+          var openCloseBlock = this.$5;
+          if (close.indexOf('~}') !== -1 && statements[0] && statements[0].type === 'contentStatement') {
+            if (!statements[0].value.trim()) {
+              statements.shift();
+            }
+          }
+          if (openCloseBlock.indexOf('{~') !== -1 && statements[statements.length - 1] && statements[statements.length - 1].type === 'contentStatement') {
+            if (!statements[statements.length - 1].value.trim()) {
+              statements.pop();
+            }
+          }
+          var statement = new this.yy.BlockStatement({
             filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
-          }, this.$2, this.$4, this.$6, this.$1.length !== 4);
+          }, this.$2, program, this.$6, this.$1.slice(0, 3) !== '{{{');
+
+          if (openBlock.indexOf('{~') !== -1) {
+            statement.ltrim = 1;
+          }
+          if (lastClose.indexOf('~}') !== -1) {
+            statement.rtrim = 1;
+          }
+          return statement;
         }
       },
 
@@ -66,11 +102,23 @@
         symbol: 'statement',
         rhs: ['OPEN_TPL', 'expression', 'CLOSE'],
         action: function () {
-          return new this.yy.ExpressionStatement({
+          var openTpl = this.$1;
+          var close = this.$3;
+
+          var statement = new this.yy.ExpressionStatement({
             filename: this.lexer.filename,
             line: this.lexer.firstLine,
             col: this.lexer.firstColumn
-          }, this.$2, this.$1.length !== 3);
+          }, this.$2, this.$1.slice(0, 3) !== '{{{');
+
+          if (openTpl.indexOf('{~') !== -1) {
+            statement.ltrim = 1;
+          }
+          if (close.indexOf('~}') !== -1) {
+            statement.rtrim = 1;
+          }
+
+          return statement;
         }
       },
 
@@ -515,12 +563,12 @@
           state: ['t'],
           // support Inverted Sections in mustache
           // support {{@
-          regexp: /^{{\{?(?:#|@)/,
+          regexp: /^{{\{?~?(?:#|@)/,
           token: 'OPEN_BLOCK',
           action: function () {
             var self = this,
               text = self.text;
-            if (text.length === 4) {
+            if (text.slice(0, 3) === '{{{') {
               self.pushState('p');
             } else {
               self.pushState('e');
@@ -529,12 +577,12 @@
         },
         {
           state: ['t'],
-          regexp: /^{{\{?\//,
+          regexp: /^{{\{?~?\//,
           token: 'OPEN_CLOSE_BLOCK',
           action: function () {
             var self = this,
               text = self.text;
-            if (text.length === 4) {
+            if (text.slice(0, 3) === '{{{') {
               self.pushState('p');
             } else {
               self.pushState('e');
@@ -566,12 +614,12 @@
         },
         {
           state: ['t'],
-          regexp: /^{{\{?/,
+          regexp: /^{{\{?~?/,
           token: 'OPEN_TPL',
           action: function () {
             var self = this,
               text = self.text;
-            if (text.length === 3) {
+            if (text.slice(0, 3) === '{{{') {
               self.pushState('p');
             } else {
               self.pushState('e');
@@ -590,7 +638,7 @@
         },
         {
           state: ['p'],
-          regexp: /^}}}/,
+          regexp: /^~?}}}/,
           action: function () {
             this.popState(2);
           },
@@ -598,7 +646,7 @@
         },
         {
           state: ['e'],
-          regexp: /^}}/,
+          regexp: /^~?}}/,
           action: function () {
             this.popState(2);
           },
