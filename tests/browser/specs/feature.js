@@ -7,379 +7,393 @@ var XTemplate = require('../../../');
 var util = require('./util');
 var expect = require('expect.js');
 describe('feature', function () {
-    it('support {{%%}}', function () {
-        var tpl = '{{%{{my}}%}}';
+  it('support {{%%}}', function () {
+    var tpl = '{{%{{my}}%}}';
 
-        var render = new XTemplate(tpl).render({
-            my: 1
-        });
-
-        expect(render).to.equal('{{my}}');
-
-        tpl = '{{%%}}';
-
-        render = new XTemplate(tpl).render({
-            my: 1
-        });
-
-        expect(render).to.equal('');
+    var render = new XTemplate(tpl).render({
+      my: 1
     });
 
-    it('support deep property access', function () {
-        var render = new XTemplate('{{x.y.z}}').render({
-            x: {
-                y: {
-                    z: 1
-                }
-            }
-        });
+    expect(render).to.equal('{{my}}');
 
-        expect(render).to.equal('1');
+    tpl = '{{%%}}';
+
+    render = new XTemplate(tpl).render({
+      my: 1
     });
 
-    it('support deep property access by this', function () {
-        var render = new XTemplate('{{this.x.y.z}}').render({
-            x: {
-                y: {
-                    z: 1
-                }
-            }
-        });
+    expect(render).to.equal('');
+  });
 
-        expect(render).to.equal('1');
+  it('support deep property access', function () {
+    var render = new XTemplate('{{x.y.z}}').render({
+      x: {
+        y: {
+          z: 1
+        }
+      }
     });
 
-    it('support deep property access by root', function () {
-        var render = new XTemplate('{{root.x.y.z}}').render({
-            x: {
-                y: {
-                    z: 1
-                }
-            }
-        });
+    expect(render).to.equal('1');
+  });
 
-        expect(render).to.equal('1');
+  it('support deep property access by this', function () {
+    var render = new XTemplate('{{this.x.y.z}}').render({
+      x: {
+        y: {
+          z: 1
+        }
+      }
     });
 
-    it('will output empty for deep absent property', function () {
-        var render = new XTemplate('{{x.y.z}}').render({
-            x: {}
-        });
+    expect(render).to.equal('1');
+  });
 
-        expect(render).to.equal('');
+  it('support deep property access by root', function () {
+    var render = new XTemplate('{{root.x.y.z}}').render({
+      x: {
+        y: {
+          z: 1
+        }
+      }
     });
 
-    it('allow empty content', function () {
-        var tpl = '';
+    expect(render).to.equal('1');
+  });
 
-        var data = {
-            title: 'o'
-        };
-
-        var ret = new XTemplate(tpl, {
-            name: 'tpl-empty-content'
-        }).render(data);
-
-        expect(ret).to.equal('');
+  it('will output empty for deep absent property', function () {
+    var render = new XTemplate('{{x.y.z}}').render({
+      x: {}
     });
 
-    it('support {{variable}}', function () {
-        var tpl = 'this is class="t" {{title}}!';
+    expect(render).to.equal('');
+  });
 
-        var data = {
-            title: 'o'
-        };
+  it('allow empty content', function () {
+    var tpl = '';
 
-        var render = new XTemplate(tpl, {
-            name: 'tpl-variable'
-        }).render(data);
+    var data = {
+      title: 'o'
+    };
 
-        expect(render).to.equal('this is class="t" o!');
+    var ret = new XTemplate(tpl, {
+      name: 'tpl-empty-content'
+    }).render(data);
+
+    expect(ret).to.equal('');
+  });
+
+  it('support {{variable}}', function () {
+    var tpl = 'this is class="t" {{title}}!';
+
+    var data = {
+      title: 'o'
+    };
+
+    var render = new XTemplate(tpl, {
+      name: 'tpl-variable'
+    }).render(data);
+
+    expect(render).to.equal('this is class="t" o!');
+  });
+
+  it('will output nothing using void', function () {
+    var tpl = 'this is {{void(title)}}!';
+
+    var data = {
+      title: 'o'
+    };
+
+    var render = new XTemplate(tpl, {
+      name: 'void-test'
+    }).render(data);
+
+    expect(render).to.equal('this is !');
+  });
+
+  it('support double quote in content', function () {
+    var tpl = '<a href="www.g.cn"></a>';
+    var render = new XTemplate(tpl).render({});
+    expect(render).to.equal('<a href="www.g.cn"></a>');
+  });
+
+  describe('property', function () {
+    it('support sub property', function () {
+      var tpl = '{{data.x}}';
+
+      var data = {
+        data: {
+          x: 1
+        }
+      };
+
+      var render = new XTemplate(tpl).render(data);
+
+      expect(render).to.equal('1');
     });
 
-    it('support double quote in content', function () {
-        var tpl = '<a href="www.g.cn"></a>';
-        var render = new XTemplate(tpl).render({});
-        expect(render).to.equal('<a href="www.g.cn"></a>');
+    it('will render empty instead of undefined', function () {
+      var tpl = '{{data.x}}';
+
+      var data = {
+        data: {
+          p: 1
+        }
+      };
+
+      var render = new XTemplate(tpl).render(data);
+
+      expect(render).to.equal('');
     });
 
-    describe('property', function () {
-        it('support sub property', function () {
-            var tpl = '{{data.x}}';
+    it('support array index', function () {
+      var tpl = '{{data[1][1]}}';
 
-            var data = {
-                data: {
-                    x: 1
-                }
-            };
+      var data = {
+        data: [1, [3, 2]]
+      };
 
-            var render = new XTemplate(tpl).render(data);
+      var render = new XTemplate(tpl).render(data);
 
-            expect(render).to.equal('1');
-        });
+      expect(render).to.equal('2');
+    });
+  });
 
-        it('will render empty instead of undefined', function () {
-            var tpl = '{{data.x}}';
+  it('support variable as index', function () {
+    var tpl = '{{data[d]}}';
 
-            var data = {
-                data: {
-                    p: 1
-                }
-            };
+    var data = {
+      data: {
+        my: 1
+      },
+      d: 'my'
+    };
 
-            var render = new XTemplate(tpl).render(data);
+    var render = new XTemplate(tpl).render(data);
 
-            expect(render).to.equal('');
-        });
+    expect(render).to.equal('1');
+  });
 
-        it('support array index', function () {
-            var tpl = '{{data[1][1]}}';
+  it('support express as index', function () {
+    var tpl = '{{data["m"+"y"]}}';
 
-            var data = {
-                data: [1, [3, 2]]
-            };
+    var data = {
+      data: {
+        my: 1
+      },
+      d: 'my'
+    };
 
-            var render = new XTemplate(tpl).render(data);
+    var render = new XTemplate(tpl).render(data);
 
-            expect(render).to.equal('2');
-        });
+    expect(render).to.equal('1');
+  });
+
+  describe('negative number and minus', function () {
+    it('support 0-1', function () {
+      var tpl = '{{#if( n===0-1)}}-1{{else}}1{{/if}}';
+
+      var data = {
+        n: -1
+      };
+
+      var render = new XTemplate(tpl).render(data);
+
+      expect(render).to.equal('-1');
+
+      tpl = '{{#if (n===1)}}-1{{else}}1{{/if}}';
+
+      data = {
+        n: 1
+      };
+
+      try {
+        new XTemplate(tpl).render(data);
+      } catch (e) {
+        expect(e.message.indexOf('Syntax error') > -1).to.equalTruthy();
+      }
     });
 
-    it('support variable as index', function () {
-        var tpl = '{{data[d]}}';
+    it('support simple -1', function () {
+      var tpl = '{{-1}}';
 
-        var data = {
-            data: {
-                my: 1
-            },
-            d: 'my'
-        };
+      var render = new XTemplate(tpl).render();
 
-        var render = new XTemplate(tpl).render(data);
-
-        expect(render).to.equal('1');
+      expect(render).to.equal('-1');
     });
 
-    it('support express as index', function () {
-        var tpl = '{{data["m"+"y"]}}';
+    it('support -1', function () {
+      var tpl = '{{#if( n===-1)}}-1{{else}}1{{/if}}';
 
-        var data = {
-            data: {
-                my: 1
-            },
-            d: 'my'
-        };
+      var data = {
+        n: -1
+      };
 
-        var render = new XTemplate(tpl).render(data);
+      var render = new XTemplate(tpl).render(data);
 
-        expect(render).to.equal('1');
+      expect(render).to.equal('-1');
+    });
+  });
+
+  describe('with', function () {
+    it('support object in with', function () {
+      var tpl = '{{#with (data)}}{{name}}-{{age}}{{/with}}';
+
+      var data = {
+        data: {
+          name: 'h',
+          age: 2
+        }
+      };
+
+      var render = new XTemplate(tpl).render(data);
+
+      expect(render).to.equal('h-2');
     });
 
-    describe('negative number and minus', function () {
-        it('support 0-1', function () {
-            var tpl = '{{#if( n===0-1)}}-1{{else}}1{{/if}}';
+    it('this will prevent up resolve', function () {
+      var tpl = '{{#with(t)}}{{#with(t2)}}{{#with(t3)}}{{../this.tt}}{{/with}}{{/with}}{{/with}}';
+      var data = {t: {tt: 1, t2: {t3: {tt: 3}}}};
+      var render = new XTemplate(tpl).render(data);
+      expect(render).to.equal('');
+    });
+  });
 
-            var data = {
-                n: -1
-            };
+  describe('parent scope', function () {
+    it('support access root scope', function () {
+      var tpl = '{{#each (children)}}' +
+        '{{name}}{{root.name}}' +
+        '{{/each}}';
+      var data = {
+        name: 'x',
+        children: [
+          {
+            name: 'x1'
+          },
+          {
+            name: 'x2'
+          }
+        ]
+      };
 
-            var render = new XTemplate(tpl).render(data);
+      var render = new XTemplate(tpl).render(data);
 
-            expect(render).to.equal('-1');
-
-            tpl = '{{#if (n===1)}}-1{{else}}1{{/if}}';
-
-            data = {
-                n: 1
-            };
-
-            try {
-                new XTemplate(tpl).render(data);
-            } catch (e) {
-                expect(e.message.indexOf('Syntax error') > -1).to.equalTruthy();
-            }
-        });
-
-        it('support simple -1', function () {
-            var tpl = '{{-1}}';
-
-            var render = new XTemplate(tpl).render();
-
-            expect(render).to.equal('-1');
-        });
-
-        it('support -1', function () {
-            var tpl = '{{#if( n===-1)}}-1{{else}}1{{/if}}';
-
-            var data = {
-                n: -1
-            };
-
-            var render = new XTemplate(tpl).render(data);
-
-            expect(render).to.equal('-1');
-        });
+      expect(render).to.equal('x1xx2x');
     });
 
-    describe('with', function () {
-        it('support object in with', function () {
-            var tpl = '{{#with (data)}}{{name}}-{{age}}{{/with}}';
-
-            var data = {
-                data: {
-                    name: 'h',
-                    age: 2
-                }
-            };
-
-            var render = new XTemplate(tpl).render(data);
-
-            expect(render).to.equal('h-2');
-        });
-
-        it('this will prevent up resolve', function () {
-            var tpl = '{{#with(t)}}{{#with(t2)}}{{#with(t3)}}{{../this.tt}}{{/with}}{{/with}}{{/with}}';
-            var data = {t: {tt: 1, t2: {t3: {tt: 3}}}};
-            var render = new XTemplate(tpl).render(data);
-            expect(render).to.equal('');
-        });
+    // https://github.com/kissyteam/kissy/issues/517
+    it('this will prevent scope finding', function () {
+      var ret = new XTemplate('{{a}}^{{#each (b)}}|{{this.a}}{{/each}}$').render({
+        a: 1,
+        b: [
+          {
+            a: 2
+          },
+          {}
+        ]
+      });
+      expect(ret).to.equal('1^|2|$');
     });
 
-    describe('parent scope', function () {
-        it('support access root scope', function () {
-            var tpl = '{{#each (children)}}' +
-                '{{name}}{{root.name}}' +
-                '{{/each}}';
-            var data = {
-                name: 'x',
-                children: [
-                    {
-                        name: 'x1'
-                    },
-                    {
-                        name: 'x2'
-                    }
-                ]
-            };
+    it('support for with', function () {
+      var tpl = '{{#with( data)}}' +
+        '{{#with (p)}}' +
+        '{{name}}-{{age}}-{{../l2}}-{{../../l1}}' +
+        '{{/with}}' +
+        '{{/with}}';
 
-            var render = new XTemplate(tpl).render(data);
+      var data = {
+        l1: 'l1',
+        l2: 'l1_2',
+        data: {
+          l1: 'l2_1',
+          l2: 'l2',
+          p: {
+            l1: 'l3_1',
+            l2: 'l3_2',
+            name: 'h',
+            age: 2
+          }
 
-            expect(render).to.equal('x1xx2x');
-        });
+        }
+      };
 
-        // https://github.com/kissyteam/kissy/issues/517
-        it('this will prevent scope finding', function () {
-            var ret = new XTemplate('{{a}}^{{#each (b)}}|{{this.a}}{{/each}}$').render({
-                a: 1,
-                b: [
-                    {
-                        a: 2
-                    },
-                    {}
-                ]
-            });
-            expect(ret).to.equal('1^|2|$');
-        });
+      var render = new XTemplate(tpl).render(data);
 
-        it('support for with', function () {
-            var tpl = '{{#with( data)}}' +
-                '{{#with (p)}}' +
-                '{{name}}-{{age}}-{{../l2}}-{{../../l1}}' +
-                '{{/with}}' +
-                '{{/with}}';
-
-            var data = {
-                l1: 'l1',
-                l2: 'l1_2',
-                data: {
-                    l1: 'l2_1',
-                    l2: 'l2',
-                    p: {
-                        l1: 'l3_1',
-                        l2: 'l3_2',
-                        name: 'h',
-                        age: 2
-                    }
-
-                }
-            };
-
-            var render = new XTemplate(tpl).render(data);
-
-            expect(render).to.equal('h-2-l2-l1');
-        });
-
-        it('support for each', function () {
-            var tpl = '{{#each (data)}}{{this}}-{{../total}}|{{/each}}';
-
-            var data = {
-                data: [1, 2],
-                total: 3
-            };
-
-            var render = new XTemplate(tpl).render(data);
-
-            expect(render).to.equal('1-3|2-3|');
-        });
-
-        //
-        it('support with and each', function () {
-            var tpl = '{{#with (a)}}{{#each (b)}}{{this}}{{../x}}{{../../x}}{{/each}}{{/with}}';
-
-            var data = {
-                a: {
-                    b: [1],
-                    x: 5
-                },
-                x: 6
-            };
-
-            var render = new XTemplate(tpl).render(data);
-
-            expect(render).to.equal('156');
-        });
+      expect(render).to.equal('h-2-l2-l1');
     });
 
-    it('support comment', function () {
-        var tpl = 'my {{!\n' +
-            'comment' +
-            '\n}} {{title}}';
+    it('support for each', function () {
+      var tpl = '{{#each (data)}}{{this}}-{{../total}}|{{/each}}';
 
-        var data = {
-            title: 'oo'
-        };
+      var data = {
+        data: [1, 2],
+        total: 3
+      };
 
+      var render = new XTemplate(tpl).render(data);
 
-        var render = new XTemplate(tpl).render(data);
-
-        expect(render).to.equal('my  oo');
+      expect(render).to.equal('1-3|2-3|');
     });
 
-    describe('汉字', function () {
-        it('允许汉字内容', function () {
-            var tpl = '{{t}}出现了';
-            var data = {
-                t: 1
-            };
+    //
+    it('support with and each', function () {
+      var tpl = '{{#with (a)}}{{#each (b)}}{{this}}{{../x}}{{../../x}}{{/each}}{{/with}}';
 
-            var render = new XTemplate(tpl).render(data);
+      var data = {
+        a: {
+          b: [1],
+          x: 5
+        },
+        x: 6
+      };
 
-            expect(render).to.equal('1出现了');
-        });
+      var render = new XTemplate(tpl).render(data);
 
-        it('允许汉字参数', function () {
-            var tpl = '{{t("出现了")}}';
-            var data = {};
-
-            var render = new XTemplate(tpl, {
-                commands: {
-                    t: function (scope, option, buffer) {
-                        return buffer.writeEscaped(option.params[0]);
-                    }
-                }
-            }).render(data);
-
-            expect(render).to.equal('出现了');
-        });
+      expect(render).to.equal('156');
     });
+  });
+
+  it('support comment', function () {
+    var tpl = 'my {{!\n' +
+      'comment' +
+      '\n}} {{title}}';
+
+    var data = {
+      title: 'oo'
+    };
+
+
+    var render = new XTemplate(tpl).render(data);
+
+    expect(render).to.equal('my  oo');
+  });
+
+  describe('汉字', function () {
+    it('允许汉字内容', function () {
+      var tpl = '{{t}}出现了';
+      var data = {
+        t: 1
+      };
+
+      var render = new XTemplate(tpl).render(data);
+
+      expect(render).to.equal('1出现了');
+    });
+
+    it('允许汉字参数', function () {
+      var tpl = '{{t("出现了")}}';
+      var data = {};
+
+      var render = new XTemplate(tpl, {
+        commands: {
+          t: function (scope, option, buffer) {
+            return buffer.writeEscaped(option.params[0]);
+          }
+        }
+      }).render(data);
+
+      expect(render).to.equal('出现了');
+    });
+  });
 });
