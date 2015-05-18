@@ -6,7 +6,7 @@ var XTemplate = require('../');
 XTemplate.config('loader', {
   load: function (tpl, callback) {
     var name = tpl.name;
-    (require.async||require)([name],
+    (require.async || require)([name],
       function (content) {
         if (typeof content === 'string') {
           try {
@@ -26,6 +26,7 @@ XTemplate.config('loader', {
   }
 });
 
+require('./browser/specs/whitespace-control');
 require('./browser/specs/data-function');
 require('./browser/specs/data-null');
 require('./browser/specs/error');

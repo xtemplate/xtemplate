@@ -84,6 +84,26 @@ output before comment
 output after comment
 ```
 
+### whitespace control
+
+You can use `{{~` to remove whitespace before this variable and `~}}` after this variable.
+
+```
+{{set x='1'}}
+{{set data=[1,2]}}
+{{ x ~}}  end
+{{#each(data)~}}
+{{this}}
+{{~/each}}
+```
+
+renders
+
+```
+1end
+123
+```
+
 ### Scope
 
 Every template has it's own independent scope. In sub template can visit parent's context, but define variables in sub template won't change parent's context.
@@ -248,6 +268,17 @@ Render this template will output:
 1
 5
 ```
+
+#### void
+
+`void` lets you ignore output
+
+```
+{{set(x=1)}}
+{{void(x)}}
+```
+
+render nothing
 
 ## Commands
 
@@ -510,3 +541,4 @@ The output would be:
 - `range`
 - `set`
 - `with`
+- `void`
