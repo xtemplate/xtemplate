@@ -26,6 +26,7 @@ var callFnUtil = utils["callFn"];
 var callDataFnUtil = utils["callDataFn"];
 var callCommandUtil = utils["callCommand"];
 var rangeCommand = nativeCommands["range"];
+var voidCommand = nativeCommands["void"];
 var foreachCommand = nativeCommands["foreach"];
 var forinCommand = nativeCommands["forin"];
 var eachCommand = nativeCommands["each"];

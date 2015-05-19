@@ -1,5 +1,9 @@
 # History
 ----
+## 4.3.0 (2015-05-19)
+
+`new` [#62](https://github.com/xtemplate/xtemplate/pull/67) support whitespace control
+`new` [#66](https://github.com/xtemplate/xtemplate/issues/66) add void command
 
 ## 4.2.4 (2015-05-05)
 
