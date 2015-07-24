@@ -1,6 +1,7 @@
 {
   "name": "xtemplate",
-  "version": "4.3.0",
+  "version": "4.3.1",
+  "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
     "node": ">=0.10"
@@ -49,10 +50,9 @@
   "config": {
     "port": 8002
   },
-  "spm": {},
   "scripts": {
     "start": "node --harmony node_modules/.bin/rc-server",
-    "publish": "spm publish && rc-tools run tag",
+    "publish": "rc-tools run tag",
     "lint": "rc-tools run lint",
     "saucelabs": "rc-tools run saucelabs",
     "test": "node --harmony ./node_modules/rc-server/node_modules/mocha/bin/mocha -R list tests/node/specs",
