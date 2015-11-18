@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "4.3.1",
+  "version": "4.4.0-alpha",
   "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
@@ -38,7 +38,7 @@
     "modulex": "^1.7.4",
     "modulex-promise": "^1.1.3",
     "modulex-util": "^1.1.5",
-    "node-uuid": "^1.4.2",
+    "node-uuid": "1.4.2",
     "precommit-hook": "^1.0.7",
     "rc-server": "^1.4.3",
     "rc-tools": "^1.1.5",
