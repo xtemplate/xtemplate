@@ -31,7 +31,6 @@ env:
   - TEST_TYPE=lint
   - TEST_TYPE=browser-test
   - TEST_TYPE=browser-test-cover
-  - TEST_TYPE=saucelabs
   global:
   - secure: DsINTQgLCxcnk2oEUmsFWDTVDskPzKqwuccKIASOhE47rOv/ApfHUlw3IkqQ5N9w75qVPpJ9FbNNCF0QjzSZKeDQ8Cd0iheGiO8hDCvSXIp9qg1Gpga8e80Y/E49NVi+hzOySiOiV7/xRvLKdMjHw9L4LfBsqfOD2zZ2B/LvKAQ=
   - secure: cm560FHnfiaARjLdtPqBd61GDKPeuSejbZ3HJOd3XcljuibZ+Ur4LQmRzgCZAhh823T2dTdK5NpKkPpjWJZNJ02jrJ4Titjfhs0q5OzJYLtPqCEkDHdPaMcFYgi8a9psuGxg/2hi/EHhHoZJO4kCMoCdPltp1I7NXW6WUk9MN1c=
