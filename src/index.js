@@ -4,10 +4,10 @@
  * @author yiminghe@gmail.com
  */
 
-var XTemplateRuntime = require('./runtime');
-var util = XTemplateRuntime.util;
-var Compiler = require('./compiler');
-var compile = Compiler.compile;
+const XTemplateRuntime = require('./runtime');
+const util = XTemplateRuntime.util;
+const Compiler = require('./compiler');
+const compile = Compiler.compile;
 
 /**
  * xtemplate engine
@@ -20,8 +20,10 @@ var compile = Compiler.compile;
  * @class XTemplate
  * @extends XTemplate.Runtime
  */
-function XTemplate(tpl, config) {
-  var tplType = (typeof tpl);
+function XTemplate(tpl_, config_) {
+  let tpl = tpl_;
+  let config = config_;
+  const tplType = (typeof tpl);
   if (tplType !== 'string' && tplType !== 'function') {
     config = tpl;
     tpl = undefined;
@@ -48,11 +50,12 @@ XTemplate.prototype.compile = function (content, name) {
   return compile(content, name, this.config);
 };
 
-XTemplate.prototype.render = function (data, option, callback) {
+XTemplate.prototype.render = function (data, option, callback_) {
+  let callback = callback_;
   if (typeof option === 'function') {
     callback = option;
   }
-  var compileError = this.compileError;
+  const compileError = this.compileError;
   if (compileError) {
     if (callback) {
       callback(compileError);
@@ -90,7 +93,7 @@ module.exports = util.mix(XTemplate, {
    * @static
    * @param {String} commandName
    */
-  removeCommand: XTemplateRuntime.removeCommand
+  removeCommand: XTemplateRuntime.removeCommand,
 });
 
 /*

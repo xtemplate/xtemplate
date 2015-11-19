@@ -34,14 +34,13 @@ support async control, inheritance, include, logic expression, custom function a
 
 ## resources
 
+- [online example](http://xtemplate.github.io/xtemplate)
 - [template syntax](https://github.com/xtemplate/xtemplate/blob/master/docs/syntax.md)([模板语法中文版](https://github.com/xtemplate/xtemplate/blob/master/docs/syntax-cn.md))
 - [API](https://github.com/xtemplate/xtemplate/blob/master/docs/api.md)
 - [中文介绍](https://github.com/xtemplate/xtemplate/blob/master/docs/tutorial/introduce.md)
 - [dailyjs](http://dailyjs.com/2014/09/24/node-roundup/)
 - [change log](https://github.com/xtemplate/xtemplate/blob/master/HISTORY.md)
-- [docs at spm](http://spmjs.io/docs/xtemplate/)
-- [history at spm](http://spmjs.io/docs/xtemplate/history.html)
-- [demo at spm](http://spmjs.io/docs/xtemplate/examples/)
+
 
 ## use on browser
 
@@ -55,7 +54,9 @@ support [requirejs](https://github.com/jrburke/requirejs) [modulex](https://gith
 
 Please use [xtpl](https://github.com/xtemplate/xtpl)
 
-## [contribute](https://github.com/xtemplate/xtemplate/blob/master/CONTRIBUTING.md)
+## contribute
+
+[contribute](https://github.com/xtemplate/xtemplate/blob/master/CONTRIBUTING.md)
 
 ## License
 

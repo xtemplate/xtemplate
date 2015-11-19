@@ -1,60 +1,56 @@
 // http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 // http://wonko.com/post/html-escaping
-var htmlEntities = {
+const htmlEntities = {
   '&': '&amp;',
   '>': '&gt;',
   '<': '&lt;',
   '`': '&#x60;',
   '/': '&#x2F;',
   '"': '&quot;',
-  /*jshint quotmark:false*/
-  "'": '&#x27;'
+  "'": '&#x27;',
 };
-var possibleEscapeHtmlReg = /[&<>"'`]/;
-var escapeHtmlReg = getEscapeReg();
-var SUBSTITUTE_REG = /\\?\{([^{}]+)\}/g;
-var win = typeof global !== 'undefined' ? global : window;
+const possibleEscapeHtmlReg = /[&<>"'`]/;
+const SUBSTITUTE_REG = /\\?\{([^{}]+)\}/g;
+const win = typeof global !== 'undefined' ? global : window;
 
 function getEscapeReg() {
-  var str = '';
-  for (var entity in htmlEntities) {
+  let str = '';
+  for (const entity in htmlEntities) {
     str += entity + '|';
   }
   str = str.slice(0, -1);
-  escapeHtmlReg = new RegExp(str, 'g');
-  return escapeHtmlReg;
+  return new RegExp(str, 'g');
 }
 
-var util;
-var toString = Object.prototype.toString;
+const escapeHtmlReg = getEscapeReg();
+
+let util;
+const toString = Object.prototype.toString;
 module.exports = util = {
   isArray: Array.isArray || function (obj) {
     return toString.call(obj) === '[object Array]';
   },
 
   keys: Object.keys || function (o) {
-    var result = [];
-    var p;
+    const result = [];
+    let p;
 
     for (p in o) {
-      // util.keys(new XX())
-      if (o.hasOwnProperty(p)) {
-        result.push(p);
-      }
+      result.push(p);
     }
 
     return result;
   },
 
-  each: function (object, fn, context) {
+  each(object, fn, context = null) {
     if (object) {
-      var key, val, keys;
-      var i = 0;
-      var length = object && object.length;
+      let key;
+      let val;
+      let keys;
+      let i = 0;
+      const length = object && object.length;
       // do not use typeof obj == 'function': bug in phantomjs
-      var isObj = length === undefined || Object.prototype.toString.call(object) === '[object Function]';
-
-      context = context || null;
+      const isObj = length === undefined || Object.prototype.toString.call(object) === '[object Function]';
 
       if (isObj) {
         keys = util.keys(object);
@@ -77,32 +73,31 @@ module.exports = util = {
     return object;
   },
 
-  mix: function (t, s) {
+  mix(t, s) {
     if (s) {
-      for (var p in s) {
+      for (const p in s) {
         t[p] = s[p];
       }
     }
     return t;
   },
 
-  globalEval: function (data) {
-    /*jshint evil:true*/
+  globalEval(data) {
     if (win.execScript) {
       win.execScript(data);
     } else {
-      (function (data) {
-        win['eval'].call(win, data);
+      (function (d) {
+        win.eval.call(win, d);
       })(data);
     }
   },
 
-  substitute: function (str, o, regexp) {
+  substitute(str, o, regexp) {
     if (typeof str !== 'string' || !o) {
       return str;
     }
 
-    return str.replace(regexp || SUBSTITUTE_REG, function (match, name) {
+    return str.replace(regexp || SUBSTITUTE_REG, (match, name) => {
       if (match.charAt(0) === '\\') {
         return match.slice(1);
       }
@@ -110,26 +105,26 @@ module.exports = util = {
     });
   },
 
-  escapeHtml: function (str) {
-    str = '' + str;
+  escapeHtml(s) {
+    const str = s + '';
     if (!possibleEscapeHtmlReg.test(str)) {
       return str;
     }
-    return (str + '').replace(escapeHtmlReg, function (m) {
+    return str.replace(escapeHtmlReg, (m) => {
       return htmlEntities[m];
     });
   },
 
-  merge: function () {
-    var i = 0;
-    var len = arguments.length;
-    var ret = {};
+  merge() {
+    let i = 0;
+    const len = arguments.length;
+    const ret = {};
     for (; i < len; i++) {
-      var arg = arguments[i];
+      const arg = arguments[i];
       if (arg) {
         util.mix(ret, arg);
       }
     }
     return ret;
-  }
+  },
 };

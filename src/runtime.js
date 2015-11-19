@@ -4,11 +4,11 @@
  * @ignore
  */
 
-var util = require('./runtime/util');
-var nativeCommands = require('./runtime/commands');
-var commands = {};
-var Scope = require('./runtime/scope');
-var LinkedBuffer = require('./runtime/linked-buffer');
+const util = require('./runtime/util');
+const nativeCommands = require('./runtime/commands');
+const commands = {};
+const Scope = require('./runtime/scope');
+const LinkedBuffer = require('./runtime/linked-buffer');
 
 // for performance: reduce hidden class
 function TplWrap(name, runtime, root, scope, buffer, originalName, fn, parent) {
@@ -25,16 +25,16 @@ function TplWrap(name, runtime, root, scope, buffer, originalName, fn, parent) {
 }
 
 function findCommand(runtimeCommands, instanceCommands, parts) {
-  var name = parts[0];
-  var cmd = runtimeCommands && runtimeCommands[name] ||
+  const name = parts[0];
+  let cmd = runtimeCommands && runtimeCommands[name] ||
     instanceCommands && instanceCommands[name] ||
     commands[name];
   if (parts.length === 1) {
     return cmd;
   }
   if (cmd) {
-    var len = parts.length;
-    for (var i = 1; i < len; i++) {
+    const len = parts.length;
+    for (let i = 1; i < len; i++) {
       cmd = cmd[parts[i]];
       if (!cmd) {
         return false;
@@ -45,12 +45,13 @@ function findCommand(runtimeCommands, instanceCommands, parts) {
 }
 
 function getSubNameFromParentName(parentName, subName) {
-  var parts = parentName.split('/');
-  var subParts = subName.split('/');
+  const parts = parentName.split('/');
+  const subParts = subName.split('/');
   parts.pop();
-  for (var i = 0, l = subParts.length; i < l; i++) {
-    var subPart = subParts[i];
+  for (let i = 0, l = subParts.length; i < l; i++) {
+    const subPart = subParts[i];
     if (subPart === '.') {
+      continue;
     } else if (subPart === '..') {
       parts.pop();
     } else {
@@ -62,17 +63,18 @@ function getSubNameFromParentName(parentName, subName) {
 
 // depth: ../x.y() => 1
 function callFn(tpl, scope, option, buffer, parts, depth) {
-  var caller, fn, command1;
+  let caller;
+  let fn;
+  let command1;
   if (!depth) {
     command1 = findCommand(tpl.runtime.commands, tpl.root.config.commands, parts);
   }
   if (command1) {
     return command1.call(tpl, scope, option, buffer);
   } else if (command1 !== false) {
-    var callerParts = parts.slice(0, -1);
+    const callerParts = parts.slice(0, -1);
     caller = scope.resolve(callerParts, depth);
-    /* jslint eqeqeq: false */
-    if (caller == null) {
+    if (caller === null || caller === undefined) {
       buffer.error('Execute function `' + parts.join('.') + '` Error: ' + callerParts.join('.') + ' is undefined or null');
       return buffer;
     }
@@ -91,16 +93,16 @@ function callFn(tpl, scope, option, buffer, parts, depth) {
   return buffer;
 }
 
-var utils = {
+const utils = {
   callFn: callFn,
 
   // {{y().z()}}
-  callDataFn: function (params, parts) {
-    var caller = parts[0];
-    var fn = caller;
-    for (var i = 1; i < parts.length; i++) {
-      var name = parts[i];
-      if (fn && fn[name] != null) {
+  callDataFn(params, parts) {
+    let caller = parts[0];
+    let fn = caller;
+    for (let i = 1; i < parts.length; i++) {
+      const name = parts[i];
+      if (fn && fn[name]) {
         caller = fn;
         fn = fn[name];
       } else {
@@ -110,9 +112,9 @@ var utils = {
     return fn.apply(caller, params || []);
   },
 
-  callCommand: function (tpl, scope, option, buffer, parts) {
+  callCommand(tpl, scope, option, buffer, parts) {
     return callFn(tpl, scope, option, buffer, parts);
-  }
+  },
 };
 
 /**
@@ -127,15 +129,15 @@ var utils = {
  * @class XTemplate.Runtime
  */
 function XTemplateRuntime(fn, config) {
-  var self = this;
+  const self = this;
   self.fn = fn;
   self.config = util.merge(XTemplateRuntime.globalConfig, config);
   this.subNameResolveCache = {};
 }
 
 util.mix(XTemplateRuntime, {
-  config: function (key, v) {
-    var globalConfig = this.globalConfig = this.globalConfig || {};
+  config(key, v) {
+    const globalConfig = this.globalConfig = this.globalConfig || {};
     if (arguments.length) {
       if (v !== undefined) {
         globalConfig[key] = v;
@@ -161,7 +163,7 @@ util.mix(XTemplateRuntime, {
    * @param {Function} fn
    * @member XTemplate.Runtime
    */
-  addCommand: function (commandName, fn) {
+  addCommand(commandName, fn) {
     commands[commandName] = fn;
   },
 
@@ -172,18 +174,19 @@ util.mix(XTemplateRuntime, {
    * @param {String} commandName
    * @member XTemplate.Runtime
    */
-  removeCommand: function (commandName) {
+  removeCommand(commandName) {
     delete commands[commandName];
-  }
+  },
 });
 
-function resolve(self, subName, parentName) {
+function resolve(self, subName_, parentName) {
+  let subName = subName_;
   if (subName.charAt(0) !== '.') {
     return subName;
   }
-  var key = parentName + '_ks_' + subName;
-  var nameResolveCache = self.subNameResolveCache;
-  var cached = nameResolveCache[key];
+  const key = parentName + '_ks_' + subName;
+  const nameResolveCache = self.subNameResolveCache;
+  const cached = nameResolveCache[key];
   if (cached) {
     return cached;
   }
@@ -191,27 +194,11 @@ function resolve(self, subName, parentName) {
   return subName;
 }
 
-function includeInternal(self, scope, escape, buffer, tpl, originalName) {
-  var name = resolve(self, originalName, tpl.name);
-  var newBuffer = buffer.insert();
-  var next = newBuffer.next;
-  loadInternal(self, name, tpl.runtime, scope, newBuffer, originalName, escape, buffer.tpl);
-  return next;
-}
-
-function includeModuleInternal(self, scope, buffer, tpl, tplFn) {
-  var newBuffer = buffer.insert();
-  var next = newBuffer.next;
-  var newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime, self, scope, newBuffer, undefined, tplFn, buffer.tpl);
-  newBuffer.tpl = newTpl;
-  renderTpl(newTpl);
-  return next;
-}
-
 function loadInternal(self, name, runtime, scope, buffer, originalName, escape, parentTpl) {
-  var tpl = new TplWrap(name, runtime, self, scope, buffer, originalName, undefined, parentTpl);
+  const tpl = new TplWrap(name, runtime, self, scope, buffer, originalName, undefined, parentTpl);
   buffer.tpl = tpl;
-  self.config.loader.load(tpl, function (error, tplFn) {
+  self.config.loader.load(tpl, function (error, tplFn_) {
+    let tplFn = tplFn_;
     if (typeof tplFn === 'function') {
       tpl.fn = tplFn;
       // reduce count of object field for performance
@@ -230,21 +217,38 @@ function loadInternal(self, name, runtime, scope, buffer, originalName, escape, 
   });
 }
 
+function includeInternal(self, scope, escape, buffer, tpl, originalName) {
+  const name = resolve(self, originalName, tpl.name);
+  const newBuffer = buffer.insert();
+  const next = newBuffer.next;
+  loadInternal(self, name, tpl.runtime, scope, newBuffer, originalName, escape, buffer.tpl);
+  return next;
+}
+
+function includeModuleInternal(self, scope, buffer, tpl, tplFn) {
+  const newBuffer = buffer.insert();
+  const next = newBuffer.next;
+  const newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime, self, scope, newBuffer, undefined, tplFn, buffer.tpl);
+  newBuffer.tpl = newTpl;
+  renderTpl(newTpl);
+  return next;
+}
+
 function renderTpl(tpl) {
-  var buffer = tpl.fn();
+  const buffer = tpl.fn();
   // tpl.fn exception
   if (buffer) {
-    var runtime = tpl.runtime;
-    var extendTpl = runtime.extendTpl;
-    var extendTplName;
+    const runtime = tpl.runtime;
+    const extendTpl = runtime.extendTpl;
+    let extendTplName;
     if (extendTpl) {
       extendTplName = extendTpl.params[0];
       if (!extendTplName) {
         return buffer.error('extend command required a non-empty parameter');
       }
     }
-    var extendTplFn = runtime.extendTplFn;
-    var extendTplBuffer = runtime.extendTplBuffer;
+    const extendTplFn = runtime.extendTplFn;
+    const extendTplBuffer = runtime.extendTplBuffer;
     // if has extend statement, only parse
     if (extendTplFn) {
       runtime.extendTpl = null;
@@ -261,13 +265,13 @@ function renderTpl(tpl) {
 }
 
 function getIncludeScope(scope, option, buffer) {
-  var params = option.params;
+  const params = option.params;
   if (!params[0]) {
     return buffer.error('include command required a non-empty parameter');
   }
-  var newScope = scope;
-  var newScopeData = params[1];
-  var hash = option.hash;
+  let newScope = scope;
+  let newScopeData = params[1];
+  const hash = option.hash;
   if (hash) {
     if (newScopeData) {
       newScopeData = util.mix({}, newScopeData);
@@ -296,8 +300,8 @@ XTemplateRuntime.prototype = {
    * remove command by name
    * @param commandName
    */
-  removeCommand: function (commandName) {
-    var config = this.config;
+  removeCommand(commandName) {
+    const config = this.config;
     if (config.commands) {
       delete config.commands[commandName];
     }
@@ -308,65 +312,66 @@ XTemplateRuntime.prototype = {
    * @param commandName
    * @param {Function} fn command definition
    */
-  addCommand: function (commandName, fn) {
-    var config = this.config;
+  addCommand(commandName, fn) {
+    const config = this.config;
     config.commands = config.commands || {};
     config.commands[commandName] = fn;
   },
 
-  include: function (scope, option, buffer, tpl) {
+  include(scope, option, buffer, tpl) {
     return includeInternal(this, getIncludeScope(scope, option, buffer), option.escape, buffer, tpl, option.params[0]);
   },
 
-  includeModule: function (scope, option, buffer, tpl) {
+  includeModule(scope, option, buffer, tpl) {
     return includeModuleInternal(this, getIncludeScope(scope, option, buffer), buffer, tpl, option.params[0]);
   },
 
   /**
    * get result by merge data with template
-   * @param data
-   * @param option
-   * @param callback function called
-   * @return {String}
    */
-  render: function (data, option, callback) {
-    var html = '';
-    var self = this;
-    var fn = self.fn;
-    var config = self.config;
+  render(data, option_, callback_) {
+    let option = option_;
+    let callback = callback_;
+    let html = '';
+    const self = this;
+    const fn = self.fn;
+    const config = self.config;
     if (typeof option === 'function') {
       callback = option;
       option = null;
     }
     option = option || {};
-    callback = callback || function (error, ret) {
-      if (error) {
-        if (!(error instanceof Error)) {
-          error = new Error(error);
+    if (!callback) {
+      callback = function (error_, ret) {
+        let error = error_;
+        if (error) {
+          if (!(error instanceof Error)) {
+            error = new Error(error);
+          }
+          throw error;
         }
-        throw error;
-      }
-      html = ret;
-    };
-    var name = self.config.name;
+        html = ret;
+      };
+    }
+    let name = self.config.name;
     if (!name && fn && fn.TPL_NAME) {
       name = fn.TPL_NAME;
     }
-    var scope;
+    let scope;
     if (data instanceof Scope) {
       scope = data;
     } else {
       scope = new Scope(data);
     }
-    var buffer = new XTemplateRuntime.LinkedBuffer(callback, config).head;
-    var tpl = new TplWrap(name, {
-      commands: option.commands
+    const buffer = new XTemplateRuntime.LinkedBuffer(callback, config).head;
+    const tpl = new TplWrap(name, {
+      commands: option.commands,
     }, self, scope, buffer, name, fn);
     buffer.tpl = tpl;
     if (!fn) {
-      config.loader.load(tpl, function (err, fn) {
-        if (fn) {
-          tpl.fn = self.fn = fn;
+      config.loader.load(tpl, (err, fn2) => {
+        if (fn2) {
+          tpl.fn = self.fn = fn2;
           renderTpl(tpl);
         } else if (err) {
           buffer.error(err);
@@ -376,7 +381,7 @@ XTemplateRuntime.prototype = {
     }
     renderTpl(tpl);
     return html;
-  }
+  },
 };
 
 XTemplateRuntime.Scope = Scope;

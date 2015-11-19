@@ -7,7 +7,7 @@
 var XTemplate = require('../../../');
 var util = require('./util');
 var expect = require('expect.js');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 describe('error detection', function () {
   // https://github.com/kissyteam/kissy/issues/516
   it('error when string encounter \\', function () {
@@ -65,7 +65,7 @@ describe('error detection', function () {
 
     }
     if (location.search.indexOf('build') === -1) {
-      expect(info).to.equal(['XTemplate error in file: xtemplate4 syntax error at line 3:',
+      expect(info).to.contain(['in file: xtemplate4 syntax error at line 3:',
         '...{#if(title)}} shoot ',
         '-----------------------^',
         'expect shift:OPEN_CLOSE_BLOCK'].join('\n'));
@@ -237,7 +237,7 @@ describe('error detection', function () {
       return '{{#if(1)}}';
     });
     new XTemplate('{{include("' + tplName + '")}}').render({}, function (e) {
-      expect(e.message).contain('XTemplate error in file: ' + tplName);
+      expect(e.message).contain('in file: ' + tplName);
       done();
     });
   });

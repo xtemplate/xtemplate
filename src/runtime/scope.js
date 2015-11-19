@@ -24,37 +24,37 @@ Scope.prototype = {
 
   constructor: Scope,
 
-  setParent: function (parentScope) {
+  setParent(parentScope) {
     this.parent = parentScope;
     this.root = parentScope.root;
   },
 
   // keep original data unmodified
-  set: function (name, value) {
+  set(name, value) {
     this.affix[name] = value;
   },
 
-  setData: function (data) {
+  setData(data) {
     this.data = data;
   },
 
-  getData: function () {
+  getData() {
     return this.data;
   },
 
-  mix: function (v) {
-    var affix = this.affix;
-    for (var name in v) {
+  mix(v) {
+    const affix = this.affix;
+    for (const name in v) {
       affix[name] = v[name];
     }
   },
 
-  get: function (name) {
-    var data = this.data;
-    var v;
-    var affix = this.affix;
+  get(name) {
+    const data = this.data;
+    let v;
+    const affix = this.affix;
 
-    if (data != null) {
+    if (data !== null && data !== undefined) {
       v = data[name];
     }
 
@@ -65,11 +65,11 @@ Scope.prototype = {
     return affix[name];
   },
 
-  resolveInternalOuter: function (parts) {
-    var part0 = parts[0];
-    var v;
-    var self = this;
-    var scope = self;
+  resolveInternalOuter(parts) {
+    const part0 = parts[0];
+    let v;
+    const self = this;
+    let scope = self;
     if (part0 === 'this') {
       v = self.data;
     } else if (part0 === 'root') {
@@ -85,19 +85,19 @@ Scope.prototype = {
     return [undefined, v];
   },
 
-  resolveInternal: function (parts) {
-    var ret = this.resolveInternalOuter(parts);
+  resolveInternal(parts) {
+    const ret = this.resolveInternalOuter(parts);
     if (ret.length === 1) {
       return ret[0];
     }
-    var i;
-    var len = parts.length;
-    var v = ret[1];
+    let i;
+    const len = parts.length;
+    let v = ret[1];
     if (v === undefined) {
       return undefined;
     }
     for (i = 1; i < len; i++) {
-      if (v == null) {
+      if (v === null || v === undefined) {
         return v;
       }
       v = v[parts[i]];
@@ -105,39 +105,39 @@ Scope.prototype = {
     return v;
   },
 
-  resolveLooseInternal: function (parts) {
-    var ret = this.resolveInternalOuter(parts);
+  resolveLooseInternal(parts) {
+    const ret = this.resolveInternalOuter(parts);
     if (ret.length === 1) {
       return ret[0];
     }
-    var i;
-    var len = parts.length;
-    var v = ret[1];
-    for (i = 1; v != null && i < len; i++) {
+    let i;
+    const len = parts.length;
+    let v = ret[1];
+    for (i = 1; v !== null && v !== undefined && i < len; i++) {
       v = v[parts[i]];
     }
     return v;
   },
 
-  resolveUp: function (parts) {
+  resolveUp(parts) {
     return this.parent && this.parent.resolveInternal(parts);
   },
 
-  resolveLooseUp: function (parts) {
+  resolveLooseUp(parts) {
     return this.parent && this.parent.resolveLooseInternal(parts);
   },
 
-  resolveOuter: function (parts, depth) {
-    var self = this;
-    var scope = self;
-    var v;
+  resolveOuter(parts, d) {
+    const self = this;
+    let scope = self;
+    let depth = d;
+    let v;
     if (!depth && parts.length === 1) {
       v = self.get(parts[0]);
       if (v !== undefined) {
         return [v];
-      } else {
-        depth = 1;
       }
+      depth = 1;
     }
     if (depth) {
       while (scope && depth--) {
@@ -150,21 +150,21 @@ Scope.prototype = {
     return [undefined, scope];
   },
 
-  resolveLoose: function (parts, depth) {
-    var ret = this.resolveOuter(parts, depth);
+  resolveLoose(parts, depth) {
+    const ret = this.resolveOuter(parts, depth);
     if (ret.length === 1) {
       return ret[0];
     }
     return ret[1].resolveLooseInternal(parts);
   },
 
-  resolve: function (parts, depth) {
-    var ret = this.resolveOuter(parts, depth);
+  resolve(parts, depth) {
+    const ret = this.resolveOuter(parts, depth);
     if (ret.length === 1) {
       return ret[0];
     }
     return ret[1].resolveInternal(parts);
-  }
+  },
 };
 
 module.exports = Scope;

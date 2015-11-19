@@ -6,7 +6,7 @@
 var XTemplate = require('../../../');
 var util = require('./util');
 var expect = require('expect.js');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 describe('extend', function () {
   it('output everything in extended template', function () {
@@ -125,7 +125,7 @@ describe('extend', function () {
   });
 
   it('error when dynamic parameter is empty', function () {
-    sub = '{{extend(base)}}{{#block("a")}}b{{/block}}';
+    var sub = '{{extend(base)}}{{#block("a")}}b{{/block}}';
     expect(function () {
       new XTemplate(sub).render({})
     }).to.throwException(/extend command required a non-empty parameter/);

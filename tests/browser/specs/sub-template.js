@@ -1,6 +1,6 @@
 var XTemplate = require('../../../');
 var expect = require('expect.js');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 describe('sub template', function () {
   it('support parse', function () {

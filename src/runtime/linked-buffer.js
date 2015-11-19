@@ -3,7 +3,7 @@
  * @author yiminghe@gmail.com
  */
 
-var util = require('./util');
+const util = require('./util');
 
 function Buffer(list, next, tpl) {
   this.list = list;
@@ -19,71 +19,74 @@ Buffer.prototype = {
 
   isBuffer: 1,
 
-  init: function () {
+  init() {
     this.data = '';
   },
 
-  append: function (data) {
+  append(data) {
     this.data += data;
     return this;
   },
 
-  write: function (data) {
+  write(data) {
     // ignore null or undefined
-    if (data != null) {
+    if (data !== null && data !== undefined) {
       if (data.isBuffer) {
         return data;
-      } else {
-        this.data += (data);
       }
+      this.data += (data);
     }
     return this;
   },
 
-  writeEscaped: function (data) {
+  writeEscaped(data) {
     // ignore null or undefined
-    if (data != null) {
+    if (data !== null && data !== undefined) {
       if (data.isBuffer) {
         return data;
-      } else {
-        this.data += (util.escapeHtml(data));
       }
+      this.data += (util.escapeHtml(data));
     }
     return this;
   },
 
-  insert: function () {
-    var self = this;
-    var list = self.list;
-    var tpl = self.tpl;
-    var nextFragment = new Buffer(list, self.next, tpl);
-    var asyncFragment = new Buffer(list, nextFragment, tpl);
+  insert() {
+    const self = this;
+    const list = self.list;
+    const tpl = self.tpl;
+    const nextFragment = new Buffer(list, self.next, tpl);
+    const asyncFragment = new Buffer(list, nextFragment, tpl);
     self.next = asyncFragment;
     self.ready = true;
     return asyncFragment;
   },
 
-  async: function (fn) {
-    var asyncFragment = this.insert();
-    var nextFragment = asyncFragment.next;
+  async(fn) {
+    const asyncFragment = this.insert();
+    const nextFragment = asyncFragment.next;
     fn(asyncFragment);
     return nextFragment;
   },
 
-  error: function (e) {
-    var callback = this.list.callback;
+  error(e_) {
+    const callback = this.list.callback;
+    let e = e_;
     if (callback) {
-      var tpl = this.tpl;
+      const tpl = this.tpl;
       if (tpl) {
-        if (e instanceof Error) {
-        } else {
+        if (!(e instanceof Error)) {
           e = new Error(e);
         }
-        var name = tpl.name;
-        var line = tpl.pos.line;
-        var errorStr = 'XTemplate error in file: ' + name + ' at line ' + line + ': ';
-        e.stack = errorStr + e.stack;
-        e.message = errorStr + e.message;
+        const name = tpl.name;
+        const line = tpl.pos.line;
+        const errorStr = 'XTemplate error in file: ' + name + ' at line ' + line + ': ';
+        try {
+          // phantomjs
+          e.stack = errorStr + e.stack;
+          e.message = errorStr + e.message;
+        } catch (e2) {
+          // empty
+        }
         e.xtpl = {pos: {line: line}, name: name};
       }
       this.list.callback = null;
@@ -91,18 +94,18 @@ Buffer.prototype = {
     }
   },
 
-  end: function () {
-    var self = this;
+  end() {
+    const self = this;
     if (self.list.callback) {
       self.ready = true;
       self.list.flush();
     }
     return self;
-  }
+  },
 };
 
 function LinkedBuffer(callback, config) {
-  var self = this;
+  const self = this;
   self.config = config;
   self.head = new Buffer(self, undefined);
   self.callback = callback;
@@ -112,22 +115,22 @@ function LinkedBuffer(callback, config) {
 LinkedBuffer.prototype = {
   constructor: LinkedBuffer,
 
-  init: function () {
+  init() {
     this.data = '';
   },
 
-  append: function (data) {
+  append(data) {
     this.data += data;
   },
 
-  end: function () {
+  end() {
     this.callback(null, this.data);
     this.callback = null;
   },
 
-  flush: function () {
-    var self = this;
-    var fragment = self.head;
+  flush() {
+    const self = this;
+    let fragment = self.head;
     while (fragment) {
       if (fragment.ready) {
         this.data += (fragment.data);
@@ -138,7 +141,7 @@ LinkedBuffer.prototype = {
       fragment = fragment.next;
     }
     self.end();
-  }
+  },
 };
 
 LinkedBuffer.Buffer = Buffer;

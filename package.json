@@ -17,45 +17,42 @@
     "type": "git",
     "url": "http://github.com/xtemplate/xtemplate.git"
   },
+  "main": "lib/index",
+  "files": [
+    "lib"
+  ],
   "devDependencies": {
-    "combined-stream": "0.0.5",
     "expect.js": "^0.3.1",
-    "gh-history": "^1.0.0",
     "gulp": "^3.8.7",
-    "gulp-filter": "^1.0.0",
-    "gulp-footer": "^1.0.5",
-    "gulp-header": "^1.0.5",
-    "gulp-kclean": "^0.0.13",
-    "gulp-modulex": "^2.0.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-replace": "^0.4.0",
-    "gulp-uglify": "^0.3.1",
-    "gulp-util": "^3.0.1",
-    "gulp-wrapper": "^0.1.5",
     "gulp-xtemplate": "^1.2.2",
-    "jquery": "^1.11.2",
+    "highlight.js": "~8.9.1",
+    "js-beautify": "~1.5.10",
     "kison": "^0.3.3",
     "modulex": "^1.7.4",
     "modulex-promise": "^1.1.3",
     "modulex-util": "^1.1.5",
-    "node-uuid": "^1.4.2",
-    "precommit-hook": "^1.0.7",
-    "rc-server": "^1.4.3",
-    "rc-tools": "^1.1.5",
+    "pre-commit": "1.x",
+    "rc-server": "3.x",
+    "rc-tools": "4.x",
+    "react": "0.14.x",
+    "react-dom": "0.14.x",
+    "uuid": "~2.0.1",
     "xtpl": "^3.0.0"
   },
-  "precommit": [
+  "pre-commit": [
     "lint"
   ],
   "config": {
     "port": 8002
   },
   "scripts": {
-    "start": "node --harmony node_modules/.bin/rc-server",
-    "publish": "rc-tools run tag",
+    "build": "rc-tools run build",
+    "gh-pages": "rc-tools run gh-pages",
+    "start": "rc-server",
+    "pub": "rc-tools run pub",
     "lint": "rc-tools run lint",
+    "karma": "rc-tools run karma",
     "saucelabs": "rc-tools run saucelabs",
-    "test": "node --harmony ./node_modules/rc-server/node_modules/mocha/bin/mocha -R list tests/node/specs",
     "browser-test": "rc-tools run browser-test",
     "browser-test-cover": "rc-tools run browser-test-cover"
   }

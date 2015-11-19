@@ -1,0 +1,23 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "id-length": [
+      0
+    ],
+    "no-cond-assign": [
+      0
+    ],
+    "guard-for-in": [
+      0
+    ],
+    "func-names": [
+      0
+    ],
+    "space-before-function-paren": [
+      0
+    ],
+    "no-use-before-define": [
+      0
+    ]
+  }
+}
