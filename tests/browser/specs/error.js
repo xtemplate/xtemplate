@@ -3,15 +3,15 @@
  * @author yiminghe@gmail.com
  */
 
-/*jshint quotmark:false*/
-var XTemplate = require('../../../');
-var util = require('./util');
-var expect = require('expect.js');
-var uuid = require('uuid');
+const XTemplate = require('../../../');
+const expect = require('expect.js');
+const uuid = require('uuid');
+const define = window.define;
+
 describe('error detection', function () {
   // https://github.com/kissyteam/kissy/issues/516
   it('error when string encounter \\', function () {
-    var ret;
+    let ret;
     try {
       ret = new XTemplate("{{'\\'}}").render();
     } catch (e) {
@@ -21,7 +21,7 @@ describe('error detection', function () {
   });
 
   it('error when string include \\n', function () {
-    var ret;
+    let ret;
     try {
       ret = new XTemplate("\n\n\n\n{{ x + '1\n222222' }}", {name: 'string'}).render();
     } catch (e) {
@@ -38,7 +38,7 @@ describe('error detection', function () {
   });
 
   it('detect lexer error', function () {
-    var ret;
+    let ret;
     try {
       ret = new XTemplate("{{'}}").render();
     } catch (e) {
@@ -48,21 +48,20 @@ describe('error detection', function () {
   });
 
   it('detect un-closed block tag', function () {
-    var tpl = '{{#if(title)}}\n' +
-        'shoot\n' +
-        '',
-      data = {
-        title: 'o'
-      }, info;
-
+    const tpl = '{{#if(title)}}\n' +
+      'shoot\n' +
+      '';
+    const data = {
+      title: 'o',
+    };
+    let info;
 
     try {
       new XTemplate(tpl, {
-        name: 'xtemplate4'
+        name: 'xtemplate4',
       }).render(data);
     } catch (e) {
       info = e.message;
-
     }
     if (location.search.indexOf('build') === -1) {
       expect(info).to.contain(['in file: xtemplate4 syntax error at line 3:',
@@ -73,20 +72,19 @@ describe('error detection', function () {
   });
 
   it('detect unmatched', function () {
-    var tpl = '{{#if(n === n1)}}\n' +
+    const tpl = '{{#if(n === n1)}}\n' +
       'n eq n1\n' +
       '{{/with}}';
 
-    var data = {
+    const data = {
       n: 1,
-      n1: 2
+      n1: 2,
     };
 
     expect(function () {
       try {
         new XTemplate(tpl).render(data);
       } catch (e) {
-        //S.log('!'+e.replace(/\n/g,'\\n').replace(/\r/g,'\\r')+'!');
         throw e;
       }
     }).to.throwError('syntax error at line 3, col 7:\n' +
@@ -94,7 +92,7 @@ describe('error detection', function () {
   });
 
   it('detect unmatched custom command', function () {
-    var tpl = '{{#x.y()}}\n{{/x}}';
+    const tpl = '{{#x.y()}}\n{{/x}}';
 
     expect(function () {
       try {
@@ -107,22 +105,22 @@ describe('error detection', function () {
   });
 
   it('detect runtime error', function (done) {
-    var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
-    var count = 0;
+    const tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
+    let count = 0;
 
     try {
       new XTemplate(tpl, {
         name: 'x.xtpl',
         strict: true,
-        catchError: true
+        catchError: true,
       }).render({x: 1});
     } catch (e) {
       if (navigator.userAgent.indexOf('Chrome') !== -1) {
-        expect(e.message).to.contain("x.xtpl at line 6");
+        expect(e.message + '').to.contain('x.xtpl at line 6');
       }
       expect(e.xtpl).to.eql({
         pos: {line: 6},
-        name: "x.xtpl"
+        name: 'x.xtpl',
       });
       callback();
     }
@@ -136,31 +134,31 @@ describe('error detection', function () {
   });
 
   it('detect runtime error silent', function () {
-    var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
-    var count = 0;
+    const tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
+    let count = 0;
 
     try {
       new XTemplate(tpl, {
         name: 'x.xtpl',
         strict: true,
-        catchError: true
+        catchError: true,
       }).render({x: 1}, function (e) {
-          if (navigator.userAgent.indexOf('Chrome') !== -1) {
-            expect(e.message).to.contain("x.xtpl at line 6");
-          }
-          expect(e.xtpl).to.eql({
-            pos: {line: 6},
-            name: "x.xtpl"
-          });
-          callback();
+        if (navigator.userAgent.indexOf('Chrome') !== -1) {
+          expect(e.message).to.contain('x.xtpl at line 6');
+        }
+        expect(e.xtpl).to.eql({
+          pos: {line: 6},
+          name: 'x.xtpl',
         });
+        callback();
+      });
     } catch (e) {
       if (navigator.userAgent.indexOf('Chrome') !== -1) {
-        expect(e.message).to.contain("x.xtpl at line 6");
+        expect(e.message).to.contain('x.xtpl at line 6');
       }
       expect(e.xtpl).to.eql({
         pos: {line: 6},
-        name: "x.xtpl"
+        name: 'x.xtpl',
       });
       callback();
     }
@@ -173,34 +171,34 @@ describe('error detection', function () {
   });
 
   it('detect sub template runtime error', function (done) {
-    var tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
-    var count = 0;
-    var tplName = uuid.v4();
+    const tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
+    let count = 0;
+    const tplName = uuid.v4();
     define(tplName, tpl);
     try {
       new XTemplate('{{include("' + tplName + '")}}', {
         name: 'x.xtpl',
         strict: true,
-        catchError: true
+        catchError: true,
       }).render({x: 1}, function (e, content) {
-          expect(content).to.be(undefined);
-          if (navigator.userAgent.indexOf('Chrome') !== -1) {
-            expect(e.message).to.contain(tplName + " at line 6");
-          }
-          expect(e.xtpl).to.eql({
-            pos: {line: 6},
-            name: tplName
-          });
-          callback();
-          throw e;
+        expect(content).to.be(undefined);
+        if (navigator.userAgent.indexOf('Chrome') !== -1) {
+          expect(e.message).to.contain(tplName + ' at line 6');
+        }
+        expect(e.xtpl).to.eql({
+          pos: {line: 6},
+          name: tplName,
         });
+        callback();
+        throw e;
+      });
     } catch (e) {
       if (navigator.userAgent.indexOf('Chrome') !== -1) {
-        expect(e.message).to.contain(tplName + " at line 6");
+        expect(e.message).to.contain(tplName + ' at line 6');
       }
       expect(e.xtpl).to.eql({
         pos: {line: 6},
-        name: tplName
+        name: tplName,
       });
       callback();
     }
@@ -215,24 +213,24 @@ describe('error detection', function () {
 
   it('error when include without parameter', function () {
     expect(function () {
-      new XTemplate("{{include()}}").render();
+      new XTemplate('{{include()}}').render();
     }).to.throwException(/include\/parse\/extend can only has at most two parameter!/);
   });
 
   it('error when include more than one parameter', function () {
     expect(function () {
-      new XTemplate("{{include(a, b,c)}}").render();
+      new XTemplate('{{include(a, b,c)}}').render();
     }).to.throwException(/include\/parse\/extend can only has at most two parameter!/);
   });
 
   it('error when include empty parameter', function () {
     expect(function () {
-      new XTemplate("{{include(a)}}").render();
+      new XTemplate('{{include(a)}}').render();
     }).to.throwException(/include command required a non-empty parameter/);
   });
 
   it('detect error in sub template', function (done) {
-    var tplName = uuid.v4();
+    const tplName = uuid.v4();
     define(tplName, [], function () {
       return '{{#if(1)}}';
     });

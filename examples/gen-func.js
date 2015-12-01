@@ -1,30 +1,32 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var XTemplate = require('../');
-var util = require('modulex-util');
-var hijs = require('highlight.js');
-var js_beautify = require('js-beautify');
+const React = require('react');
+const ReactDOM = require('react-dom');
+const XTemplate = require('../');
+const hijs = require('highlight.js');
+const jsBeautify = require('js-beautify');
 
-function js_beauty(str) {
-  var opts = {
-    "indent_size": "4", "indent_char": ' ',
-    "preserve_newlines": true, "brace_style": "collapse",
-    "keep_array_indentation": false, "space_after_anon_function": true
+function jsBeauty(str) {
+  const opts = {
+    'indent_size': '4',
+    'indent_char': ' ',
+    'preserve_newlines': true,
+    'brace_style': 'collapse',
+    'keep_array_indentation': false,
+    'space_after_anon_function': true,
   };
-  return js_beautify(str, opts);
+  return jsBeautify(str, opts);
 }
-var Test = React.createClass({
+const Test = React.createClass({
   parse() {
-    var refs = this.refs;
-    var g = XTemplate.Compiler.compileToStr({
+    const refs = this.refs;
+    const g = XTemplate.Compiler.compileToStr({
       content: refs.tpl.value,
       catchError: refs.catchError.checked,
       useNativeRequire: refs.useNativeRequire.checked,
       isModule: refs.isModule.checked,
-      strict: refs.strict.checked
+      strict: refs.strict.checked,
     });
     refs.gen.innerHTML = ('<pre class="brush: js;">' +
-    hijs.highlight('js', js_beauty(g)).value + '</pre>');
+    hijs.highlight('js', jsBeauty(g)).value + '</pre>');
   },
 
   render() {
@@ -38,7 +40,7 @@ var Test = React.createClass({
             <h2>模板代码</h2>
 
             <div>
-                <textarea style={{width: 350,height: 400}} ref="tpl" defaultValue={`
+                <textarea style={{width: 350, height: 400}} ref="tpl" defaultValue={`
                     {{x.y.z.q}}
 
                   my first {{tpl(name ,'0', file=3)}} o
@@ -85,7 +87,7 @@ var Test = React.createClass({
 `}/>
             </div>
             <br/>
-            <button ref='parse' className="ks-button" onClick={this.parse}>parse</button>
+            <button ref="parse" className="ks-button" onClick={this.parse}>parse</button>
             <span><label >isModule: <input type="checkbox" ref="isModule"/></label></span>
             <span><label >useNativeRequire: <input type="checkbox"
                                                    ref="useNativeRequire"/></label></span>
@@ -105,7 +107,7 @@ var Test = React.createClass({
         </div>
       </div>
     </div>);
-  }
+  },
 });
 
 ReactDOM.render(<Test />, document.getElementById('__react-content'));

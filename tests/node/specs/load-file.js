@@ -1,17 +1,20 @@
-var expect = require('expect.js');
-var xtpl = require('xtpl');
-var path = require('path');
-var XTemplate = require('../../../');
+/* eslint no-console:0 */
+'use strict';
+
+const expect = require('expect.js');
+const xtpl = require('xtpl');
+const path = require('path');
+const XTemplate = require('../../../');
 xtpl.config({
-  XTemplate: XTemplate
+  XTemplate: XTemplate,
 });
-var base = path.resolve(__dirname, '../fixture/error/');
+const base = path.resolve(__dirname, '../fixture/error/');
 
 describe('node', function () {
   it('works', function () {
     xtpl.renderFile(path.resolve(__dirname, '../fixture/a.xtpl'), {
       x: 1,
-      y: 2
+      y: 2,
     }, function (err, content) {
       expect(err).to.equal(null);
       expect(content).to.equal('12');
@@ -19,30 +22,30 @@ describe('node', function () {
   });
 
   it('detect sub template error', function (done) {
-    var fs = require('fs');
+    const fs = require('fs');
 
-    var loader = {
-      load: function (tpl, callback) {
-        var name = tpl.name;
-        var fn;
+    const loader = {
+      load(tpl, callback) {
+        const name = tpl.name;
+        let fn;
         try {
           fn = compile(name);
         } catch (e) {
           return callback(e);
         }
         return callback(null, fn);
-      }
+      },
     };
 
     function getInstance(name) {
       return new XTemplate(compile(name), {
         loader: loader,
-        name: name
+        name: name,
       });
     }
 
     function compile(p) {
-      var content = fs.readFileSync(path.join(base, p), 'utf8');
+      const content = fs.readFileSync(path.join(base, p), 'utf8');
       return XTemplate.compile(content, p);
     }
 

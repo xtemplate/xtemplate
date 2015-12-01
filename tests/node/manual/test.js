@@ -1,33 +1,42 @@
-var Xtemplate = require('../../../');
-var path = require('path');
-var fs = require('fs');
+/* eslint no-console:0 */
+'use strict';
 
-var loader = {
-  load: function (tpl, callback) {
-    var ctx = tpl.scope.root.data ||{};
-    var name = tpl.originalName;
+const Xtemplate = require('../../../');
+const path = require('path');
+const fs = require('fs');
+
+const loader = {
+  load(tpl, callback) {
+    // const ctx = tpl.scope.root.data ||{};
+    const name = tpl.originalName;
     tpl.name = path.join(__dirname, name);
-    var fn;
-    try{
+    let fn;
+    try {
       fn = compile(name);
-    } catch (e){
+    } catch (e) {
       return callback(e);
     }
     return callback(null, fn);
-  }
-}
+  },
+};
 
-function getInstance(name){
+function getInstance(name) {
   return new Xtemplate(compile(name), {
     loader: loader,
-    name: name
+    name: name,
   });
 }
 
-function  compile (name) {
-  var p = path.join(__dirname, name);
-  var content = fs.readFileSync(p, 'utf8');
-  return Xtemplate.compile(content,name);
+function compile(name) {
+  let p = path.join(__dirname, '../fixture', name);
+  if (!p.endsWith('.xtpl')) {
+    p += '.xtpl';
+  }
+  const content = fs.readFileSync(p, 'utf8');
+  return Xtemplate.compile(content, name);
 }
 
-console.log(getInstance('a.xtpl').render({}));
+console.log(getInstance('a.xtpl').render({
+  x: 'x',
+  y: 'y',
+}));

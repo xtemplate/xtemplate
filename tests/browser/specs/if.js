@@ -3,151 +3,150 @@
  * @author yiminghe@gmail.com
  */
 
-var XTemplate = require('../../../');
-var expect = require('expect.js');
+const XTemplate = require('../../../');
+const expect = require('expect.js');
 describe('if', function () {
-    it('support empty field', function () {
-        var tpl = '{{set(q=1)}}{{#if(x.y.z)}}has title{{/if}}';
-        var render = new XTemplate(tpl).render({x: {y: {}}});
+  it('support empty field', function () {
+    const tpl = '{{set(q=1)}}{{#if(x.y.z)}}has title{{/if}}';
+    const render = new XTemplate(tpl).render({x: {y: {}}});
 
-        expect(render).to.equal('');
+    expect(render).to.equal('');
+  });
+
+  it('support {{#if}} {{@', function () {
+    const tpl = '{{#if(title)}}has title{{/if}}\n' +
+      '{{@if(title2)}}has title2{{else}}not has title2{{/if}}';
+
+    const data = {
+      title: 'o',
+      title2: '',
+    };
+
+    const render = new XTemplate(tpl).render(data);
+
+    expect(render).to.equal('has title\n' +
+      'not has title2');
+  });
+
+  it('support undefined null', function () {
+    const tpl = '{{#if(t !== undefined)}}defined{{/if}} {{#if(t === null)}}null{{/if}} ' +
+      '{{#if(t3 === undefined)}}undefined{{/if}} {{#if(t3 !== null)}}nonull{{else}}null{{/if}}';
+    const data = {
+      t: null,
+    };
+    const render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('defined null undefined nonull');
+  });
+
+  it('empty block works', function () {
+    const tpl = '{{#if(t !== true)}}{{else}}true{{/if}}';
+    const data = {
+      t: true,
+    };
+    const render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('true');
+  });
+
+  it('{{{if}}} is same as {{if}}', function () {
+    const tpl = '{{{#if(t !== true)}}}{{else}}true{{{/if}}}';
+    const data = {
+      t: true,
+    };
+    const render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('true');
+  });
+
+  it('support boolean', function () {
+    const tpl = '{{#if(t === true)}}true{{else}}not true{{/if}}';
+    let data = {
+      t: true,
+    };
+    let render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('true');
+    data = {
+      t: 1,
+    };
+    render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('not true');
+  });
+
+  it('support access length attribute of array', function () {
+    const tpl = '{{arr.length}} {{#if(arr.length)}}have elements{{else}}empty{{/if}}';
+    const data = {
+      arr: ['a', 'b'],
+    };
+    let render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('2 have elements');
+    render = new XTemplate(tpl).render({
+      arr: [],
     });
+    expect(render).to.equal('0 empty');
+  });
 
-    it('support {{#if}} {{@', function () {
-        var tpl = '{{#if(title)}}has title{{/if}}\n' +
-            '{{@if(title2)}}has title2{{else}}not has title2{{/if}}';
+  it('support nested properties', function () {
+    const tpl = '{{#with (z)}}{{#if (data.x)}}x{{else}}y{{/if}}{{/with}}';
+    const data = {
+      data: null,
+      z: {
+        data: {
+          y: 1,
+        },
+      },
+    };
+    const render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('y');
+  });
 
-        var data = {
-            title: 'o',
-            title2: ''
-        };
+  it('can not get sub property data from parent scope', function () {
+    const tpl = '{{#with (z)}}{{#if (data.x)}}x{{else}}y{{/if}}{{/with}}';
+    const data = {
+      data: {
+        x: 1,
+      },
+      z: {
+        data: {
+          y: 1,
+        },
+      },
+    };
+    const render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('y');
+  });
 
-        var render = new XTemplate(tpl).render(data);
+  it('can not get sub property data from null', function () {
+    const tpl = '{{#if (data&&data.x)}}x{{else}}y{{/if}}';
+    const data = {
+      data: null,
+    };
+    const render = new XTemplate(tpl).render(data);
+    expect(render).to.equal('y');
+  });
 
-        expect(render).to.equal('has title\n' +
-            'not has title2');
+  it('support elseif', function () {
+    const tpl = '{{#if(x===1)}} 1 {{elseif (x===2)}} 2 {{elseif (x===3)}} 3 {{else}} ! {{/if}}';
+    let render = new XTemplate(tpl, {
+      name: 'elseif',
+    }).render({
+      x: 1,
     });
-
-    it('support undefined null', function () {
-        var tpl = '{{#if(t !== undefined)}}defined{{/if}} {{#if(t === null)}}null{{/if}} ' +
-            '{{#if(t3 === undefined)}}undefined{{/if}} {{#if(t3 !== null)}}nonull{{else}}null{{/if}}';
-        var data = {
-            t: null
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('defined null undefined nonull');
+    expect(render).to.equal(' 1 ');
+    render = new XTemplate(tpl).render({
+      x: 2,
     });
-
-    it('empty block works', function () {
-        var tpl = '{{#if(t !== true)}}{{else}}true{{/if}}';
-        var data = {
-            t: true
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('true');
+    expect(render).to.equal(' 2 ');
+    render = new XTemplate(tpl).render({
+      x: 3,
     });
-
-    it('{{{if}}} is same as {{if}}', function () {
-        var tpl = '{{{#if(t !== true)}}}{{else}}true{{{/if}}}';
-        var data = {
-            t: true
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('true');
+    expect(render).to.equal(' 3 ');
+    render = new XTemplate(tpl).render({
+      x: 4,
     });
+    expect(render).to.equal(' ! ');
+  });
 
-    it('support boolean', function () {
-        var tpl = '{{#if(t === true)}}true{{else}}not true{{/if}}';
-        var data = {
-            t: true
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('true');
-        data = {
-            t: 1
-        };
-        render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('not true');
-    });
-
-    it('support access length attribute of array', function () {
-        var tpl = '{{arr.length}} {{#if(arr.length)}}have elements{{else}}empty{{/if}}';
-        var data = {
-            arr: ['a', 'b']
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('2 have elements');
-        render = new XTemplate(tpl).render({
-            arr: []
-        });
-        expect(render).to.equal('0 empty');
-    });
-
-    it('support nested properties', function () {
-        var tpl = '{{#with (z)}}{{#if (data.x)}}x{{else}}y{{/if}}{{/with}}';
-        var data = {
-            data: null,
-            z: {
-                data: {
-                    y: 1
-                }
-            }
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('y');
-    });
-
-    it('can not get sub property data from parent scope', function () {
-        var tpl = '{{#with (z)}}{{#if (data.x)}}x{{else}}y{{/if}}{{/with}}';
-        var data = {
-            data: {
-                x: 1
-            },
-            z: {
-                data: {
-                    y: 1
-                }
-            }
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('y');
-    });
-
-    it('can not get sub property data from null', function () {
-        var tpl = '{{#if (data&&data.x)}}x{{else}}y{{/if}}';
-        var data = {
-            data: null
-        };
-        var render = new XTemplate(tpl).render(data);
-        expect(render).to.equal('y');
-    });
-
-    it('support elseif', function () {
-        var tpl = '{{#if(x===1)}} 1 {{elseif (x===2)}} 2 {{elseif (x===3)}} 3 {{else}} ! {{/if}}';
-        var render = new XTemplate(tpl,{
-          name:'elseif'
-        }).render({
-            x: 1
-        });
-        expect(render).to.equal(' 1 ');
-        render = new XTemplate(tpl).render({
-            x: 2
-        });
-        expect(render).to.equal(' 2 ');
-        render = new XTemplate(tpl).render({
-            x: 3
-        });
-        expect(render).to.equal(' 3 ');
-        render = new XTemplate(tpl).render({
-            x: 4
-        });
-        expect(render).to.equal(' ! ');
-    });
-
-    it('can if deep absent property', function () {
-        var tpl = '{{#if(x.y.z.q === 1)}}1{{else}}0{{/if}}';
-        var render = new XTemplate(tpl).render({
-        });
-        expect(render).to.equal('0');
-    });
+  it('can if deep absent property', function () {
+    const tpl = '{{#if(x.y.z.q === 1)}}1{{else}}0{{/if}}';
+    const render = new XTemplate(tpl).render({});
+    expect(render).to.equal('0');
+  });
 });

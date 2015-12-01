@@ -1,1 +1,2 @@
 src/compiler/parser.js
+tests/browser/fixture/*.js

@@ -1,13 +1,12 @@
-/**
- * TC for XTemplate
- * @author yiminghe@gmail.com
- */
-var XTemplate = require('../');
+/* eslint no-console:0 */
+
+const XTemplate = require('../');
 XTemplate.config('loader', {
-  load: function (tpl, callback) {
-    var name = tpl.name;
+  load(tpl, callback) {
+    const name = tpl.name;
     (require.async || require)([name],
-      function (content) {
+      function (cont) {
+        let content = cont;
         if (typeof content === 'string') {
           try {
             content = tpl.root.compile(content, name);
@@ -18,12 +17,12 @@ XTemplate.config('loader', {
         callback(undefined, content);
       },
       function () {
-        var error = 'template "' + name + '" does not exist';
+        const error = 'template "' + name + '" does not exist';
         console.error(error);
         callback(error);
       }
     );
-  }
+  },
 });
 
 require('./browser/specs/whitespace-control');

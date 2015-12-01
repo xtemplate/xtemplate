@@ -3,20 +3,20 @@
  * @author yiminghe@gmail.com
  */
 
-var XTemplate = require('../../../');
-var util = require('./util');
-var expect = require('expect.js');
-var uuid = require('uuid');
+const XTemplate = require('../../../');
+const expect = require('expect.js');
+const uuid = require('uuid');
+const define = window.define;
 
 describe('extend', function () {
   it('output everything in extended template', function () {
-    var base = '1{{#block("a")}}a{{/block}}2';
-    var baseTpl = uuid.v4();
-    var sub = '3{{extend("' + baseTpl + '")}}4';
+    const base = '1{{#block("a")}}a{{/block}}2';
+    const baseTpl = uuid.v4();
+    let sub = '3{{extend("' + baseTpl + '")}}4';
 
     define(baseTpl, base);
 
-    var result = new XTemplate(sub).render({});
+    let result = new XTemplate(sub).render({});
 
     expect(result).to.equal('31a24');
 
@@ -27,69 +27,69 @@ describe('extend', function () {
   });
 
   it('support block', function () {
-    var baseTpl = uuid.v4();
-    var base = 'title {{#block ("name")}}{{content}}{{/block}}';
+    const baseTpl = uuid.v4();
+    const base = 'title {{#block ("name")}}{{content}}{{/block}}';
 
-    var sub = '{{extend("' + baseTpl + '")}}{{#block ("name")}}sub {{content}}{{/block}}';
+    const sub = '{{extend("' + baseTpl + '")}}{{#block ("name")}}sub {{content}}{{/block}}';
 
     define(baseTpl, base);
 
-    var result = new XTemplate(sub).render({
-      content: 1
+    const result = new XTemplate(sub).render({
+      content: 1,
     });
 
     expect(result).to.equal('title sub 1');
   });
 
   it('support block append', function () {
-    var baseTpl = uuid.v4();
-    var baseTpl2 = uuid.v4();
-    var base = 'title {{#block( "name")}}{{content}}{{/block}}';
+    const baseTpl = uuid.v4();
+    const baseTpl2 = uuid.v4();
+    const base = 'title {{#block( "name")}}{{content}}{{/block}}';
 
-    var base2 = '{{extend ("' + baseTpl + '")}}{{#block ("append", "name")}} append base2 {{/block}}';
+    const base2 = '{{extend ("' + baseTpl + '")}}{{#block ("append", "name")}} append base2 {{/block}}';
 
     define(baseTpl, base);
 
     define(baseTpl2, base2);
 
-    var sub = '{{extend ("' + baseTpl2 + '")}}{{#block ("append", "name")}} append sub {{/block}}';
+    const sub = '{{extend ("' + baseTpl2 + '")}}{{#block ("append", "name")}} append sub {{/block}}';
 
-    var result = new XTemplate(sub).render({
-      content: 1
+    const result = new XTemplate(sub).render({
+      content: 1,
     });
 
     expect(result).to.equal('title 1 append base2  append sub ');
   });
 
   it('support block prepend', function () {
-    var baseTpl = uuid.v4();
-    var baseTpl2 = uuid.v4();
-    var base = 'title {{#block ("name")}}{{content}}{{/block}}';
+    const baseTpl = uuid.v4();
+    const baseTpl2 = uuid.v4();
+    const base = 'title {{#block ("name")}}{{content}}{{/block}}';
 
-    var base2 = '{{extend ("' + baseTpl + '")}}{{#block("prepend", "name")}} prepend base2 {{/block}}';
+    const base2 = '{{extend ("' + baseTpl + '")}}{{#block("prepend", "name")}} prepend base2 {{/block}}';
 
     define(baseTpl, base);
 
     define(baseTpl2, base2);
 
-    var sub = '{{extend ("' + baseTpl2 + '")}}{{#block("prepend", "name")}} prepend sub {{/block}}';
+    const sub = '{{extend ("' + baseTpl2 + '")}}{{#block("prepend", "name")}} prepend sub {{/block}}';
 
-    var result = new XTemplate(sub).render({
-      content: 1
+    const result = new XTemplate(sub).render({
+      content: 1,
     });
 
     expect(result).to.equal('title  prepend sub  prepend base2 1');
   });
 
   it('support mixing prepend and append', function () {
-    var baseTpl = uuid.v4();
-    var baseTpl2 = uuid.v4();
-    var baseTpl3 = uuid.v4();
-    var base = 'title {{#block ("name")}}{{content}}{{/block}}';
+    const baseTpl = uuid.v4();
+    const baseTpl2 = uuid.v4();
+    const baseTpl3 = uuid.v4();
+    const base = 'title {{#block ("name")}}{{content}}{{/block}}';
 
-    var base2 = '{{extend ("' + baseTpl + '")}}{{#block ("prepend", "name")}} prepend base2 {{/block}}';
+    const base2 = '{{extend ("' + baseTpl + '")}}{{#block ("prepend", "name")}} prepend base2 {{/block}}';
 
-    var base3 = '{{extend ("' + baseTpl2 + '")}}{{#block( "append", "name")}} append base3 {{/block}}';
+    const base3 = '{{extend ("' + baseTpl2 + '")}}{{#block( "append", "name")}} append base3 {{/block}}';
 
     define(baseTpl, base);
 
@@ -97,24 +97,24 @@ describe('extend', function () {
 
     define(baseTpl3, base3);
 
-    var sub = '{{extend( "' + baseTpl3 + '")}}{{#block ("prepend", "name")}} prepend sub< {{/block}}';
+    const sub = '{{extend( "' + baseTpl3 + '")}}{{#block ("prepend", "name")}} prepend sub< {{/block}}';
 
-    var result = new XTemplate(sub).render({
-      content: 1
+    const result = new XTemplate(sub).render({
+      content: 1,
     });
 
     expect(result).to.equal('title  prepend sub<  prepend base2 1 append base3 ');
   });
 
   it('support dynamic parameter', function () {
-    var baseTpl = uuid.v4();
-    var base = '1{{#block("a")}}a{{/block}}2';
+    const baseTpl = uuid.v4();
+    const base = '1{{#block("a")}}a{{/block}}2';
 
-    var sub = '3{{set (base="' + baseTpl + '")}}{{extend(base)}}4';
+    let sub = '3{{set (base="' + baseTpl + '")}}{{extend(base)}}4';
 
     define(baseTpl, base);
 
-    var result = new XTemplate(sub).render({});
+    let result = new XTemplate(sub).render({});
 
     expect(result).to.equal('31a24');
 
@@ -125,10 +125,9 @@ describe('extend', function () {
   });
 
   it('error when dynamic parameter is empty', function () {
-    var sub = '{{extend(base)}}{{#block("a")}}b{{/block}}';
+    const sub = '{{extend(base)}}{{#block("a")}}b{{/block}}';
     expect(function () {
-      new XTemplate(sub).render({})
+      new XTemplate(sub).render({});
     }).to.throwException(/extend command required a non-empty parameter/);
   });
-
 });

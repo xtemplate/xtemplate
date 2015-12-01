@@ -1,6 +1,9 @@
 {
   "extends": "airbnb",
   "rules": {
+    "strict": [
+      0
+    ],
     "id-length": [
       0
     ],
@@ -19,5 +22,9 @@
     "no-use-before-define": [
       0
     ]
+  },
+  "env": {
+    "node": true,
+    "mocha": true
   }
 }

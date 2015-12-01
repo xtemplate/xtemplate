@@ -3,157 +3,157 @@
  * @author yiminghe@gmail.com
  */
 
-var XTemplate = require('../../../');
-var expect = require('expect.js');
+const XTemplate = require('../../../');
+const expect = require('expect.js');
 describe('escape', function () {
-    it('can output {{', function () {
-        var tpl = '\\{{ {{x}}';
-        var render = new XTemplate(tpl).render({x: 1});
-        expect(render).to.equal('{{ 1');
-    });
+  it('can output {{', function () {
+    const tpl = '\\{{ {{x}}';
+    const render = new XTemplate(tpl).render({x: 1});
+    expect(render).to.equal('{{ 1');
+  });
 
-    it('can escape {{{', function () {
-        var tpl = '\\{{{x}}\\}';
-        var render = new XTemplate(tpl).render({x: 1});
-        expect(render).to.equal('{{{x}}\\}');
-    });
+  it('can escape {{{', function () {
+    const tpl = '\\{{{x}}\\}';
+    const render = new XTemplate(tpl).render({x: 1});
+    expect(render).to.equal('{{{x}}\\}');
+  });
 
-    it('can output {escape}', function () {
-        var tpl = '{{"{"+x+"}"}}';
-        var render = new XTemplate(tpl).render({x: '<'});
-        expect(render).to.equal('{&lt;}');
-    });
+  it('can output {escape}', function () {
+    const tpl = '{{"{"+x+"}"}}';
+    const render = new XTemplate(tpl).render({x: '<'});
+    expect(render).to.equal('{&lt;}');
+  });
 
-    it('support escape {{', function () {
-        var tpl = 'my {{!\n' +
-            'comment' +
-            '\n}} \\{{title}}';
+  it('support escape {{', function () {
+    const tpl = 'my {{!\n' +
+      'comment' +
+      '\n}} \\{{title}}';
 
-        var data = {
-            title: 'oo'
-        };
+    const data = {
+      title: 'oo',
+    };
 
-        var render = new XTemplate(tpl).render(data);
+    let render = new XTemplate(tpl).render(data);
 
-        expect(render).to.equal('my  {{title}}');
+    expect(render).to.equal('my  {{title}}');
 
-        render = new XTemplate('\\{{@').render({});
+    render = new XTemplate('\\{{@').render({});
 
-        expect(render).to.equal('{{@');
-    });
+    expect(render).to.equal('{{@');
+  });
 
-    it('support escape {{ more', function () {
-        var tpl = 'my {{!\n' +
-            'comment' +
-            '\n}} \\{{title}}{{title}}';
+  it('support escape {{ more', function () {
+    const tpl = 'my {{!\n' +
+      'comment' +
+      '\n}} \\{{title}}{{title}}';
 
-        var data = {
-            title: 'oo'
-        };
+    const data = {
+      title: 'oo',
+    };
 
-        var render = new XTemplate(tpl).render(data);
+    const render = new XTemplate(tpl).render(data);
 
-        expect(render).to.equal('my  {{title}}oo');
-    });
+    expect(render).to.equal('my  {{title}}oo');
+  });
 
-    it('escapeHtml works', function () {
-        var tpl = 'my {{title}} is {{{title}}}';
+  it('escapeHtml works', function () {
+    const tpl = 'my {{title}} is {{{title}}}';
 
-        var data = {
-            title: '<a>'
-        };
+    const data = {
+      title: '<a>',
+    };
 
-        var render = new XTemplate(tpl).render(data);
+    const render = new XTemplate(tpl).render(data);
 
-        expect(render).to.equal('my &lt;a&gt; is <a>');
-    });
+    expect(render).to.equal('my &lt;a&gt; is <a>');
+  });
 
-    it('escape in inline command', function () {
-        var tpl = 'my {{title()}} is {{{title()}}}';
+  it('escape in inline command', function () {
+    const tpl = 'my {{title()}} is {{{title()}}}';
 
-        var render = new XTemplate(tpl, {
-            commands: {
-                title: function () {
-                    return '<a>';
-                }
-            }
-        }).render();
+    const render = new XTemplate(tpl, {
+      commands: {
+        title() {
+          return '<a>';
+        },
+      },
+    }).render();
 
-        expect(render).to.equal('my &lt;a&gt; is <a>');
-    });
+    expect(render).to.equal('my &lt;a&gt; is <a>');
+  });
 
-    it('escape in inline command 2', function () {
-        var tpl = 'my {{title(2)}} is {{{title(2)}}}';
+  it('escape in inline command 2', function () {
+    const tpl = 'my {{title(2)}} is {{{title(2)}}}';
 
-        var render = new XTemplate(tpl, {
-            commands: {
-                title: function () {
-                    return '<a>';
-                }
-            }
-        }).render();
+    const render = new XTemplate(tpl, {
+      commands: {
+        title() {
+          return '<a>';
+        },
+      },
+    }).render();
 
-        expect(render).to.equal('my &lt;a&gt; is <a>');
-    });
+    expect(render).to.equal('my &lt;a&gt; is <a>');
+  });
 
-    it('support escape " in tpl', function () {
-        var tpl = '{{{"haha \\""}}}';
+  it('support escape " in tpl', function () {
+    const tpl = '{{{"haha \\""}}}';
 
-        var render = new XTemplate(tpl).render({});
+    const render = new XTemplate(tpl).render({});
 
-        expect(render).to.equal('haha "');
-    });
+    expect(render).to.equal('haha "');
+  });
 
-    it('support escape \' in tpl', function () {
-        var tpl = '{{{\'haha \\\'\'}}}';
+  it('support escape \' in tpl', function () {
+    const tpl = '{{{\'haha \\\'\'}}}';
 
-        var render = new XTemplate(tpl).render({});
+    const render = new XTemplate(tpl).render({});
 
-        expect(render).to.equal('haha \'');
-    });
+    expect(render).to.equal('haha \'');
+  });
 
-    it('support escape \\\' in tpl', function () {
-        var tpl = '{{{"haha \'"}}}';
+  it('support escape \\\' in tpl', function () {
+    const tpl = '{{{"haha \'"}}}';
 
-        var render = new XTemplate(tpl).render({});
-        /*jshint quotmark:false*/
-        expect(render).to.equal("haha '");
-    });
+    const render = new XTemplate(tpl).render({});
 
-    it('does support escape " in content', function () {
-        var tpl = '"haha \\"';
+    expect(render).to.equal("haha '");
+  });
 
-        var render = new XTemplate(tpl).render({});
+  it('does support escape " in content', function () {
+    const tpl = '"haha \\"';
 
-        expect(render).to.equal('"haha \\"');
-    });
+    const render = new XTemplate(tpl).render({});
 
-    it('support escape escape', function () {
-        var tpl = 'haha \\\\{{title}}';
-        var data = {
-            title: 'a'
-        };
+    expect(render).to.equal('"haha \\"');
+  });
 
-        var render = new XTemplate(tpl).render(data);
+  it('support escape escape', function () {
+    let tpl = 'haha \\\\{{title}}';
+    let data = {
+      title: 'a',
+    };
 
-        expect(render).to.equal('haha \\a');
+    let render = new XTemplate(tpl).render(data);
 
-        tpl = 'haha \\\\\\{{title}}';
-        data = {
-            title: 'a'
-        };
+    expect(render).to.equal('haha \\a');
 
-        render = new XTemplate(tpl).render(data);
+    tpl = 'haha \\\\\\{{title}}';
+    data = {
+      title: 'a',
+    };
 
-        expect(render).to.equal('haha \\{{title}}');
+    render = new XTemplate(tpl).render(data);
 
-        tpl = 'haha \\\\\\\\\\{{title}}';
-        data = {
-            title: 'a'
-        };
+    expect(render).to.equal('haha \\{{title}}');
 
-        render = new XTemplate(tpl).render(data);
+    tpl = 'haha \\\\\\\\\\{{title}}';
+    data = {
+      title: 'a',
+    };
 
-        expect(render).to.equal('haha \\\\{{title}}');
-    });
+    render = new XTemplate(tpl).render(data);
+
+    expect(render).to.equal('haha \\\\{{title}}');
+  });
 });

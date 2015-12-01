@@ -1,36 +1,36 @@
-var XTemplate = require('../../../');
-var expect = require('expect.js');
+const XTemplate = require('../../../');
+const expect = require('expect.js');
 
 describe('whitespace control', function () {
-  it('ltrim works',function(){
-    var tpl = [
+  it('ltrim works', function () {
+    const tpl = [
       ' ',
       '{{~"x"}}',
-      ' '
+      ' ',
     ].join('');
-    var ret = new XTemplate(tpl).render({});
+    const ret = new XTemplate(tpl).render({});
     expect(ret).to.equal('x ');
   });
 
-  it('rtrim works',function(){
-    var tpl = [
+  it('rtrim works', function () {
+    const tpl = [
       ' ',
       '{{ "x" ~}}',
-      ' '
+      ' ',
     ].join('');
-    var ret = new XTemplate(tpl).render({});
+    const ret = new XTemplate(tpl).render({});
     expect(ret).to.equal(' x');
   });
 
-  describe('block',function(){
-    it('works inside block',function(){
-      var tpl=[
+  describe('block', function () {
+    it('works inside block', function () {
+      const tpl = [
         '{{#each(data)~}}',
         '{{this}}',
-        '{{~/each}}'
+        '{{~/each}}',
       ].join('\n');
-      var ret = new XTemplate(tpl).render({
-        data:[1,2,3]
+      const ret = new XTemplate(tpl).render({
+        data: [1, 2, 3],
       });
       expect(ret).to.equal('123');
     });
