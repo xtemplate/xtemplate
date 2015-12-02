@@ -1,28 +1,8 @@
 // http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 // http://wonko.com/post/html-escaping
-const htmlEntities = {
-  '&': '&amp;',
-  '>': '&gt;',
-  '<': '&lt;',
-  '`': '&#x60;',
-  '/': '&#x2F;',
-  '"': '&quot;',
-  "'": '&#x27;',
-};
-const possibleEscapeHtmlReg = /[&<>"'`]/;
+const possibleEscapeHtmlReg = /[&<>"'`\/]/;
 const SUBSTITUTE_REG = /\\?\{([^{}]+)\}/g;
 const win = typeof global !== 'undefined' ? global : window;
-
-function getEscapeReg() {
-  let str = '';
-  for (const entity in htmlEntities) {
-    str += entity + '|';
-  }
-  str = str.slice(0, -1);
-  return new RegExp(str, 'g');
-}
-
-const escapeHtmlReg = getEscapeReg();
 
 let util;
 const toString = Object.prototype.toString;
@@ -105,14 +85,57 @@ module.exports = util = {
     });
   },
 
-  escapeHtml(s) {
-    const str = s + '';
-    if (!possibleEscapeHtmlReg.test(str)) {
+  escapeHtml: function (string) {
+    const str = '' + string;
+    const match = possibleEscapeHtmlReg.exec(str);
+
+    if (!match) {
       return str;
     }
-    return str.replace(escapeHtmlReg, (m) => {
-      return htmlEntities[m];
-    });
+
+    let escape;
+    let html = '';
+    let index = 0;
+    let lastIndex = 0;
+
+    for (index = match.index; index < str.length; index++) {
+      switch (str.charCodeAt(index)) {
+      case 34: // "
+        escape = '&quot;';
+        break;
+      case 38: // &
+        escape = '&amp;';
+        break;
+      case 39: // '
+        escape = '&#39;';
+        break;
+      case 60: // <
+        escape = '&lt;';
+        break;
+      case 62: // >
+        escape = '&gt;';
+        break;
+      case 96: // `
+        escape = '&#x60;';
+        break;
+      case 47: // /
+        escape = '&#x2F;';
+        break;
+      default:
+        continue;
+      }
+
+      if (lastIndex !== index) {
+        html += str.substring(lastIndex, index);
+      }
+
+      lastIndex = index + 1;
+      html += escape;
+    }
+
+    return lastIndex !== index
+      ? html + str.substring(lastIndex, index)
+      : html;
   },
 
   merge() {
