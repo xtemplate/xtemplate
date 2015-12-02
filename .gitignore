@@ -1,4 +1,3 @@
-bower_components/
 nohup.out
 *.iml
 *.cfg
@@ -17,8 +16,6 @@ Thumbs.db
 .*proj
 .svn/
 *.swp
-out/
 node_modules/
 build/
-spm_modules
-_site/
+lib/
