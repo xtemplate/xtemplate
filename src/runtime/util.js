@@ -1,6 +1,8 @@
 // http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 // http://wonko.com/post/html-escaping
-const possibleEscapeHtmlReg = /[&<>"'`\/]/;
+
+const escapeHtml = require('escape-html');
+
 const SUBSTITUTE_REG = /\\?\{([^{}]+)\}/g;
 const win = typeof global !== 'undefined' ? global : window;
 
@@ -85,58 +87,7 @@ module.exports = util = {
     });
   },
 
-  escapeHtml: function (string) {
-    const str = '' + string;
-    const match = possibleEscapeHtmlReg.exec(str);
-
-    if (!match) {
-      return str;
-    }
-
-    let escape;
-    let html = '';
-    let index = 0;
-    let lastIndex = 0;
-
-    for (index = match.index; index < str.length; index++) {
-      switch (str.charCodeAt(index)) {
-      case 34: // "
-        escape = '&quot;';
-        break;
-      case 38: // &
-        escape = '&amp;';
-        break;
-      case 39: // '
-        escape = '&#39;';
-        break;
-      case 60: // <
-        escape = '&lt;';
-        break;
-      case 62: // >
-        escape = '&gt;';
-        break;
-      case 96: // `
-        escape = '&#x60;';
-        break;
-      case 47: // /
-        escape = '&#x2F;';
-        break;
-      default:
-        continue;
-      }
-
-      if (lastIndex !== index) {
-        html += str.substring(lastIndex, index);
-      }
-
-      lastIndex = index + 1;
-      html += escape;
-    }
-
-    return lastIndex !== index
-      ? html + str.substring(lastIndex, index)
-      : html;
-  },
+  escapeHtml: escapeHtml,
 
   merge() {
     let i = 0;

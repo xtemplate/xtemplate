@@ -21,6 +21,9 @@
   "files": [
     "lib"
   ],
+  "dependencies": {
+    "escape-html": "~1.0.3"
+  },
   "devDependencies": {
     "beautify-benchmark": "~0.2.4",
     "benchmark": "~1.0.0",
