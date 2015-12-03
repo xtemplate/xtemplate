@@ -63,6 +63,7 @@ function getData() {
 (function () {
   var compiled = dust.compile(getElementById('testDustjs').innerHTML.trim(), 'intro');
   dust.loadSource(compiled);
+  var html;
   getElementById('startDustjs').onclick = function () {
     console.time('dustjs');
     for (var i = 0; i < 10000; i++) {
@@ -99,7 +100,6 @@ function getData() {
       var html = tpl.render(getData());
       if (!fn) {
         fn = tpl.fn;
-        console.log(fn);
       }
       if (debug) {
         break;

@@ -2,6 +2,8 @@
  * compiler tools
  */
 
+'use strict';
+
 const doubleReg = /\\*"/g;
 const singleReg = /\\*'/g;
 const arrayPush = [].push;

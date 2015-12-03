@@ -1,8 +1,8 @@
 /**
- * @ignore
  * simple facade for runtime and compiler
- * @author yiminghe@gmail.com
  */
+
+'use strict';
 
 const XTemplateRuntime = require('./runtime');
 const util = XTemplateRuntime.util;
@@ -70,9 +70,9 @@ XTemplate.prototype.render = function (data, option, callback_) {
 module.exports = util.mix(XTemplate, {
   config: XTemplateRuntime.config,
 
-  compile: compile,
+  compile,
 
-  Compiler: Compiler,
+  Compiler,
 
   Scope: XTemplateRuntime.Scope,
 

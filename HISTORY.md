@@ -1,5 +1,7 @@
 # History
 ----
+## 4.4.0 (2015-12-03)
+
 ## 4.3.0 (2015-05-19)
 
 `new` [#62](https://github.com/xtemplate/xtemplate/pull/67) support whitespace control

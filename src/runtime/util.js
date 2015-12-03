@@ -1,3 +1,5 @@
+'use strict';
+
 // http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 // http://wonko.com/post/html-escaping
 
@@ -87,14 +89,14 @@ module.exports = util = {
     });
   },
 
-  escapeHtml: escapeHtml,
+  escapeHtml,
 
-  merge() {
+  merge(...args) {
     let i = 0;
-    const len = arguments.length;
+    const len = args.length;
     const ret = {};
     for (; i < len; i++) {
-      const arg = arguments[i];
+      const arg = args[i];
       if (arg) {
         util.mix(ret, arg);
       }

@@ -1,8 +1,8 @@
 /**
  * xtemplate runtime
- * @author yiminghe@gmail.com
- * @ignore
  */
+
+'use strict';
 
 const util = require('./runtime/util');
 const nativeCommands = require('./runtime/commands');
@@ -94,7 +94,7 @@ function callFn(tpl, scope, option, buffer, parts, depth) {
 }
 
 const utils = {
-  callFn: callFn,
+  callFn,
 
   // {{y().z()}}
   callDataFn(params, parts) {
@@ -138,7 +138,7 @@ function XTemplateRuntime(fn, config) {
 util.mix(XTemplateRuntime, {
   config(key, v) {
     const globalConfig = this.globalConfig = this.globalConfig || {};
-    if (arguments.length) {
+    if (key !== undefined) {
       if (v !== undefined) {
         globalConfig[key] = v;
       } else {
@@ -149,11 +149,11 @@ util.mix(XTemplateRuntime, {
     }
   },
 
-  nativeCommands: nativeCommands,
+  nativeCommands,
 
-  utils: utils,
+  utils,
 
-  util: util,
+  util,
 
   /**
    * add command to all template

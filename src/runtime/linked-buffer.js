@@ -1,7 +1,8 @@
 /**
  * LinkedBuffer of generate content from xtemplate
- * @author yiminghe@gmail.com
  */
+
+'use strict';
 
 const util = require('./util');
 

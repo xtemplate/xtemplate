@@ -1,8 +1,9 @@
 /**
  * Ast node class for xtemplate
- * @author yiminghe@gmail.com
- * @ignore
  */
+
+'use strict';
+
 const ast = {};
 
 function sameArray(a1, a2) {

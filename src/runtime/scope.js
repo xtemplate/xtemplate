@@ -1,7 +1,9 @@
 /**
  * scope resolution for xtemplate like function in javascript but keep original data unmodified
- * @author yiminghe@gmail.com
  */
+
+'use strict';
+
 function Scope(data, affix, parent) {
   if (data !== undefined) {
     this.data = data;

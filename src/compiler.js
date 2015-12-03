@@ -1,8 +1,8 @@
 /**
  * translate ast to js function code
- * @author yiminghe@gmail.com
- * @ignore
  */
+
+'use strict';
 
 const util = require('./runtime').util;
 const compilerTools = require('./compiler/tools');
@@ -125,8 +125,8 @@ function opExpression(e) {
     source.push(`${exp} = (${exp1}) ${type} (${exp2});`);
   }
   return {
-    exp: exp,
-    source: source,
+    exp,
+    source,
   };
 }
 
@@ -265,8 +265,8 @@ function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
   }
   return {
     exp: exp || '{}',
-    funcParams: funcParams,
-    source: source,
+    funcParams,
+    source,
   };
 }
 
@@ -414,7 +414,7 @@ function generateFunction(self, func, block, escape_) {
 
   return {
     exp: idName,
-    source: source,
+    source,
   };
 }
 
@@ -446,7 +446,7 @@ AstToJSProcessor.prototype = {
     }
     return {
       exp: `[ ${exp.join(',')} ]`,
-      source: source,
+      source,
     };
   },
 
@@ -464,7 +464,7 @@ AstToJSProcessor.prototype = {
     }
     return {
       exp: `{ ${exp.join(',')} }`,
-      source: source,
+      source,
     };
   },
 
@@ -511,7 +511,7 @@ AstToJSProcessor.prototype = {
     if (compilerTools.isGlobalId(idNode)) {
       return {
         exp: idNode.string,
-        source: source,
+        source,
       };
     }
     const depth = idNode.depth;
@@ -521,11 +521,11 @@ AstToJSProcessor.prototype = {
       source.push(substitute(loose ? SCOPE_RESOLVE_LOOSE_DEPTH : SCOPE_RESOLVE_DEPTH, {
         lhs: idName,
         idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr,
-        depth: depth,
+        depth,
       }));
       return {
         exp: idName,
-        source: source,
+        source,
       };
     }
     const part0 = idParts[0];
@@ -539,7 +539,7 @@ AstToJSProcessor.prototype = {
       }));
       return {
         exp: idName,
-        source: source,
+        source,
       };
     } else if (part0 === 'root') {
       remainParts = idParts.slice(1);
@@ -554,7 +554,7 @@ AstToJSProcessor.prototype = {
       }));
       return {
         exp: idName,
-        source: source,
+        source,
       };
     }
     // {{x.y().z}}
@@ -574,7 +574,7 @@ AstToJSProcessor.prototype = {
       }
       source.push(substitute(ASSIGN_STATEMENT, {
         lhs: idName,
-        value: value,
+        value,
       }));
     } else {
       source.push(substitute(ASSIGN_STATEMENT, {
@@ -584,7 +584,7 @@ AstToJSProcessor.prototype = {
     }
     return {
       exp: idName,
-      source: source,
+      source,
     };
   },
 
@@ -611,7 +611,7 @@ AstToJSProcessor.prototype = {
     }));
     return {
       exp: '',
-      source: source,
+      source,
     };
   },
 
@@ -703,11 +703,11 @@ const compiler = {
   compile(tplContent, name, config) {
     const code = compiler.compileToJson(util.merge(config, {
       content: tplContent,
-      name: name,
+      name,
     }));
     let source = code.source;
     source += substitute(SOURCE_URL, {
-      name: name,
+      name,
     });
     const args = code.params.concat(source);
     // eval is not ok for eval("(function(){})") ie

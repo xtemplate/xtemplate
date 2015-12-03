@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "4.3.1",
+  "version": "4.4.0",
   "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
@@ -25,12 +25,11 @@
     "escape-html": "~1.0.3"
   },
   "devDependencies": {
-    "beautify-benchmark": "~0.2.4",
-    "benchmark": "~1.0.0",
     "expect.js": "^0.3.1",
     "gulp": "^3.8.7",
     "gulp-xtemplate": "^1.2.2",
     "highlight.js": "~8.9.1",
+    "jquery": "~1.11.3",
     "js-beautify": "~1.5.10",
     "kison": "^0.3.3",
     "modulex": "^1.7.4",
@@ -54,6 +53,7 @@
     "build": "rc-tools run build",
     "gh-pages": "rc-tools run gh-pages",
     "start": "rc-server",
+    "watch": "rc-tools run watch",
     "pub": "rc-tools run pub",
     "lint": "rc-tools run lint",
     "karma": "rc-tools run karma",

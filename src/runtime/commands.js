@@ -1,8 +1,8 @@
 /**
  * native commands for xtemplate.
- * @author yiminghe@gmail.com
- * @ignore
  */
+
+'use strict';
 
 const Scope = require('./scope');
 const util = require('./util');
@@ -25,7 +25,7 @@ const commands = {
     return ret;
   },
 
-  'void'() {
+  void() {
     return undefined;
   },
 
