@@ -2,6 +2,8 @@
 ----
 ## 4.4.0 (2015-12-03)
 
+`improved` [#71](https://github.com/xtemplate/xtemplate/issues/71) use faster escapeHtml
+
 ## 4.3.0 (2015-05-19)
 
 `new` [#62](https://github.com/xtemplate/xtemplate/pull/67) support whitespace control
