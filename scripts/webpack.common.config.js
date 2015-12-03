@@ -12,7 +12,6 @@ module.exports = {
 
   output: {
     libraryTarget: 'umd',
-    umdNamedDefine: true,
     path: path.join(process.cwd(), 'dist'),
     filename: '[name].js'
   },

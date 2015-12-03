@@ -1,6 +1,6 @@
 var config = require('./webpack.common.config');
 
-config.entry['xtemplate/runtime']=['./lib/runtime.js'];
+config.entry['xtemplate/runtime']=['./src/runtime.js'];
 
 config.output.library = 'xtemplate/runtime';
 
