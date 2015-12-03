@@ -1,28 +1,10 @@
 // http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 // http://wonko.com/post/html-escaping
-const htmlEntities = {
-  '&': '&amp;',
-  '>': '&gt;',
-  '<': '&lt;',
-  '`': '&#x60;',
-  '/': '&#x2F;',
-  '"': '&quot;',
-  "'": '&#x27;',
-};
-const possibleEscapeHtmlReg = /[&<>"'`]/;
+
+const escapeHtml = require('escape-html');
+
 const SUBSTITUTE_REG = /\\?\{([^{}]+)\}/g;
 const win = typeof global !== 'undefined' ? global : window;
-
-function getEscapeReg() {
-  let str = '';
-  for (const entity in htmlEntities) {
-    str += entity + '|';
-  }
-  str = str.slice(0, -1);
-  return new RegExp(str, 'g');
-}
-
-const escapeHtmlReg = getEscapeReg();
 
 let util;
 const toString = Object.prototype.toString;
@@ -105,15 +87,7 @@ module.exports = util = {
     });
   },
 
-  escapeHtml(s) {
-    const str = s + '';
-    if (!possibleEscapeHtmlReg.test(str)) {
-      return str;
-    }
-    return str.replace(escapeHtmlReg, (m) => {
-      return htmlEntities[m];
-    });
-  },
+  escapeHtml: escapeHtml,
 
   merge() {
     let i = 0;
