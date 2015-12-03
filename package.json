@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
@@ -19,7 +19,8 @@
   },
   "main": "lib/index",
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "dependencies": {
     "escape-html": "~1.0.3"
@@ -43,6 +44,7 @@
     "react": "0.14.x",
     "react-dom": "0.14.x",
     "uuid": "~2.0.1",
+    "webpack": "~1.12.9",
     "xtpl": "^3.0.0"
   },
   "pre-commit": [
@@ -56,7 +58,7 @@
     "gh-pages": "rc-tools run gh-pages",
     "start": "rc-server",
     "watch": "rc-tools run watch",
-    "pub": "rc-tools run pub",
+    "pub": "rm -rf dist && webpack --config scripts/webpack.runtime.config.js && webpack --config scripts/webpack.xtemplate.config.js && rc-tools run pub",
     "lint": "rc-tools run lint",
     "karma": "rc-tools run karma",
     "saucelabs": "rc-tools run saucelabs",
