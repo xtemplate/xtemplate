@@ -40,7 +40,7 @@ Use `{{ foo }}` to display escaped data, and `{{{ foo }}}` to display original u
 
 ```html
 escaped: {{ foo }}
-unescaped: {{ foo }}
+unescaped: {{{ foo }}}
 ```
 
 Render this template with data `{ foo: "<script>" }`, the output will be:
