@@ -171,6 +171,8 @@ const commands = {
 
   include: 1,
 
+  includeOnce: 1,
+
   parse: 1,
 
   extend: 1,

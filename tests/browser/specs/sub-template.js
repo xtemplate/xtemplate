@@ -169,4 +169,42 @@ describe('sub template', function () {
     }).render({});
     expect(ret).to.be('12');
   });
+
+  it('include twice works', function () {
+    const tplName = uuid.v4();
+    const tplName2 = uuid.v4();
+    define(tplName, `
+    {{set(x=1)}}
+
+    {{include('${tplName2}')}}
+
+    {{include('${tplName2}')}}
+
+    {{x}}
+    `);
+    define(tplName2, '{{set(x = x+1)}}');
+    const ret = new XTemplate({
+      name: tplName,
+    }).render({});
+    expect(ret.trim()).to.be('3');
+  });
+
+  it('includeOnce works', function () {
+    const tplName = uuid.v4();
+    const tplName2 = uuid.v4();
+    define(tplName, `
+    {{set(x=1)}}
+
+    {{includeOnce('${tplName2}')}}
+
+    {{includeOnce('${tplName2}')}}
+
+    {{x}}
+    `);
+    define(tplName2, '{{set(x = x+1)}}');
+    const ret = new XTemplate({
+      name: tplName,
+    }).render({});
+    expect(ret.trim()).to.be('2');
+  });
 });
