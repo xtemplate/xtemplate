@@ -377,6 +377,8 @@ function generateFunction(self, func, block, escape_) {
       }
     } else if (idString === 'include') {
       source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
+    } else if (idString === 'includeOnce') {
+      source.push('buffer = root.' + (isModule ? 'includeOnceModule' : 'includeOnce') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
     } else if (idString === 'parse') {
       source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(new scope.constructor(),' + functionConfigCode.exp + ',buffer,tpl);');
     } else {

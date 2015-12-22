@@ -129,10 +129,10 @@ const utils = {
  * @class XTemplate.Runtime
  */
 function XTemplateRuntime(fn, config) {
-  const self = this;
-  self.fn = fn;
-  self.config = util.merge(XTemplateRuntime.globalConfig, config);
+  this.fn = fn;
+  this.config = util.merge(XTemplateRuntime.globalConfig, config);
   this.subNameResolveCache = {};
+  this.loadedSubTplNames = {};
 }
 
 util.mix(XTemplateRuntime, {
@@ -179,13 +179,13 @@ util.mix(XTemplateRuntime, {
   },
 });
 
-function resolve(self, subName_, parentName) {
+function resolve(root, subName_, parentName) {
   let subName = subName_;
   if (subName.charAt(0) !== '.') {
     return subName;
   }
   const key = parentName + '_ks_' + subName;
-  const nameResolveCache = self.subNameResolveCache;
+  const nameResolveCache = root.subNameResolveCache;
   const cached = nameResolveCache[key];
   if (cached) {
     return cached;
@@ -194,10 +194,10 @@ function resolve(self, subName_, parentName) {
   return subName;
 }
 
-function loadInternal(self, name, runtime, scope, buffer, originalName, escape, parentTpl) {
-  const tpl = new TplWrap(name, runtime, self, scope, buffer, originalName, undefined, parentTpl);
+function loadInternal(root, name, runtime, scope, buffer, originalName, escape, parentTpl) {
+  const tpl = new TplWrap(name, runtime, root, scope, buffer, originalName, undefined, parentTpl);
   buffer.tpl = tpl;
-  self.config.loader.load(tpl, function (error, tplFn_) {
+  root.config.loader.load(tpl, function (error, tplFn_) {
     let tplFn = tplFn_;
     if (typeof tplFn === 'function') {
       tpl.fn = tplFn;
@@ -217,18 +217,18 @@ function loadInternal(self, name, runtime, scope, buffer, originalName, escape, 
   });
 }
 
-function includeInternal(self, scope, escape, buffer, tpl, originalName) {
-  const name = resolve(self, originalName, tpl.name);
+function includeInternal(root, scope, escape, buffer, tpl, originalName) {
+  const name = resolve(root, originalName, tpl.name);
   const newBuffer = buffer.insert();
   const next = newBuffer.next;
-  loadInternal(self, name, tpl.runtime, scope, newBuffer, originalName, escape, buffer.tpl);
+  loadInternal(root, name, tpl.runtime, scope, newBuffer, originalName, escape, buffer.tpl);
   return next;
 }
 
-function includeModuleInternal(self, scope, buffer, tpl, tplFn) {
+function includeModuleInternal(root, scope, buffer, tpl, tplFn) {
   const newBuffer = buffer.insert();
   const next = newBuffer.next;
-  const newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime, self, scope, newBuffer, undefined, tplFn, buffer.tpl);
+  const newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime, root, scope, newBuffer, undefined, tplFn, buffer.tpl);
   newBuffer.tpl = newTpl;
   renderTpl(newTpl);
   return next;
@@ -287,6 +287,17 @@ function getIncludeScope(scope, option, buffer) {
   return newScope;
 }
 
+function checkIncludeOnce(root, option, tpl) {
+  const originalName = option.params[0];
+  const name = resolve(root, originalName, tpl.name);
+  const {loadedSubTplNames} = root;
+  if (loadedSubTplNames[name]) {
+    return false;
+  }
+  loadedSubTplNames[name] = true;
+  return true;
+}
+
 XTemplateRuntime.prototype = {
   constructor: XTemplateRuntime,
 
@@ -326,6 +337,20 @@ XTemplateRuntime.prototype = {
     return includeModuleInternal(this, getIncludeScope(scope, option, buffer), buffer, tpl, option.params[0]);
   },
 
+  includeOnce(scope, option, buffer, tpl) {
+    if (checkIncludeOnce(this, option, tpl)) {
+      return this.include(scope, option, buffer, tpl);
+    }
+    return buffer;
+  },
+
+  includeOnceModule(scope, option, buffer, tpl) {
+    if (checkIncludeOnce(this, option, tpl)) {
+      return this.includeModule(scope, option, buffer, tpl);
+    }
+    return buffer;
+  },
+
   /**
    * get result by merge data with template
    */
@@ -333,9 +358,8 @@ XTemplateRuntime.prototype = {
     let option = option_;
     let callback = callback_;
     let html = '';
-    const self = this;
-    const fn = self.fn;
-    const config = self.config;
+    const fn = this.fn;
+    const config = this.config;
     if (typeof option === 'function') {
       callback = option;
       option = null;
@@ -353,7 +377,7 @@ XTemplateRuntime.prototype = {
         html = ret;
       };
     }
-    let name = self.config.name;
+    let name = this.config.name;
     if (!name && fn && fn.TPL_NAME) {
       name = fn.TPL_NAME;
     }
@@ -366,12 +390,12 @@ XTemplateRuntime.prototype = {
     const buffer = new XTemplateRuntime.LinkedBuffer(callback, config).head;
     const tpl = new TplWrap(name, {
       commands: option.commands,
-    }, self, scope, buffer, name, fn);
+    }, this, scope, buffer, name, fn);
     buffer.tpl = tpl;
     if (!fn) {
       config.loader.load(tpl, (err, fn2) => {
         if (fn2) {
-          tpl.fn = self.fn = fn2;
+          tpl.fn = this.fn = fn2;
           renderTpl(tpl);
         } else if (err) {
           buffer.error(err);
