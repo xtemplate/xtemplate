@@ -448,6 +448,10 @@ xx: x
 yy: x
 ```
 
+### includeOnce
+
+功能和 include 一样, 区别在于对于同一个模版只在第一次调用时起作用, 类似 PHP 中的 include 与 include_once.
+
 ### parse
 
 如果希望能够让子模版拥有一个完全独立的上下文，不需要父级作用域，则可以使用 `parse`。

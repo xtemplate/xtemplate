@@ -1,5 +1,9 @@
 # History
 ----
+## 4.5.0 (2015-12-23)
+
+`new` [#75](https://github.com/xtemplate/xtemplate/pull/75/files) support includeOnce
+
 ## 4.4.0 (2015-12-03)
 
 `improved` [#71](https://github.com/xtemplate/xtemplate/issues/71) use faster escapeHtml

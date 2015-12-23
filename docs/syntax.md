@@ -448,6 +448,10 @@ xx: x
 yy: x
 ```
 
+### includeOnce
+
+Same with `include` except it only include once like include and include_once in PHP.
+
 ### parse
 
 If you want sub templates have an independent scope, please use `parse`.
