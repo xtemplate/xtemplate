@@ -99,6 +99,14 @@ function guid(self, str) {
   return str + (self.uuid++);
 }
 
+function considerSuffix(n, withSuffix) {
+  let name = n;
+  if (withSuffix && !(/\.xtpl$/).test(name)) {
+    name += '.xtpl';
+  }
+  return name;
+}
+
 function opExpression(e) {
   const source = [];
   const type = e.opType;
@@ -344,7 +352,7 @@ function generateFunction(self, func, block, escape_) {
     pushToArray(source, functionConfigCode.source);
   }
 
-  const isModule = self.config.isModule;
+  const { isModule, withSuffix } = self.config;
 
   if (idString === 'include' || idString === 'parse' || idString === 'extend') {
     if (!func.params || func.params.length > 2) {
@@ -354,7 +362,8 @@ function generateFunction(self, func, block, escape_) {
 
   if (isModule) {
     if (idString === 'include' || idString === 'parse') {
-      func.params[0] = {type: 'raw', value: 're' + 'quire("' + func.params[0].value + '")'};
+      const name = considerSuffix(func.params[0].value, withSuffix);
+      func.params[0] = {type: 'raw', value: 're' + 'quire("' + name + '")'};
     }
   }
 
@@ -373,7 +382,8 @@ function generateFunction(self, func, block, escape_) {
       source.push('runtime.extendTpl = ' + functionConfigCode.exp);
       source.push('buffer = buffer.async(function(newBuffer){runtime.extendTplBuffer = newBuffer;});');
       if (isModule) {
-        source.push('runtime.extendTplFn = re' + 'quire(' + functionConfigCode.exp + '.params[0])');
+        const name = considerSuffix(func.params[0].value, withSuffix);
+        source.push('runtime.extendTplFn = re' + 'quire("' + name + '");');
       }
     } else if (idString === 'include') {
       source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
@@ -684,6 +694,7 @@ const compiler = {
    * @param {String} [param.name] xtemplate name
    * @param {String} param.content
    * @param {Boolean} [param.isModule] whether generated function is used in module
+   * @param {Boolean} [param.withSuffix] whether generated require name with suffix xtpl
    * @param {Boolean} [param.catchError] whether to try catch generated function to provide good error message
    * @param {Boolean} [param.strict] whether to generate strict function
    * @return {Object}
