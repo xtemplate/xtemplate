@@ -2,7 +2,7 @@
 
 const React = require('react');
 const ReactDOM = require('react-dom');
-const XTemplate = require('../');
+const XTemplate = require('xtemplate');
 
 const Test = React.createClass({
   parse() {
