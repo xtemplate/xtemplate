@@ -134,6 +134,23 @@ describe('expression', function () {
     })).to.equal('01');
   });
 
+  it('support conditionalexpression', function () {
+    const tpl = `{{a?b:c}}`;
+
+    expect(new XTemplate(tpl, {
+      name: 'conditional-expression',
+    }).render({
+      a: 2,
+      b: 200,
+      c: 100,
+    })).to.equal('200');
+
+    const tpl2 = `{{set (a = b ? 200 : 100) }}{{a}}`;
+    expect(new XTemplate(tpl2).render({
+      b: true,
+    })).to.equal('200');
+  });
+
   it('support transform data in if statement', function () {
     const tpl = '{{#if (transform(x) === 2)}}2{{else}}1{{/if}}';
     const content = new XTemplate(tpl, {
