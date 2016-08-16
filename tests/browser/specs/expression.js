@@ -134,7 +134,7 @@ describe('expression', function () {
     })).to.equal('01');
   });
 
-  it.only('support conditionalexpression', function () {
+  it('support conditionalexpression', function () {
     const tpl = `{{a?b:c}}`;
 
     expect(new XTemplate(tpl, {
