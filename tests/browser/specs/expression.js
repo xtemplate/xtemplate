@@ -145,10 +145,16 @@ describe('expression', function () {
       c: 100,
     })).to.equal('200');
 
-    const tpl2 = `{{set (a = b ? 200 : 100) }}{{a}}`;
+    const tpl2 = `{{set (a = b ? 200*100 : 100) }}{{a}}`;
     expect(new XTemplate(tpl2).render({
       b: true,
-    })).to.equal('200');
+    })).to.equal('20000');
+
+
+    const tpl3 = `{{set (a = b ? 200 * 100 : true ? 20*100 : 20 ) }}{{a}}`;
+    expect(new XTemplate(tpl3).render({
+      b: false,
+    })).to.equal('2000');
   });
 
   it('support transform data in if statement', function () {
