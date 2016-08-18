@@ -3,14 +3,18 @@
 const XTemplate = require('../../../');
 const expect = require('expect.js');
 const uuid = require('uuid');
-const define = window.define;
+const { registerTemplate, loadTemplate, clearTemplates } = require('../../config');
 
-describe('sub template', function () {
-  it('support parse', function () {
+describe('sub template', () => {
+  beforeEach(() => {
+    clearTemplates();
+  });
+
+  it('support parse', () => {
     const tplName = uuid.v4();
-    define(tplName, '{{title}}{{title2}}');
+    registerTemplate(tplName, '{{title}}{{title2}}');
 
-    const tpl = '{{parse ("' + tplName + '", title2="2")}}';
+    const tpl = `{{parse ("${tplName}", title2="2")}}`;
 
     const data = {
       title: '1',
@@ -23,43 +27,25 @@ describe('sub template', function () {
     expect(render).to.equal('2');
   });
 
-  it('support sub template as string', function () {
+  it('support sub template as string', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    const tpl = '{{include ("./' + tplName + '")}}';
+    const tpl = `{{include ("./${tplName}")}}`;
 
     const data = {
       title: '1',
     };
 
-    define('xtemplate-test/' + tplName, '{{title}}');
+    registerTemplate(`xtemplate-test/${tplName}`, '{{title}}');
 
     const render = new XTemplate(tpl, {
-      name: 'xtemplate-test/' + tplName2,
+      name: `xtemplate-test/${tplName2}`,
       loader: {
         load(innerTpl, callback) {
-          const name = innerTpl.name;
-          expect(innerTpl.name).to.equal('xtemplate-test/' + tplName);
-          expect(innerTpl.originalName).to.equal('./' + tplName);
-          expect(innerTpl.parent.name).to.equal('xtemplate-test/' + tplName2);
-          (require.async || require)([name],
-            function (cont) {
-              let content = cont;
-              if (typeof content === 'string') {
-                try {
-                  content = innerTpl.root.compile(content, name);
-                } catch (e) {
-                  return callback(e);
-                }
-              }
-              callback(undefined, content);
-            },
-            function () {
-              const error = 'template "' + name + '" does not exist';
-              console.error(error);
-              callback(error);
-            }
-          );
+          expect(innerTpl.name).to.equal(`xtemplate-test/${tplName}`);
+          expect(innerTpl.originalName).to.equal(`./${tplName}`);
+          expect(innerTpl.parent.name).to.equal(`xtemplate-test/${tplName2}`);
+          loadTemplate(innerTpl, callback);
         },
       },
     }).render(data);
@@ -67,7 +53,7 @@ describe('sub template', function () {
     expect(render).to.equal('1');
   });
 
-  it('support sub template compile', function () {
+  it('support sub template compile', () => {
     const tpl = '{{include ("./x")}}';
     const code = XTemplate.Compiler.compileToStr({
       content: tpl,
@@ -77,53 +63,54 @@ describe('sub template', function () {
     expect(code).to.contain('requ' + 'ire("./x")');
   });
 
-  it('support relative sub template name', function () {
+  it('support relative sub template name', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    const tpl = '{{include( "./' + tplName + '")}}';
+    const tpl = `{{include( "./${tplName}")}}`;
 
     const data = {
       title: '1',
     };
 
-    define('xtemplate-test/' + tplName, '{{title}}');
+    registerTemplate(`xtemplate-test/${tplName}`, '{{title}}');
 
     const render = new XTemplate(tpl, {
-      name: 'xtemplate-test/' + tplName2,
+      name: `xtemplate-test/${tplName2}`,
     }).render(data);
 
     expect(render).to.equal('1');
   });
 
-  it('support unescape sub template name', function () {
+  it('support unescape sub template name', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    const tpl = '{{{include("./' + tplName + '")}}}';
+    const tpl = `{{{include("./${tplName}")}}}`;
 
     const data = {
       title: '1',
     };
 
-    define('xtemplate-test/' + tplName, '<>{{title}}');
+    registerTemplate(`xtemplate-test/${tplName}`, '<>{{title}}');
 
     const render = new XTemplate(tpl, {
-      name: 'xtemplate-test/' + tplName2,
+      name: `xtemplate-test/${tplName2}`,
     }).render(data);
 
     expect(render).to.equal('<>1');
   });
 
-  it('allow shadow parent data', function () {
+  it('allow shadow parent data', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    const tpl = '{{title}}{{include ("xtemplate-test/' + tplName + '", title="2")}}{{include ("xtemplate-test/' + tplName2 + '")}}';
+    const tpl = `{{title}}{{include ("xtemplate-test/${tplName}", title="2")}}\
+{{include ("xtemplate-test/${tplName2}")}}`;
 
     const data = {
       title: '1',
     };
 
-    define('xtemplate-test/' + tplName, '{{title}}{{../title}}');
-    define('xtemplate-test/' + tplName2, '{{title}}');
+    registerTemplate(`xtemplate-test/${tplName}`, '{{title}}{{../title}}');
+    registerTemplate(`xtemplate-test/${tplName2}`, '{{title}}');
 
 
     const render = new XTemplate(tpl).render(data);
@@ -131,49 +118,48 @@ describe('sub template', function () {
     expect(render).to.equal('1211');
   });
 
-  it('throw error when relative sub template name', function () {
+  it('throw error when relative sub template name', () => {
     const tplName = uuid.v4();
-    const tpl = '{{include ("./' + tplName + '")}}';
+    const tpl = `{{include ("./${tplName}")}}`;
 
     const data = {
       title: '1',
     };
 
-    define('xtemplate-test/' + tplName, '{{title}}');
+    registerTemplate(`xtemplate-test/${tplName}`, '{{title}}');
 
-    expect(function () {
+    expect(() => {
       new XTemplate(tpl).render(data);
-    }).to.throwError('parent template does not have name ' +
-      'for relative sub tpl name:' +
-      ' ./' + tplName);
+    }).to.throwError(`parent template does not have name\
+     for relative sub tpl name: ./${tplName}`);
   });
 
-  it('will always use loader', function () {
+  it('will always use loader', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    define(tplName, '{{include("' + tplName2 + '")}}');
-    define(tplName2, '{{title}}');
+    registerTemplate(tplName, `{{include("${tplName2}")}}`);
+    registerTemplate(tplName2, '{{title}}');
     const ret = new XTemplate({
       name: tplName,
-    }).render({title: 1});
+    }).render({ title: 1 });
     expect(ret).to.be('1');
   });
 
-  it('will support json as second parameter', function () {
+  it('will support json as second parameter', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    define(tplName, '{{include("' + tplName2 + '",{title:3,title2:2},title=1)}}');
-    define(tplName2, '{{title}}{{title2}}');
+    registerTemplate(tplName, `{{include("${tplName2}",{title:3,title2:2},title=1)}}`);
+    registerTemplate(tplName2, '{{title}}{{title2}}');
     const ret = new XTemplate({
       name: tplName,
     }).render({});
     expect(ret).to.be('12');
   });
 
-  it('include twice works', function () {
+  it('include twice works', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    define(tplName, `
+    registerTemplate(tplName, `
     {{set(x=1)}}
 
     {{include('${tplName2}')}}
@@ -182,17 +168,17 @@ describe('sub template', function () {
 
     {{x}}
     `);
-    define(tplName2, '{{set(x = x+1)}}');
+    registerTemplate(tplName2, '{{set(x = x+1)}}');
     const ret = new XTemplate({
       name: tplName,
     }).render({});
     expect(ret.trim()).to.be('3');
   });
 
-  it('includeOnce works', function () {
+  it('includeOnce works', () => {
     const tplName = uuid.v4();
     const tplName2 = uuid.v4();
-    define(tplName, `
+    registerTemplate(tplName, `
     {{set(x=1)}}
 
     {{includeOnce('${tplName2}')}}
@@ -201,7 +187,7 @@ describe('sub template', function () {
 
     {{x}}
     `);
-    define(tplName2, '{{set(x = x+1)}}');
+    registerTemplate(tplName2, '{{set(x = x+1)}}');
     const ret = new XTemplate({
       name: tplName,
     }).render({});

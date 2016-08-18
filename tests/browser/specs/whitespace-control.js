@@ -1,8 +1,8 @@
 const XTemplate = require('../../../');
 const expect = require('expect.js');
 
-describe('whitespace control', function () {
-  it('ltrim works', function () {
+describe('whitespace control', () => {
+  it('ltrim works', () => {
     const tpl = [
       ' ',
       '{{~"x"}}',
@@ -12,7 +12,7 @@ describe('whitespace control', function () {
     expect(ret).to.equal('x ');
   });
 
-  it('rtrim works', function () {
+  it('rtrim works', () => {
     const tpl = [
       ' ',
       '{{ "x" ~}}',
@@ -22,8 +22,8 @@ describe('whitespace control', function () {
     expect(ret).to.equal(' x');
   });
 
-  describe('block', function () {
-    it('works inside block', function () {
+  describe('block', () => {
+    it('works inside block', () => {
       const tpl = [
         '{{#each(data)~}}',
         '{{this}}',

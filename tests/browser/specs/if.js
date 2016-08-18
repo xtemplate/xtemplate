@@ -5,15 +5,15 @@
 
 const XTemplate = require('../../../');
 const expect = require('expect.js');
-describe('if', function () {
-  it('support empty field', function () {
+describe('if', () => {
+  it('support empty field', () => {
     const tpl = '{{set(q=1)}}{{#if(x.y.z)}}has title{{/if}}';
-    const render = new XTemplate(tpl).render({x: {y: {}}});
+    const render = new XTemplate(tpl).render({ x: { y: {} } });
 
     expect(render).to.equal('');
   });
 
-  it('support {{#if}} {{@', function () {
+  it('support {{#if}} {{@', () => {
     const tpl = '{{#if(title)}}has title{{/if}}\n' +
       '{{@if(title2)}}has title2{{else}}not has title2{{/if}}';
 
@@ -28,7 +28,7 @@ describe('if', function () {
       'not has title2');
   });
 
-  it('support undefined null', function () {
+  it('support undefined null', () => {
     const tpl = '{{#if(t !== undefined)}}defined{{/if}} {{#if(t === null)}}null{{/if}} ' +
       '{{#if(t3 === undefined)}}undefined{{/if}} {{#if(t3 !== null)}}nonull{{else}}null{{/if}}';
     const data = {
@@ -38,7 +38,7 @@ describe('if', function () {
     expect(render).to.equal('defined null undefined nonull');
   });
 
-  it('empty block works', function () {
+  it('empty block works', () => {
     const tpl = '{{#if(t !== true)}}{{else}}true{{/if}}';
     const data = {
       t: true,
@@ -47,7 +47,7 @@ describe('if', function () {
     expect(render).to.equal('true');
   });
 
-  it('{{{if}}} is same as {{if}}', function () {
+  it('{{{if}}} is same as {{if}}', () => {
     const tpl = '{{{#if(t !== true)}}}{{else}}true{{{/if}}}';
     const data = {
       t: true,
@@ -56,7 +56,7 @@ describe('if', function () {
     expect(render).to.equal('true');
   });
 
-  it('support boolean', function () {
+  it('support boolean', () => {
     const tpl = '{{#if(t === true)}}true{{else}}not true{{/if}}';
     let data = {
       t: true,
@@ -70,7 +70,7 @@ describe('if', function () {
     expect(render).to.equal('not true');
   });
 
-  it('support access length attribute of array', function () {
+  it('support access length attribute of array', () => {
     const tpl = '{{arr.length}} {{#if(arr.length)}}have elements{{else}}empty{{/if}}';
     const data = {
       arr: ['a', 'b'],
@@ -83,7 +83,7 @@ describe('if', function () {
     expect(render).to.equal('0 empty');
   });
 
-  it('support nested properties', function () {
+  it('support nested properties', () => {
     const tpl = '{{#with (z)}}{{#if (data.x)}}x{{else}}y{{/if}}{{/with}}';
     const data = {
       data: null,
@@ -97,7 +97,7 @@ describe('if', function () {
     expect(render).to.equal('y');
   });
 
-  it('can not get sub property data from parent scope', function () {
+  it('can not get sub property data from parent scope', () => {
     const tpl = '{{#with (z)}}{{#if (data.x)}}x{{else}}y{{/if}}{{/with}}';
     const data = {
       data: {
@@ -113,7 +113,7 @@ describe('if', function () {
     expect(render).to.equal('y');
   });
 
-  it('can not get sub property data from null', function () {
+  it('can not get sub property data from null', () => {
     const tpl = '{{#if (data&&data.x)}}x{{else}}y{{/if}}';
     const data = {
       data: null,
@@ -122,7 +122,7 @@ describe('if', function () {
     expect(render).to.equal('y');
   });
 
-  it('support elseif', function () {
+  it('support elseif', () => {
     const tpl = '{{#if(x===1)}} 1 {{elseif (x===2)}} 2 {{elseif (x===3)}} 3 {{else}} ! {{/if}}';
     let render = new XTemplate(tpl, {
       name: 'elseif',
@@ -144,7 +144,7 @@ describe('if', function () {
     expect(render).to.equal(' ! ');
   });
 
-  it('can if deep absent property', function () {
+  it('can if deep absent property', () => {
     const tpl = '{{#if(x.y.z.q === 1)}}1{{else}}0{{/if}}';
     const render = new XTemplate(tpl).render({});
     expect(render).to.equal('0');

@@ -1,9 +1,18 @@
-/* eslint no-console:0 */
+/* eslint no-console:0, strict:0 */
 'use strict';
 
 const Xtemplate = require('../../../');
 const path = require('path');
 const fs = require('fs');
+
+function compile(name) {
+  let p = path.join(__dirname, '../fixture', name);
+  if (!p.endsWith('.xtpl')) {
+    p += '.xtpl';
+  }
+  const content = fs.readFileSync(p, 'utf8');
+  return Xtemplate.compile(content, name);
+}
 
 const loader = {
   load(tpl, callback) {
@@ -22,18 +31,9 @@ const loader = {
 
 function getInstance(name) {
   return new Xtemplate(compile(name), {
-    loader: loader,
-    name: name,
+    loader,
+    name,
   });
-}
-
-function compile(name) {
-  let p = path.join(__dirname, '../fixture', name);
-  if (!p.endsWith('.xtpl')) {
-    p += '.xtpl';
-  }
-  const content = fs.readFileSync(p, 'utf8');
-  return Xtemplate.compile(content, name);
 }
 
 console.log(getInstance('a.xtpl').render({

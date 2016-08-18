@@ -5,8 +5,8 @@
 
 const XTemplate = require('../../../');
 const expect = require('expect.js');
-describe('feature', function () {
-  it('support {{%%}}', function () {
+describe('feature', () => {
+  it('support {{%%}}', () => {
     let tpl = '{{%{{my}}%}}';
 
     let render = new XTemplate(tpl).render({
@@ -24,7 +24,7 @@ describe('feature', function () {
     expect(render).to.equal('');
   });
 
-  it('support deep property access', function () {
+  it('support deep property access', () => {
     const render = new XTemplate('{{x.y.z}}').render({
       x: {
         y: {
@@ -36,7 +36,7 @@ describe('feature', function () {
     expect(render).to.equal('1');
   });
 
-  it('support deep property access by this', function () {
+  it('support deep property access by this', () => {
     const render = new XTemplate('{{this.x.y.z}}').render({
       x: {
         y: {
@@ -48,7 +48,7 @@ describe('feature', function () {
     expect(render).to.equal('1');
   });
 
-  it('support deep property access by root', function () {
+  it('support deep property access by root', () => {
     const render = new XTemplate('{{root.x.y.z}}').render({
       x: {
         y: {
@@ -60,7 +60,7 @@ describe('feature', function () {
     expect(render).to.equal('1');
   });
 
-  it('will output empty for deep absent property', function () {
+  it('will output empty for deep absent property', () => {
     const render = new XTemplate('{{x.y.z}}').render({
       x: {},
     });
@@ -68,7 +68,7 @@ describe('feature', function () {
     expect(render).to.equal('');
   });
 
-  it('allow empty content', function () {
+  it('allow empty content', () => {
     const tpl = '';
 
     const data = {
@@ -82,7 +82,7 @@ describe('feature', function () {
     expect(ret).to.equal('');
   });
 
-  it('support {{variable}}', function () {
+  it('support {{variable}}', () => {
     const tpl = 'this is class="t" {{title}}!';
 
     const data = {
@@ -96,7 +96,7 @@ describe('feature', function () {
     expect(render).to.equal('this is class="t" o!');
   });
 
-  it('will output nothing using void', function () {
+  it('will output nothing using void', () => {
     const tpl = 'this is {{void(title)}}!';
 
     const data = {
@@ -110,14 +110,14 @@ describe('feature', function () {
     expect(render).to.equal('this is !');
   });
 
-  it('support double quote in content', function () {
+  it('support double quote in content', () => {
     const tpl = '<a href="www.g.cn"></a>';
     const render = new XTemplate(tpl).render({});
     expect(render).to.equal('<a href="www.g.cn"></a>');
   });
 
-  describe('property', function () {
-    it('support sub property', function () {
+  describe('property', () => {
+    it('support sub property', () => {
       const tpl = '{{data.x}}';
 
       const data = {
@@ -131,7 +131,7 @@ describe('feature', function () {
       expect(render).to.equal('1');
     });
 
-    it('will render empty instead of undefined', function () {
+    it('will render empty instead of undefined', () => {
       const tpl = '{{data.x}}';
 
       const data = {
@@ -145,7 +145,7 @@ describe('feature', function () {
       expect(render).to.equal('');
     });
 
-    it('support array index', function () {
+    it('support array index', () => {
       const tpl = '{{data[1][1]}}';
 
       const data = {
@@ -158,7 +158,7 @@ describe('feature', function () {
     });
   });
 
-  it('support variable as index', function () {
+  it('support variable as index', () => {
     const tpl = '{{data[d]}}';
 
     const data = {
@@ -173,7 +173,7 @@ describe('feature', function () {
     expect(render).to.equal('1');
   });
 
-  it('support express as index', function () {
+  it('support express as index', () => {
     const tpl = '{{data["m"+"y"]}}';
 
     const data = {
@@ -188,8 +188,8 @@ describe('feature', function () {
     expect(render).to.equal('1');
   });
 
-  describe('negative number and minus', function () {
-    it('support 0-1', function () {
+  describe('negative number and minus', () => {
+    it('support 0-1', () => {
       let tpl = '{{#if( n===0-1)}}-1{{else}}1{{/if}}';
 
       let data = {
@@ -213,7 +213,7 @@ describe('feature', function () {
       }
     });
 
-    it('support simple -1', function () {
+    it('support simple -1', () => {
       const tpl = '{{-1}}';
 
       const render = new XTemplate(tpl).render();
@@ -221,7 +221,7 @@ describe('feature', function () {
       expect(render).to.equal('-1');
     });
 
-    it('support -1', function () {
+    it('support -1', () => {
       const tpl = '{{#if( n===-1)}}-1{{else}}1{{/if}}';
 
       const data = {
@@ -234,8 +234,8 @@ describe('feature', function () {
     });
   });
 
-  describe('with', function () {
-    it('support object in with', function () {
+  describe('with', () => {
+    it('support object in with', () => {
       const tpl = '{{#with (data)}}{{name}}-{{age}}{{/with}}';
 
       const data = {
@@ -250,16 +250,16 @@ describe('feature', function () {
       expect(render).to.equal('h-2');
     });
 
-    it('this will prevent up resolve', function () {
+    it('this will prevent up resolve', () => {
       const tpl = '{{#with(t)}}{{#with(t2)}}{{#with(t3)}}{{../this.tt}}{{/with}}{{/with}}{{/with}}';
-      const data = {t: {tt: 1, t2: {t3: {tt: 3}}}};
+      const data = { t: { tt: 1, t2: { t3: { tt: 3 } } } };
       const render = new XTemplate(tpl).render(data);
       expect(render).to.equal('');
     });
   });
 
-  describe('parent scope', function () {
-    it('support access root scope', function () {
+  describe('parent scope', () => {
+    it('support access root scope', () => {
       const tpl = '{{#each (children)}}' +
         '{{name}}{{root.name}}' +
         '{{/each}}';
@@ -281,7 +281,7 @@ describe('feature', function () {
     });
 
     // https://github.com/kissyteam/kissy/issues/517
-    it('this will prevent scope finding', function () {
+    it('this will prevent scope finding', () => {
       const ret = new XTemplate('{{a}}^{{#each (b)}}|{{this.a}}{{/each}}$').render({
         a: 1,
         b: [
@@ -294,8 +294,8 @@ describe('feature', function () {
       expect(ret).to.equal('1^|2|$');
     });
 
-    it('support for with', function () {
-      const tpl = '{{#with( data)}}' +
+    it('support for with', () => {
+      const tpl = '{{#with(data)}}' +
         '{{#with (p)}}' +
         '{{name}}-{{age}}-{{../l2}}-{{../../l1}}' +
         '{{/with}}' +
@@ -321,7 +321,7 @@ describe('feature', function () {
       expect(render).to.equal('h-2-l2-l1');
     });
 
-    it('support for each', function () {
+    it('support for each', () => {
       const tpl = '{{#each (data)}}{{this}}-{{../total}}|{{/each}}';
 
       const data = {
@@ -335,7 +335,7 @@ describe('feature', function () {
     });
 
     //
-    it('support with and each', function () {
+    it('support with and each', () => {
       const tpl = '{{#with (a)}}{{#each (b)}}{{this}}{{../x}}{{../../x}}{{/each}}{{/with}}';
 
       const data = {
@@ -352,7 +352,7 @@ describe('feature', function () {
     });
   });
 
-  it('support comment', function () {
+  it('support comment', () => {
     const tpl = 'my {{!\n' +
       'comment' +
       '\n}} {{title}}';
@@ -367,8 +367,8 @@ describe('feature', function () {
     expect(render).to.equal('my  oo');
   });
 
-  describe('汉字', function () {
-    it('允许汉字内容', function () {
+  describe('汉字', () => {
+    it('允许汉字内容', () => {
       const tpl = '{{t}}出现了';
       const data = {
         t: 1,
@@ -379,7 +379,7 @@ describe('feature', function () {
       expect(render).to.equal('1出现了');
     });
 
-    it('允许汉字参数', function () {
+    it('允许汉字参数', () => {
       const tpl = '{{t("出现了")}}';
       const data = {};
 

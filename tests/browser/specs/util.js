@@ -2,6 +2,16 @@ function isArray(obj) {
   return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
+function keys(obj) {
+  const ret = [];
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      ret.push(key);
+    }
+  }
+  return ret;
+}
+
 function each(obj, fn) {
   let i = 0;
   let myKeys;
@@ -24,17 +34,11 @@ function each(obj, fn) {
   }
 }
 
-function keys(obj) {
-  const ret = [];
-  for (const key in obj) {
-    ret.push(key);
-  }
-  return ret;
-}
-
 function mix(to, from) {
   for (const i in from) {
-    to[i] = from[i];
+    if (from.hasOwnProperty(i)) {
+      to[i] = from[i];
+    }
   }
   return to;
 }
@@ -46,7 +50,7 @@ module.exports = {
     for (let i = 0; i < len; i++) {
       const el = typeof arr === 'string' ? arr.charAt(i) : arr[i];
       if (el ||
-          // ie<9 in invalid when typeof arr == string
+        // ie<9 in invalid when typeof arr == string
         i in arr) {
         res[i] = fn.call(context || this, el, i, arr);
       }
@@ -58,7 +62,7 @@ module.exports = {
     return str.lastIndexOf(prefix, 0) === 0;
   },
 
-  each: each,
+  each,
 
-  mix: mix,
+  mix,
 };

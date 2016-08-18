@@ -2,8 +2,6 @@
  * native commands for xtemplate.
  */
 
-'use strict';
-
 const Scope = require('./scope');
 const util = require('./util');
 const commands = {
@@ -43,8 +41,8 @@ const commands = {
       xcount = param0.length;
       for (xindex = 0; xindex < xcount; xindex++) {
         opScope = new Scope(param0[xindex], {
-          xcount: xcount,
-          xindex: xindex,
+          xcount,
+          xindex,
         }, scope);
         affix = opScope.affix;
         if (xindexName !== 'xindex') {
@@ -72,18 +70,20 @@ const commands = {
     // if undefined, will emit warning by compiler
     if (param0) {
       for (name in param0) {
-        opScope = new Scope(param0[name], {
-          xindex: name,
-        }, scope);
-        affix = opScope.affix;
-        if (xindexName !== 'xindex') {
-          affix[xindexName] = name;
-          affix.xindex = undefined;
+        if (param0.hasOwnProperty(name)) {
+          opScope = new Scope(param0[name], {
+            xindex: name,
+          }, scope);
+          affix = opScope.affix;
+          if (xindexName !== 'xindex') {
+            affix[xindexName] = name;
+            affix.xindex = undefined;
+          }
+          if (valueName) {
+            affix[valueName] = param0[name];
+          }
+          buffer = option.fn(opScope, buffer);
         }
-        if (valueName) {
-          affix[valueName] = param0[name];
-        }
-        buffer = option.fn(opScope, buffer);
       }
     }
     return buffer;
@@ -193,7 +193,7 @@ const commands = {
     let cursor;
     const current = {
       fn: option.fn,
-      type: type,
+      type,
     };
     if (!head) {
       blocks[blockName] = current;
@@ -240,13 +240,13 @@ const commands = {
     if (option.fn) {
       macros[macroName] = {
         paramNames: params1,
-        hash: hash,
+        hash,
         fn: option.fn,
       };
     } else if (macro) {
       const paramValues = macro.hash || {};
-      let paramNames;
-      if ((paramNames = macro.paramNames)) {
+      const paramNames = macro.paramNames;
+      if (paramNames) {
         for (let i = 0, len = paramNames.length; i < len; i++) {
           const p = paramNames[i];
           paramValues[p] = params1[i];
@@ -254,7 +254,9 @@ const commands = {
       }
       if (hash) {
         for (const h in hash) {
-          paramValues[h] = hash[h];
+          if (hash.hasOwnProperty(h)) {
+            paramValues[h] = hash[h];
+          }
         }
       }
       const newScope = new Scope(paramValues);
@@ -263,14 +265,14 @@ const commands = {
       // no caller Scope
       buffer = macro.fn.call(self, newScope, buffer);
     } else {
-      const error = 'can not find macro: ' + macroName;
+      const error = `can not find macro: ${macroName}`;
       buffer.error(error);
     }
     return buffer;
   },
 };
 
-commands.debugger = function () {
+commands.debugger = function debuggerFn() {
   util.globalEval('debugger');
 };
 

@@ -226,6 +226,12 @@ Examples:
 {{/if}}
 ```
 
+### Conditional expression
+
+```
+{{1 > 2 ? 1 : 2}}
+```
+
 ### Function Calls
 
 If you have passed a javascript method to your template, you can call it like normal.

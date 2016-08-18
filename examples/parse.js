@@ -24,9 +24,14 @@ const Test = React.createClass({
             <h2>模板代码</h2>
 
             <div>
-                <textarea style={{width: 350, height: 400}} ref="tpl" defaultValue={`
+                <textarea
+                  style={{ width: 350, height: 400 }}
+                  ref="tpl"
+                  defaultValue={`
                     {{3*4*5}}
-`}/></div>
+`}
+                />
+            </div>
             <br/>
             <button ref="parse" className="ks-button" onClick={this.parse}>parse</button>
           </div>

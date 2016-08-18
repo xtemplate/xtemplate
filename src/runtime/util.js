@@ -1,5 +1,3 @@
-'use strict';
-
 // http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
 // http://wonko.com/post/html-escaping
 
@@ -11,16 +9,18 @@ const win = typeof global !== 'undefined' ? global : window;
 let util;
 const toString = Object.prototype.toString;
 module.exports = util = {
-  isArray: Array.isArray || function (obj) {
+  isArray: Array.isArray || function isArray(obj) {
     return toString.call(obj) === '[object Array]';
   },
 
-  keys: Object.keys || function (o) {
+  keys: Object.keys || function keys(o) {
     const result = [];
     let p;
 
     for (p in o) {
-      result.push(p);
+      if (o.hasOwnProperty(p)) {
+        result.push(p);
+      }
     }
 
     return result;
@@ -34,7 +34,8 @@ module.exports = util = {
       let i = 0;
       const length = object && object.length;
       // do not use typeof obj == 'function': bug in phantomjs
-      const isObj = length === undefined || Object.prototype.toString.call(object) === '[object Function]';
+      const isObj = length === undefined ||
+        Object.prototype.toString.call(object) === '[object Function]';
 
       if (isObj) {
         keys = util.keys(object);
@@ -60,7 +61,9 @@ module.exports = util = {
   mix(t, s) {
     if (s) {
       for (const p in s) {
-        t[p] = s[p];
+        if (s.hasOwnProperty(p)) {
+          t[p] = s[p];
+        }
       }
     }
     return t;
@@ -70,7 +73,8 @@ module.exports = util = {
     if (win.execScript) {
       win.execScript(data);
     } else {
-      (function (d) {
+      /* eslint wrap-iife:0 */
+      (function run(d) {
         win.eval.call(win, d);
       })(data);
     }

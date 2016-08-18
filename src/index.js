@@ -2,8 +2,6 @@
  * simple facade for runtime and compiler
  */
 
-'use strict';
-
 const XTemplateRuntime = require('./runtime');
 const util = XTemplateRuntime.util;
 const Compiler = require('./compiler');
@@ -46,28 +44,32 @@ Noop.prototype = XTemplateRuntime.prototype;
 XTemplate.prototype = new Noop();
 XTemplate.prototype.constructor = XTemplate;
 
-XTemplate.prototype.compile = function (content, name) {
-  return compile(content, name, this.config);
-};
+util.mix(XTemplate.prototype, {
+  compile(content, name) {
+    return compile(content, name, this.config);
+  },
 
-XTemplate.prototype.render = function (data, option, callback_) {
-  let callback = callback_;
-  if (typeof option === 'function') {
-    callback = option;
-  }
-  const compileError = this.compileError;
-  if (compileError) {
-    if (callback) {
-      callback(compileError);
-    } else {
-      throw compileError;
+  render(data, option, callback_) {
+    let callback = callback_;
+    if (typeof option === 'function') {
+      callback = option;
     }
-  } else {
-    return XTemplateRuntime.prototype.render.apply(this, arguments);
-  }
-};
+    const compileError = this.compileError;
+    if (compileError) {
+      if (callback) {
+        callback(compileError);
+      } else {
+        throw compileError;
+      }
+    } else {
+      return XTemplateRuntime.prototype.render.apply(this, arguments);
+    }
+  },
+});
 
 module.exports = util.mix(XTemplate, {
+  globalConfig: {},
+
   config: XTemplateRuntime.config,
 
   compile,

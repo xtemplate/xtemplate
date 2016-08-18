@@ -1,5 +1,9 @@
 # History
 ----
+## 4.6.0 (2016-08-18)
+
+`new` [#83](https://github.com/xtemplate/xtemplate/pull/83/files) support conditional expression
+
 ## 4.5.0 (2015-12-23)
 
 `new` [#75](https://github.com/xtemplate/xtemplate/pull/75/files) support includeOnce

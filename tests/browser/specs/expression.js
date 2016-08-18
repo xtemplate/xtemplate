@@ -5,8 +5,8 @@
 
 const XTemplate = require('../../../');
 const expect = require('expect.js');
-describe('expression', function () {
-  it('support render false', function () {
+describe('expression', () => {
+  it('support render false', () => {
     const tpl = '{{t}}';
 
     const render = new XTemplate(tpl).render({
@@ -16,7 +16,7 @@ describe('expression', function () {
     expect(render).to.equal('false');
   });
 
-  it('support literal', function () {
+  it('support literal', () => {
     const tpl = '{{1}}';
 
     const render = new XTemplate(tpl).render();
@@ -24,7 +24,7 @@ describe('expression', function () {
     expect(render).to.equal('1');
   });
 
-  it('support keyword prefix', function () {
+  it('support keyword prefix', () => {
     const tpl = '{{trueX}} {{falseX}} {{nullX}} {{undefinedX}}';
     const render = new XTemplate(tpl).render({
       trueX: 1,
@@ -35,7 +35,7 @@ describe('expression', function () {
     expect(render).to.equal('1 2 3 4');
   });
 
-  it('distinguish {{}} from {{}}}', function () {
+  it('distinguish {{}} from {{}}}', () => {
     const tpl = '{{1}}}';
 
     const render = new XTemplate(tpl).render();
@@ -43,7 +43,7 @@ describe('expression', function () {
     expect(render).to.equal('1}');
   });
 
-  it('support (', function () {
+  it('support (', () => {
     const tpl = '{{3 - (1+1)}}';
 
     const render = new XTemplate(tpl).render();
@@ -51,7 +51,7 @@ describe('expression', function () {
     expect(render).to.equal('1');
   });
 
-  it('support modulus', function () {
+  it('support modulus', () => {
     const tpl = '{{3 % 2}}';
 
     const render = new XTemplate(tpl).render();
@@ -59,7 +59,7 @@ describe('expression', function () {
     expect(render).to.equal('1');
   });
 
-  it('support unary expression', function () {
+  it('support unary expression', () => {
     const tpl = '{{#if (!n)}}1{{/if}}';
     expect(new XTemplate(tpl).render({
       n: 1,
@@ -69,12 +69,12 @@ describe('expression', function () {
     })).to.equal('1');
   });
 
-  it('support escapeHtml', function () {
+  it('support escapeHtml', () => {
     const tpl = '{{{"2<\\\\"+1}}} {{{"2<\\\\"+1}}}';
     expect(new XTemplate(tpl).render()).to.equal('2<\\1 2<\\1');
   });
 
-  it('differentiate negative number and minus', function () {
+  it('differentiate negative number and minus', () => {
     const tpl = '{{n-1}}';
 
     const data = {
@@ -84,7 +84,7 @@ describe('expression', function () {
     expect(new XTemplate(tpl).render(data)).to.equal('9');
   });
 
-  it('support expression for variable', function () {
+  it('support expression for variable', () => {
     const tpl = '{{n+3*4/2}}';
 
     const data = {
@@ -94,7 +94,7 @@ describe('expression', function () {
     expect(new XTemplate(tpl).render(data)).to.equal('7');
   });
 
-  it('support expression for variable in string', function () {
+  it('support expression for variable in string', () => {
     const tpl = '{{n+" is good"}}';
 
     const data = {
@@ -104,7 +104,7 @@ describe('expression', function () {
     expect(new XTemplate(tpl).render(data)).to.equal('xtemplate is good');
   });
 
-  it('support newline/quote for variable in string', function () {
+  it('support newline/quote for variable in string', () => {
     const tpl = '{{{"\\n \\\' \\\\\\\'"}}} | \n \\\' \\\\\\\'';
 
     const data = {
@@ -116,12 +116,12 @@ describe('expression', function () {
     expect(content).to.equal("\n ' \\' | \n \\' \\\\\\'");
   });
 
-  it('support conditional expression', function () {
+  it('support if-else expression', () => {
     const tpl = '{{#if (x>1 && x<10)}}1{{else}}0{{/if}}' +
       '{{#if (q && q.x<10)}}1{{else}}0{{/if}}';
 
     expect(new XTemplate(tpl, {
-      name: 'conditional-expression',
+      name: 'if-else-expression',
     }).render({
       x: 2,
     })).to.equal('10');
@@ -134,7 +134,7 @@ describe('expression', function () {
     })).to.equal('01');
   });
 
-  it('support conditionalexpression', function () {
+  it('support conditional expression', () => {
     const tpl = `{{a?b:c}}`;
 
     expect(new XTemplate(tpl, {
@@ -157,7 +157,7 @@ describe('expression', function () {
     })).to.equal('2000');
   });
 
-  it('support transform data in if statement', function () {
+  it('support transform data in if statement', () => {
     const tpl = '{{#if (transform(x) === 2)}}2{{else}}1{{/if}}';
     const content = new XTemplate(tpl, {
       name: 'transform-in-if-statement',
@@ -172,34 +172,34 @@ describe('expression', function () {
     expect(content).to.equal('2');
   });
 
-  describe('array expression', function () {
-    it('support simple array', function () {
+  describe('array expression', () => {
+    it('support simple array', () => {
       const tpl = '{{[1,2]}}';
       const content = new XTemplate(tpl, {}).render({});
       expect(content).to.equal('1,2');
     });
 
-    it('support each', function () {
+    it('support each', () => {
       const tpl = '{{#each([1,2])}}{{this}}{{#if(xindex !== 1)}}+{{/if}}{{/each}}';
       const content = new XTemplate(tpl, {}).render({});
       expect(content).to.equal('1+2');
     });
   });
 
-  describe('json expression', function () {
-    it('id: support with', function () {
+  describe('json expression', () => {
+    it('id: support with', () => {
       const tpl = '{{# with({x:2}) }}{{x}}{{/with}}';
       const content = new XTemplate(tpl, {}).render({});
       expect(content).to.equal('2');
     });
 
-    it('quote: support with', function () {
+    it('quote: support with', () => {
       const tpl = '{{# with({"x":2}) }}{{x}}{{/with}}';
       const content = new XTemplate(tpl, {}).render({});
       expect(content).to.equal('2');
     });
 
-    it('support each', function () {
+    it('support each', () => {
       const tpl = '{{#each({"x":2})}}{{xindex}}+{{this}}{{/each}}';
       const content = new XTemplate(tpl, {}).render({});
       expect(content).to.equal('x+2');

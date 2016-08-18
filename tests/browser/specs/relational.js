@@ -1,7 +1,7 @@
 const XTemplate = require('../../../');
 const expect = require('expect.js');
-describe('relational expression', function () {
-  it('support relational expression', function () {
+describe('relational expression', () => {
+  it('support relational expression', () => {
     const tpl = '{{#if( n > n2+4/2)}}' +
       '{{n+1}}' +
       '{{else}}' +
@@ -48,14 +48,14 @@ describe('relational expression', function () {
 
     expect(new XTemplate(tpl4).render(data3)).to.equal('3');
 
-    expect(new XTemplate(tpl5).render({n: 5})).to.equal('1');
+    expect(new XTemplate(tpl5).render({ n: 5 })).to.equal('1');
 
-    expect(new XTemplate(tpl6).render({n: 4})).to.equal('1');
+    expect(new XTemplate(tpl6).render({ n: 4 })).to.equal('1');
 
-    expect(new XTemplate(tpl7).render({n: 4})).to.equal('1');
+    expect(new XTemplate(tpl7).render({ n: 4 })).to.equal('1');
   });
 
-  it('support relational expression in each', function () {
+  it('support relational expression in each', () => {
     const tpl = '{{#each (data)}}' +
       '{{#if (this > ../limit+1)}}' +
       '{{this+1}}-{{xindex+1}}-{{xcount}}|' +
@@ -71,7 +71,7 @@ describe('relational expression', function () {
     expect(new XTemplate(tpl).render(data)).to.equal('13-3-6|20-5-6|');
   });
 
-  it('support relational expression in with', function () {
+  it('support relational expression in with', () => {
     const tpl = '{{#with (data)}}' +
       '{{#if (n > ../limit/5)}}' +
       '{{n+1}}' +
@@ -88,7 +88,7 @@ describe('relational expression', function () {
     expect(new XTemplate(tpl).render(data)).to.equal('6');
   });
 
-  it('allows short circuit of &&', function () {
+  it('allows short circuit of &&', () => {
     let tpl = '{{#if(arr && run())}}ok{{else}}not ok{{/if}}';
     let runed = 0;
     let data = {};
@@ -116,7 +116,7 @@ describe('relational expression', function () {
     expect(runed).to.equal(1);
   });
 
-  it('allows short circuit of ||', function () {
+  it('allows short circuit of ||', () => {
     const tpl = '{{#if(arr || run())}}ok{{else}}not ok{{/if}}';
     let runed = 0;
     const data = {};
@@ -131,7 +131,7 @@ describe('relational expression', function () {
   });
 
 
-  it('allows short circuit of ||', function () {
+  it('allows short circuit of ||', () => {
     const tpl = '{{#if(arr || run())}}ok{{else}}not ok{{/if}}';
     let runed = 0;
     const data = {

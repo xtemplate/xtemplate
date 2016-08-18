@@ -1,9 +1,6 @@
 /**
  * Ast node class for xtemplate
  */
-
-'use strict';
-
 const ast = {};
 
 function sameArray(a1, a2) {
@@ -20,7 +17,7 @@ function sameArray(a1, a2) {
   return 1;
 }
 
-ast.ProgramNode = function (pos, statements, inverse) {
+ast.ProgramNode = function ProgramNode(pos, statements, inverse) {
   const self = this;
   self.pos = pos;
   self.statements = statements;
@@ -29,18 +26,15 @@ ast.ProgramNode = function (pos, statements, inverse) {
 
 ast.ProgramNode.prototype.type = 'program';
 
-ast.BlockStatement = function (pos, func, program, close, escape) {
+ast.BlockStatement = function BlockStatement(pos, func, program, close, escape) {
   const closeParts = close.parts;
   const self = this;
   let e;
   // no close tag
   if (!sameArray(func.id.parts, closeParts)) {
-    e = ('in file: ' + pos.filename + ' syntax error at line ' +
-    pos.line +
-    ', col ' + pos.col + ':\n' + 'expect {{/' +
-    func.id.parts +
-    '}} not {{/' +
-    closeParts + '}}');
+    e = (`in file: ${pos.filename} syntax error at line \
+    ${pos.line}, col ${pos.col}:
+    expect {{/${func.id.parts}}} not {{/${closeParts}}}`);
     throw new Error(e);
   }
   self.escape = escape;
@@ -51,7 +45,7 @@ ast.BlockStatement = function (pos, func, program, close, escape) {
 
 ast.BlockStatement.prototype.type = 'blockStatement';
 
-ast.ExpressionStatement = function (pos, expression, escape) {
+ast.ExpressionStatement = function ExpressionStatement(pos, expression, escape) {
   const self = this;
   self.pos = pos;
   self.value = expression;
@@ -60,7 +54,7 @@ ast.ExpressionStatement = function (pos, expression, escape) {
 
 ast.ExpressionStatement.prototype.type = 'expressionStatement';
 
-ast.ContentStatement = function (pos, value) {
+ast.ContentStatement = function ContentStatement(pos, value) {
   const self = this;
   self.pos = pos;
   self.value = value || '';
@@ -68,12 +62,12 @@ ast.ContentStatement = function (pos, value) {
 
 ast.ContentStatement.prototype.type = 'contentStatement';
 
-ast.UnaryExpression = function (unaryType, v) {
+ast.UnaryExpression = function UnaryExpression(unaryType, v) {
   this.value = v;
   this.unaryType = unaryType;
 };
 
-ast.Function = function (pos, id, params, hash) {
+ast.Function = function Function(pos, id, params, hash) {
   const self = this;
   self.pos = pos;
   self.id = id;
@@ -85,7 +79,7 @@ ast.Function.prototype.type = 'function';
 
 ast.UnaryExpression.prototype.type = 'unaryExpression';
 
-ast.MultiplicativeExpression = function (op1, opType, op2) {
+ast.MultiplicativeExpression = function MultiplicativeExpression(op1, opType, op2) {
   const self = this;
   self.op1 = op1;
   self.opType = opType;
@@ -94,7 +88,7 @@ ast.MultiplicativeExpression = function (op1, opType, op2) {
 
 ast.MultiplicativeExpression.prototype.type = 'multiplicativeExpression';
 
-ast.AdditiveExpression = function (op1, opType, op2) {
+ast.AdditiveExpression = function AdditiveExpression(op1, opType, op2) {
   const self = this;
   self.op1 = op1;
   self.opType = opType;
@@ -103,7 +97,7 @@ ast.AdditiveExpression = function (op1, opType, op2) {
 
 ast.AdditiveExpression.prototype.type = 'additiveExpression';
 
-ast.RelationalExpression = function (op1, opType, op2) {
+ast.RelationalExpression = function RelationalExpression(op1, opType, op2) {
   const self = this;
   self.op1 = op1;
   self.opType = opType;
@@ -112,7 +106,7 @@ ast.RelationalExpression = function (op1, opType, op2) {
 
 ast.RelationalExpression.prototype.type = 'relationalExpression';
 
-ast.EqualityExpression = function (op1, opType, op2) {
+ast.EqualityExpression = function EqualityExpression(op1, opType, op2) {
   const self = this;
   self.op1 = op1;
   self.opType = opType;
@@ -121,7 +115,7 @@ ast.EqualityExpression = function (op1, opType, op2) {
 
 ast.EqualityExpression.prototype.type = 'equalityExpression';
 
-ast.ConditionalAndExpression = function (op1, op2) {
+ast.ConditionalAndExpression = function ConditionalAndExpression(op1, op2) {
   const self = this;
   self.op1 = op1;
   self.op2 = op2;
@@ -130,7 +124,7 @@ ast.ConditionalAndExpression = function (op1, op2) {
 
 ast.ConditionalAndExpression.prototype.type = 'conditionalAndExpression';
 
-ast.ConditionalOrExpression = function (op1, op2) {
+ast.ConditionalOrExpression = function ConditionalOrExpression(op1, op2) {
   const self = this;
   self.op1 = op1;
   self.op2 = op2;
@@ -140,7 +134,7 @@ ast.ConditionalOrExpression = function (op1, op2) {
 ast.ConditionalOrExpression.prototype.type = 'conditionalOrExpression';
 
 
-ast.ConditionalExpression = function (op1, op2, op3) {
+ast.ConditionalExpression = function ConditionalExpression(op1, op2, op3) {
   const self = this;
   self.op1 = op1;
   self.op2 = op2;
@@ -150,7 +144,7 @@ ast.ConditionalExpression = function (op1, op2, op3) {
 ast.ConditionalExpression.prototype.type = 'conditionalExpression';
 
 
-ast.String = function (pos, value) {
+ast.String = function StringType(pos, value) {
   const self = this;
   self.pos = pos;
   self.value = value;
@@ -158,7 +152,7 @@ ast.String = function (pos, value) {
 
 ast.String.prototype.type = 'string';
 
-ast.Number = function (pos, value) {
+ast.Number = function NumberType(pos, value) {
   const self = this;
   self.pos = pos;
   self.value = value;
@@ -166,7 +160,7 @@ ast.Number = function (pos, value) {
 
 ast.Number.prototype.type = 'number';
 
-ast.Hash = function (pos, value) {
+ast.Hash = function Hash(pos, value) {
   const self = this;
   self.pos = pos;
   self.value = value;
@@ -174,19 +168,19 @@ ast.Hash = function (pos, value) {
 
 ast.Hash.prototype.type = 'hash';
 
-ast.ArrayExpression = function (list) {
+ast.ArrayExpression = function ArrayExpression(list) {
   this.list = list;
 };
 
 ast.ArrayExpression.prototype.type = 'arrayExpression';
 
-ast.ObjectExpression = function (obj) {
+ast.ObjectExpression = function ObjectExpression(obj) {
   this.obj = obj;
 };
 
 ast.ObjectExpression.prototype.type = 'objectExpression';
 
-ast.Id = function (pos, raw) {
+ast.Id = function Id(pos, raw) {
   const self = this;
   const parts = [];
   let depth = 0;

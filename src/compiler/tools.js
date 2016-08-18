@@ -1,9 +1,6 @@
 /**
  * compiler tools
  */
-
-'use strict';
-
 const doubleReg = /\\*"/g;
 const singleReg = /\\*'/g;
 const arrayPush = [].push;
@@ -16,10 +13,12 @@ function genStackJudge(parts, data, count = 0, lastVariable_) {
   }
   const lastVariable = lastVariable_ || data;
   const part0 = parts[0];
-  const variable = 't' + count;
-  return ['(' + data + ' != null ? ',
-    genStackJudge(parts.slice(1), '(' + variable + '=' + lastVariable + part0 + ')', count + 1, variable),
-    ' : ', lastVariable, ')'].join('');
+  const variable = `t${count}`;
+  return [
+    `(${data} != null ? `,
+    genStackJudge(parts.slice(1), `(${variable} = ${lastVariable + part0})`, count + 1, variable),
+    ' : ', lastVariable, ')',
+  ].join('');
 }
 
 function accessVariable(loose, parts, topVariable, fullVariable) {
@@ -27,7 +26,7 @@ function accessVariable(loose, parts, topVariable, fullVariable) {
 }
 
 const tools = module.exports = {
-  genStackJudge: genStackJudge,
+  genStackJudge,
 
   isGlobalId(node) {
     if (globals[node.string]) {
@@ -44,11 +43,11 @@ const tools = module.exports = {
     if (root) {
       scope = 'scope.root.';
     }
-    const affix = scope + 'affix';
-    const data = scope + 'data';
+    const affix = `${scope}affix`;
+    const data = `${scope}data`;
     let ret = [
       '(',
-      '(t=(' + affix + part0 + ')) !== undefined ? ',
+      `(t=(${affix + part0})) !== undefined ? `,
       (idParts.length > 1 ?
         accessVariable(loose, parts, 't', affix + strs.str)
         : 't'),
@@ -57,12 +56,12 @@ const tools = module.exports = {
     if (resolveUp) {
       ret = ret.concat([
         '(',
-        '(t = ' + data + part0 + ') !== undefined ? ',
+        `(t = ${data + part0}) !== undefined ? `,
         (idParts.length > 1 ?
           accessVariable(loose, parts, 't', data + strs.str)
           : 't'),
         '  : ',
-        (loose ? 'scope.resolveLooseUp(' + strs.arr + ')' : 'scope.resolveUp(' + strs.arr + ')'),
+        (loose ? `scope.resolveLooseUp(${strs.arr})` : `scope.resolveUp(${strs.arr})`),
         ')',
       ]);
     } else {
@@ -90,26 +89,31 @@ const tools = module.exports = {
         if (idPartType === 'function') {
           funcRet = 1;
         }
-        ret.push('[' + nextIdNameCode.exp + ']');
+        ret.push(`[ ${nextIdNameCode.exp} ]`);
         parts.push(nextIdNameCode.exp);
       } else {
         // literal a.x
-        ret.push('.' + idPart);
+        ret.push(`.${idPart}`);
         parts.push(tools.wrapByDoubleQuote(idPart));
       }
     }
     // y().z() =>
     // var a = y();
     // a['z']
-    return {str: ret.join(''), arr: '[' + parts.join(',') + ']', parts: ret, funcRet: funcRet, resolvedParts: parts};
+    return {
+      str: ret.join(''),
+      arr: `[${parts.join(',')}]`,
+      parts: ret, funcRet,
+      resolvedParts: parts,
+    };
   },
 
   wrapByDoubleQuote(str) {
-    return '"' + str + '"';
+    return `"${str }"`;
   },
 
   wrapBySingleQuote(str) {
-    return '\'' + str + '\'';
+    return `'${str }'`;
   },
 
   joinArrayOfString(arr) {
@@ -121,7 +125,7 @@ const tools = module.exports = {
       let m = m_;
       // \ 's number ，用户显式转过 "\'" , "\\\'" 就不处理了，否则手动对 ` 加 \ 转义
       if (m.length % 2) {
-        m = '\\' + m;
+        m = `\\${m}`;
       }
       return m;
     });

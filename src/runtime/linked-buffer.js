@@ -1,9 +1,6 @@
 /**
  * LinkedBuffer of generate content from xtemplate
  */
-
-'use strict';
-
 const util = require('./util');
 
 function Buffer(list, next, tpl) {
@@ -80,7 +77,7 @@ Buffer.prototype = {
         }
         const name = tpl.name;
         const line = tpl.pos.line;
-        const errorStr = 'XTemplate error in file: ' + name + ' at line ' + line + ': ';
+        const errorStr = `XTemplate error in file: ${name} at line ${line}: `;
         try {
           // phantomjs
           e.stack = errorStr + e.stack;
@@ -88,7 +85,12 @@ Buffer.prototype = {
         } catch (e2) {
           // empty
         }
-        e.xtpl = {pos: {line: line}, name: name};
+        e.xtpl = {
+          pos: {
+            line,
+          },
+          name,
+        };
       }
       this.list.callback = null;
       callback(e, undefined);

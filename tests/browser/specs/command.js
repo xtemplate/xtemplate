@@ -6,8 +6,8 @@
 const XTemplate = require('../../../');
 const util = require('./util');
 const expect = require('expect.js');
-describe('command', function () {
-  it('../ or this can skip command finding', function () {
+describe('command', () => {
+  it('../ or this can skip command finding', () => {
     const tpl = '{{this.title}}{{#with (d)}}{{../title}}{{/with}}';
 
     const data = {
@@ -26,7 +26,7 @@ describe('command', function () {
     expect(render).to.equal('11');
   });
 
-  it('skip command in expression', function () {
+  it('skip command in expression', () => {
     const tpl = '{{title+3}}';
 
     const data = {
@@ -44,7 +44,7 @@ describe('command', function () {
     expect(render).to.equal('13');
   });
 
-  it('can skip property finding', function () {
+  it('can skip property finding', () => {
     const tpl = '{{title (1)}}{{#with(d)}}{{title (2)}}{{/with}}';
 
     const data = {
@@ -63,7 +63,7 @@ describe('command', function () {
     expect(render).to.equal('22');
   });
 
-  it('will only find property for param', function () {
+  it('will only find property for param', () => {
     const tpl = '{{#with (title)}}{{c}}{{/with}}';
 
     const data = {
@@ -85,7 +85,7 @@ describe('command', function () {
     expect(render).to.equal('1');
   });
 
-  it('support param function', function () {
+  it('support param function', () => {
     const tpl = '{{#with (title())}}{{c}}{{/with}}';
 
     const data = {
@@ -107,9 +107,9 @@ describe('command', function () {
     expect(render).to.equal('2');
   });
 
-  it('support global command for variable', function () {
-    XTemplate.addCommand('globalXcmd', function (scope, option) {
-      return 'global-' + option.params[0];
+  it('support global command for variable', () => {
+    XTemplate.addCommand('globalXcmd', (scope, option) => {
+      return `global-${option.params[0]}`;
     });
 
     const tpl = 'my {{globalXcmd( title)}}';
@@ -123,10 +123,10 @@ describe('command', function () {
     expect(render).to.equal('my global-1');
   });
 
-  it('support namespace global command for variable', function () {
+  it('support namespace global command for variable', () => {
     XTemplate.addCommand('cmd', {
       globalXcmd(scope, option) {
-        return 'global-' + option.params[0];
+        return `global-${option.params[0]}`;
       },
     });
 
@@ -141,8 +141,8 @@ describe('command', function () {
     expect(render).to.equal('global-1');
   });
 
-  it('support global command for block', function () {
-    XTemplate.addCommand('global2_xcmd', function (scope, option, buffer) {
+  it('support global command for block', () => {
+    XTemplate.addCommand('global2_xcmd', (scope, option, buffer) => {
       buffer.write('global2-');
       return option.fn(scope, buffer);
     });
@@ -158,7 +158,7 @@ describe('command', function () {
     expect(render).to.equal('my global2-1');
   });
 
-  it('support local command for variable', function () {
+  it('support local command for variable', () => {
     const tpl = 'my {{global3(title)}}';
 
     const data = {
@@ -168,7 +168,7 @@ describe('command', function () {
     const render = new XTemplate(tpl, {
       commands: {
         global3(scope, option) {
-          return 'global3-' + option.params[0];
+          return `global3-${option.params[0]}`;
         },
       },
     }).render(data);
@@ -176,7 +176,7 @@ describe('command', function () {
     expect(render).to.equal('my global3-1');
   });
 
-  it('support namespace local command for variable', function () {
+  it('support namespace local command for variable', () => {
     const tpl = 'my {{global3.x(title)}}';
 
     const data = {
@@ -187,7 +187,7 @@ describe('command', function () {
       commands: {
         global3: {
           x(scope, option) {
-            return 'global3-' + option.params[0];
+            return `global3-${option.params[0]}`;
           },
         },
       },
@@ -196,7 +196,7 @@ describe('command', function () {
     expect(render).to.equal('my global3-1');
   });
 
-  it('support local command for block', function () {
+  it('support local command for block', () => {
     const tpl = 'my {{#global4()}}{{title}}{{/global4}}';
 
     const data = {
@@ -215,12 +215,12 @@ describe('command', function () {
     expect(render).to.equal('my global4-1');
   });
 
-  it('support filter command', function () {
+  it('support filter command', () => {
     const tpl = '{{ join (map (users)) }}';
     const render = new XTemplate(tpl, {
       commands: {
         map(scope, option) {
-          return util.map(option.params[0], function (u) {
+          return util.map(option.params[0], (u) => {
             return u.name;
           });
         },
@@ -242,7 +242,7 @@ describe('command', function () {
     expect(render).to.equal('1|2');
   });
 
-  it('support runtime commands', function () {
+  it('support runtime commands', () => {
     const tpl = '{{s}} {{ k() }} {{ q() }}';
     const xtpl = new XTemplate(tpl, {
       commands: {

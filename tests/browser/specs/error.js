@@ -6,48 +6,55 @@
 const XTemplate = require('../../../');
 const expect = require('expect.js');
 const uuid = require('uuid');
-const define = window.define;
+const { registerTemplate, clearTemplates } = require('../../config');
 
-describe('error detection', function () {
+describe('error detection', () => {
+  beforeEach(() => {
+    clearTemplates();
+  });
+
   // https://github.com/kissyteam/kissy/issues/516
-  it('error when string encounter \\', function () {
+  it('error when string encounter \\', () => {
     let ret;
     try {
       ret = new XTemplate("{{'\\'}}").render();
     } catch (e) {
       ret = e.message;
     }
-    expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
+    expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, ' +
+      'shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
   });
 
-  it('error when string include \\n', function () {
+  it('error when string include \\n', () => {
     let ret;
     try {
-      ret = new XTemplate("\n\n\n\n{{ x + '1\n222222' }}", {name: 'string'}).render();
+      ret = new XTemplate("\n\n\n\n{{ x + '1\n222222' }}", { name: 'string' }).render();
     } catch (e) {
       ret = e.message;
     }
     expect(ret.indexOf("\n    {{ x + '1 222222' }}\n-----------^")).not.to.equal(-1);
   });
 
-  it('can catch compile error in callback', function (done) {
-    new XTemplate("{{'}}").render({}, function (e) {
-      expect(e.message.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
+  it('can catch compile error in callback', (done) => {
+    new XTemplate("{{'}}").render({}, (e) => {
+      expect(e.message.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, ' +
+        'shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
       done();
     });
   });
 
-  it('detect lexer error', function () {
+  it('detect lexer error', () => {
     let ret;
     try {
       ret = new XTemplate("{{'}}").render();
     } catch (e) {
       ret = e.message;
     }
-    expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
+    expect(ret.indexOf('expect shift:L_PAREN, shift:MINUS, shift:NOT, shift:STRING, ' +
+      'shift:NUMBER, shift:ID, shift:L_BRACKET, shift:L_BRACE')).not.to.equal(-1);
   });
 
-  it('detect un-closed block tag', function () {
+  it('detect un-closed block tag', () => {
     const tpl = '{{#if(title)}}\n' +
       'shoot\n' +
       '';
@@ -71,7 +78,7 @@ describe('error detection', function () {
     }
   });
 
-  it('detect unmatched', function () {
+  it('detect unmatched', () => {
     const tpl = '{{#if(n === n1)}}\n' +
       'n eq n1\n' +
       '{{/with}}';
@@ -81,7 +88,7 @@ describe('error detection', function () {
       n1: 2,
     };
 
-    expect(function () {
+    expect(() => {
       try {
         new XTemplate(tpl).render(data);
       } catch (e) {
@@ -91,10 +98,10 @@ describe('error detection', function () {
       'expect {{/if}} not {{/with}}');
   });
 
-  it('detect unmatched custom command', function () {
+  it('detect unmatched custom command', () => {
     const tpl = '{{#x.y()}}\n{{/x}}';
 
-    expect(function () {
+    expect(() => {
       try {
         new XTemplate(tpl).render();
       } catch (e) {
@@ -104,26 +111,9 @@ describe('error detection', function () {
       'expect {{/x,y}} not {{/x}}');
   });
 
-  it('detect runtime error', function (done) {
+  it('detect runtime error', (done) => {
     const tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
     let count = 0;
-
-    try {
-      new XTemplate(tpl, {
-        name: 'x.xtpl',
-        strict: true,
-        catchError: true,
-      }).render({x: 1});
-    } catch (e) {
-      if (navigator.userAgent.indexOf('Chrome') !== -1) {
-        expect(e.message + '').to.contain('x.xtpl at line 6');
-      }
-      expect(e.xtpl).to.eql({
-        pos: {line: 6},
-        name: 'x.xtpl',
-      });
-      callback();
-    }
 
     function callback() {
       ++count;
@@ -131,23 +121,44 @@ describe('error detection', function () {
         done();
       }
     }
-  });
-
-  it('detect runtime error silent', function () {
-    const tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
-    let count = 0;
 
     try {
       new XTemplate(tpl, {
         name: 'x.xtpl',
         strict: true,
         catchError: true,
-      }).render({x: 1}, function (e) {
+      }).render({ x: 1 });
+    } catch (e) {
+      if (navigator.userAgent.indexOf('Chrome') !== -1) {
+        expect(e.message).to.contain('x.xtpl at line 6');
+      }
+      expect(e.xtpl).to.eql({
+        pos: { line: 6 },
+        name: 'x.xtpl',
+      });
+      callback();
+    }
+  });
+
+  it('detect runtime error silent', () => {
+    const tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
+    let count = 0;
+
+    function callback() {
+      ++count;
+    }
+
+    try {
+      new XTemplate(tpl, {
+        name: 'x.xtpl',
+        strict: true,
+        catchError: true,
+      }).render({ x: 1 }, (e) => {
         if (navigator.userAgent.indexOf('Chrome') !== -1) {
           expect(e.message).to.contain('x.xtpl at line 6');
         }
         expect(e.xtpl).to.eql({
-          pos: {line: 6},
+          pos: { line: 6 },
           name: 'x.xtpl',
         });
         callback();
@@ -157,51 +168,20 @@ describe('error detection', function () {
         expect(e.message).to.contain('x.xtpl at line 6');
       }
       expect(e.xtpl).to.eql({
-        pos: {line: 6},
+        pos: { line: 6 },
         name: 'x.xtpl',
       });
       callback();
     }
 
     expect(count).to.be(1);
-
-    function callback() {
-      ++count;
-    }
   });
 
-  it('detect sub template runtime error', function (done) {
+  it('detect sub template runtime error', (done) => {
     const tpl = '{{x}}\n \n \n \n \n {{x.y.z}}';
     let count = 0;
     const tplName = uuid.v4();
-    define(tplName, tpl);
-    try {
-      new XTemplate('{{include("' + tplName + '")}}', {
-        name: 'x.xtpl',
-        strict: true,
-        catchError: true,
-      }).render({x: 1}, function (e, content) {
-        expect(content).to.be(undefined);
-        if (navigator.userAgent.indexOf('Chrome') !== -1) {
-          expect(e.message).to.contain(tplName + ' at line 6');
-        }
-        expect(e.xtpl).to.eql({
-          pos: {line: 6},
-          name: tplName,
-        });
-        callback();
-        throw e;
-      });
-    } catch (e) {
-      if (navigator.userAgent.indexOf('Chrome') !== -1) {
-        expect(e.message).to.contain(tplName + ' at line 6');
-      }
-      expect(e.xtpl).to.eql({
-        pos: {line: 6},
-        name: tplName,
-      });
-      callback();
-    }
+    registerTemplate(tplName, tpl);
 
     function callback() {
       ++count;
@@ -209,33 +189,59 @@ describe('error detection', function () {
         done();
       }
     }
+
+    try {
+      new XTemplate(`{{include("${tplName}")}}`, {
+        name: 'x.xtpl',
+        strict: true,
+        catchError: true,
+      }).render({ x: 1 }, (e, content) => {
+        expect(content).to.be(undefined);
+        if (navigator.userAgent.indexOf('Chrome') !== -1) {
+          expect(e.message).to.contain(`${tplName} at line 6`);
+        }
+        expect(e.xtpl).to.eql({
+          pos: { line: 6 },
+          name: tplName,
+        });
+        callback();
+        throw e;
+      });
+    } catch (e) {
+      if (navigator.userAgent.indexOf('Chrome') !== -1) {
+        expect(e.message).to.contain(`${tplName} at line 6`);
+      }
+      expect(e.xtpl).to.eql({
+        pos: { line: 6 },
+        name: tplName,
+      });
+      callback();
+    }
   });
 
-  it('error when include without parameter', function () {
-    expect(function () {
+  it('error when include without parameter', () => {
+    expect(() => {
       new XTemplate('{{include()}}').render();
     }).to.throwException(/include\/parse\/extend can only has at most two parameter!/);
   });
 
-  it('error when include more than one parameter', function () {
-    expect(function () {
+  it('error when include more than one parameter', () => {
+    expect(() => {
       new XTemplate('{{include(a, b,c)}}').render();
     }).to.throwException(/include\/parse\/extend can only has at most two parameter!/);
   });
 
-  it('error when include empty parameter', function () {
-    expect(function () {
+  it('error when include empty parameter', () => {
+    expect(() => {
       new XTemplate('{{include(a)}}').render();
     }).to.throwException(/include command required a non-empty parameter/);
   });
 
-  it('detect error in sub template', function (done) {
+  it('detect error in sub template', (done) => {
     const tplName = uuid.v4();
-    define(tplName, [], function () {
-      return '{{#if(1)}}';
-    });
-    new XTemplate('{{include("' + tplName + '")}}').render({}, function (e) {
-      expect(e.message).contain('in file: ' + tplName);
+    registerTemplate(tplName, '{{#if(1)}}');
+    new XTemplate(`{{include("${tplName}")}}`).render({}, (e) => {
+      expect(e.message).contain(`in file: ${tplName}`);
       done();
     });
   });

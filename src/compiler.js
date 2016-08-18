@@ -2,12 +2,16 @@
  * translate ast to js function code
  */
 
-'use strict';
-
-const util = require('./runtime').util;
+const XTemplateRuntime = require('./runtime');
+const parser = require('./compiler/parser');
+parser.yy = require('./compiler/ast');
+const { util, nativeCommands, utils: nativeUtils } = XTemplateRuntime;
 const compilerTools = require('./compiler/tools');
-const pushToArray = compilerTools.pushToArray;
-const wrapByDoubleQuote = compilerTools.wrapByDoubleQuote;
+const {
+  pushToArray, wrapByDoubleQuote,
+  convertIdPartsToRawAccessor, wrapBySingleQuote,
+  escapeString, chainedVariableRead,
+} = compilerTools;
 // codeTemplates --------------------------- start
 const TMP_DECLARATION = [
   'var t;',
@@ -50,24 +54,17 @@ const BUFFER_WRITE_ESCAPED = 'buffer = buffer.writeEscaped({value});';
 const RETURN_BUFFER = 'return buffer;';
 // codeTemplates ---------------------------- end
 
-const XTemplateRuntime = require('./runtime');
-const parser = require('./compiler/parser');
-parser.yy = require('./compiler/ast');
 let nativeCode = [];
-const substitute = util.substitute;
-const each = util.each;
-const nativeCommands = XTemplateRuntime.nativeCommands;
-const nativeUtils = XTemplateRuntime.utils;
-
-each(nativeUtils, function (v, name) {
+const { substitute, each } = util;
+each(nativeUtils, (v, name) => {
   nativeCode.push(substitute(DECLARE_UTILS, {
-    name: name,
+    name,
   }));
 });
 
-each(nativeCommands, function (v, name) {
+each(nativeCommands, (v, name) => {
   nativeCode.push(substitute(DECLARE_NATIVE_COMMANDS, {
-    name: name,
+    name,
   }));
 });
 
@@ -80,7 +77,7 @@ function markLine(pos, source) {
     return;
   }
   lastLine = pos.line;
-  source.push('pos.line = ' + pos.line + ';');
+  source.push(`pos.line = ${pos.line};`);
 }
 
 function resetGlobal() {
@@ -130,7 +127,7 @@ function opExpression(e) {
     code3Source = code3.source;
   }
   pushToArray(source, code1Source);
-  source.push('var ' + exp + ' = ' + exp1 + ';');
+  source.push(`var ${exp} = ${exp1};`);
   if (type === '&&' || type === '||') {
     source.push(`if(${type === '&&' ? '' : '!'}(${exp})){`);
     pushToArray(source, code2Source);
@@ -202,11 +199,13 @@ function genTopFunction(self, statements) {
   // source.push('try {');
   // source.push('ret = run(this);');
   if (catchError) {
-    source.push('} catch(e) {');
-    source.push('if(!e.xtpl){');
-    source.push('buffer.error(e);');
-    source.push('}else{ throw e; }');
-    source.push('}');
+    source.push.apply(source, [
+      '} catch(e) {',
+      'if(!e.xtpl){',
+      'buffer.error(e);',
+      '}else{ throw e; }',
+      '}',
+    ]);
   }
 //    source.push('}');
 //    source.push('return tryRun(this);');
@@ -223,7 +222,7 @@ function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
   const funcParams = [];
   const isSetFunction = func.id.string === 'set';
   if (params) {
-    each(params, function (param) {
+    each(params, (param) => {
       const nextIdNameCode = self[param.type](param);
       pushToArray(source, nextIdNameCode.source);
       funcParams.push(nextIdNameCode.exp);
@@ -231,7 +230,7 @@ function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
   }
   const funcHash = [];
   if (hash) {
-    each(hash.value, function (h) {
+    each(hash.value, (h) => {
       const v = h[1];
       const key = h[0];
       const vCode = self[v.type](v);
@@ -239,8 +238,8 @@ function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
       if (isSetFunction) {
         // support  {{set(x.y.z=1)}}
         // https://github.com/xtemplate/xtemplate/issues/54
-        const resolvedParts = compilerTools.convertIdPartsToRawAccessor(self, source, key.parts).resolvedParts;
-        funcHash.push({key: resolvedParts, depth: key.depth, value: vCode.exp});
+        const resolvedParts = convertIdPartsToRawAccessor(self, source, key.parts).resolvedParts;
+        funcHash.push({ key: resolvedParts, depth: key.depth, value: vCode.exp });
       } else {
         if (key.parts.length !== 1 || typeof key.parts[0] !== 'string') {
           throw new Error('invalid hash parameter');
@@ -253,35 +252,35 @@ function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
   // literal init array, do not use arr.push for performance
   if (funcParams.length || funcHash.length || escape || fn || inverse || elseIfs) {
     if (escape) {
-      exp += ',escape:1';
+      exp += ', escape: 1';
     }
     if (funcParams.length) {
-      exp += ',params:[' + funcParams.join(',') + ']';
+      exp += `, params: [ ${funcParams.join(',')} ]`;
     }
     if (funcHash.length) {
       const hashStr = [];
       if (isSetFunction) {
-        util.each(funcHash, function (h) {
-          hashStr.push('{key:[' + h.key.join(',') + '],value:' + h.value + ', depth:' + h.depth + '}');
+        util.each(funcHash, (h) => {
+          hashStr.push(`{ key: [${h.key.join(',')}], value: ${h.value}, depth: ${h.depth} }`);
         });
-        exp += ',hash: [' + hashStr.join(',') + ']';
+        exp += `,hash: [ ${hashStr.join(',')} ]`;
       } else {
-        util.each(funcHash, function (h) {
-          hashStr.push(h[0] + ':' + h[1]);
+        util.each(funcHash, (h) => {
+          hashStr.push(`${h[0]}:${h[1]}`);
         });
-        exp += ',hash: {' + hashStr.join(',') + '}';
+        exp += `,hash: { ${hashStr.join(',')} }`;
       }
     }
     if (fn) {
-      exp += ',fn: ' + fn;
+      exp += `,fn: ${fn}`;
     }
     if (inverse) {
-      exp += ',inverse: ' + inverse;
+      exp += `,inverse: ${inverse}`;
     }
     if (elseIfs) {
-      exp += ',elseIfs: ' + elseIfs;
+      exp += `,elseIfs: ${elseIfs}`;
     }
-    exp = '{' + exp.slice(1) + '}';
+    exp = `{ ${exp.slice(1)} }`;
   }
   return {
     exp: exp || '{}',
@@ -323,6 +322,7 @@ function generateFunction(self, func, block, escape_) {
     const thenStatements = [];
     for (i = 0; i < statements.length; i++) {
       statement = statements[i];
+      /* eslint no-cond-assign:0 */
       if (statement.type === 'expressionStatement' &&
         (functionValue = statement.value) &&
         (functionValue = functionValue.parts) &&
@@ -356,11 +356,15 @@ function generateFunction(self, func, block, escape_) {
       for (i = 0; i < elseIfs.length; i++) {
         const elseIfStatement = elseIfs[i];
         const conditionName = genConditionFunction(self, elseIfStatement.condition);
-        elseIfsVariable.push('{test: ' + conditionName + ',fn : ' + genFunction(self, elseIfStatement.statements) + '}');
+        elseIfsVariable.push(`{
+        test: ${conditionName},
+        fn: ${genFunction(self, elseIfStatement.statements)}
+        }`);
       }
-      elseIfsName = '[' + elseIfsVariable.join(',') + ']';
+      elseIfsName = `[ ${elseIfsVariable.join(',')} ]`;
     }
-    functionConfigCode = genOptionFromFunction(self, func, escape, fnName, elseIfsName, inverseName);
+    functionConfigCode = genOptionFromFunction(self, func,
+      escape, fnName, elseIfsName, inverseName);
     pushToArray(source, functionConfigCode.source);
   }
 
@@ -375,7 +379,7 @@ function generateFunction(self, func, block, escape_) {
   if (isModule) {
     if (idString === 'include' || idString === 'parse') {
       const name = considerSuffix(func.params[0].value, withSuffix);
-      func.params[0] = {type: 'raw', value: 're' + 'quire("' + name + '")'};
+      func.params[0] = { type: 'raw', value: `${'require'}("${name}")` };
     }
   }
 
@@ -386,23 +390,31 @@ function generateFunction(self, func, block, escape_) {
 
   if (!block) {
     idName = guid(self, 'callRet');
-    source.push('var ' + idName);
+    source.push(`var ${idName}`);
   }
 
   if (idString in nativeCommands) {
     if (idString === 'extend') {
-      source.push('runtime.extendTpl = ' + functionConfigCode.exp);
-      source.push('buffer = buffer.async(function(newBuffer){runtime.extendTplBuffer = newBuffer;});');
+      source.push(`runtime.extendTpl = ${functionConfigCode.exp}`);
+      source.push(`buffer = buffer.async(
+      function(newBuffer){runtime.extendTplBuffer = newBuffer;}
+      );`);
       if (isModule) {
         const name = considerSuffix(func.params[0].value, withSuffix);
-        source.push('runtime.extendTplFn = re' + 'quire("' + name + '");');
+        source.push(`runtime.extendTplFn = ${'require'}("${name}");`);
       }
     } else if (idString === 'include') {
-      source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
+      source.push(`buffer = root.${isModule ?
+        'includeModule' :
+        'include'}(scope, ${functionConfigCode.exp}, buffer,tpl);`);
     } else if (idString === 'includeOnce') {
-      source.push('buffer = root.' + (isModule ? 'includeOnceModule' : 'includeOnce') + '(scope,' + functionConfigCode.exp + ',buffer,tpl);');
+      source.push(`buffer = root.${isModule ?
+        'includeOnceModule' :
+        'includeOnce'}(scope, ${functionConfigCode.exp}, buffer,tpl);`);
     } else if (idString === 'parse') {
-      source.push('buffer = root.' + (isModule ? 'includeModule' : 'include') + '(new scope.constructor(),' + functionConfigCode.exp + ',buffer,tpl);');
+      source.push(`buffer = root.${isModule ?
+        'includeModule' :
+        'include'}(new scope.constructor(), ${functionConfigCode.exp}, buffer, tpl);`);
     } else {
       source.push(substitute(CALL_NATIVE_COMMAND, {
         lhs: block ? 'buffer' : idName,
@@ -413,10 +425,10 @@ function generateFunction(self, func, block, escape_) {
   } else if (block) {
     source.push(substitute(CALL_CUSTOM_COMMAND, {
       option: functionConfigCode.exp,
-      idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr,
+      idParts: convertIdPartsToRawAccessor(self, source, idParts).arr,
     }));
   } else {
-    const resolveParts = compilerTools.convertIdPartsToRawAccessor(self, source, idParts);
+    const resolveParts = convertIdPartsToRawAccessor(self, source, idParts);
     // {{x.y().q.z()}}
     // do not need scope resolution, call data function directly
     if (resolveParts.funcRet) {
@@ -484,7 +496,7 @@ AstToJSProcessor.prototype = {
       const item = obj[i];
       r = this[item[1].type](item[1]);
       pushToArray(source, r.source);
-      exp.push(wrapByDoubleQuote(item[0]) + ': ' + r.exp);
+      exp.push(`${wrapByDoubleQuote(item[0])}: ${r.exp}`);
     }
     return {
       exp: `{ ${exp.join(',')} }`,
@@ -517,7 +529,7 @@ AstToJSProcessor.prototype = {
   string(e) {
     // same as contentNode.value
     return {
-      exp: compilerTools.wrapBySingleQuote(compilerTools.escapeString(e.value, 1)),
+      exp: wrapBySingleQuote(escapeString(e.value, 1)),
       source: [],
     };
   },
@@ -546,7 +558,7 @@ AstToJSProcessor.prototype = {
     if (depth) {
       source.push(substitute(loose ? SCOPE_RESOLVE_LOOSE_DEPTH : SCOPE_RESOLVE_DEPTH, {
         lhs: idName,
-        idParts: compilerTools.convertIdPartsToRawAccessor(self, source, idParts).arr,
+        idParts: convertIdPartsToRawAccessor(self, source, idParts).arr,
         depth,
       }));
       return {
@@ -561,7 +573,9 @@ AstToJSProcessor.prototype = {
       remainParts = idParts.slice(1);
       source.push(substitute(ASSIGN_STATEMENT, {
         lhs: idName,
-        value: remainParts.length ? compilerTools.chainedVariableRead(self, source, remainParts, undefined, undefined, loose) : 'data',
+        value: remainParts.length ?
+          chainedVariableRead(self, source, remainParts, undefined, undefined, loose) :
+          'data',
       }));
       return {
         exp: idName,
@@ -571,11 +585,13 @@ AstToJSProcessor.prototype = {
       remainParts = idParts.slice(1);
       remain = remainParts.join('.');
       if (remain) {
-        remain = '.' + remain;
+        remain = `.${remain}`;
       }
       source.push(substitute(ASSIGN_STATEMENT, {
         lhs: idName,
-        value: remain ? compilerTools.chainedVariableRead(self, source, remainParts, true, undefined, loose) : 'scope.root.data',
+        value: remain ?
+          chainedVariableRead(self, source, remainParts, true, undefined, loose) :
+          'scope.root.data',
         idParts: remain,
       }));
       return {
@@ -585,9 +601,9 @@ AstToJSProcessor.prototype = {
     }
     // {{x.y().z}}
     if (idParts[0].type === 'function') {
-      const resolvedParts = compilerTools.convertIdPartsToRawAccessor(self, source, idParts).resolvedParts;
+      const resolvedParts = convertIdPartsToRawAccessor(self, source, idParts).resolvedParts;
       for (let i = 1; i < resolvedParts.length; i++) {
-        resolvedParts[i] = '[' + resolvedParts[i] + ']';
+        resolvedParts[i] = `[ ${resolvedParts[i]} ]`;
       }
       let value;
       if (loose) {
@@ -605,7 +621,7 @@ AstToJSProcessor.prototype = {
     } else {
       source.push(substitute(ASSIGN_STATEMENT, {
         lhs: idName,
-        value: compilerTools.chainedVariableRead(self, source, idParts, false, true, loose),
+        value: chainedVariableRead(self, source, idParts, false, true, loose),
       }));
     }
     return {
@@ -614,7 +630,7 @@ AstToJSProcessor.prototype = {
     };
   },
 
-  'function': function (func, escape) {
+  'function'(func, escape) {
     return generateFunction(this, func, false, escape);
   },
 
@@ -646,7 +662,7 @@ AstToJSProcessor.prototype = {
       exp: '',
       source: [
         substitute(BUFFER_APPEND, {
-          value: compilerTools.wrapBySingleQuote(compilerTools.escapeString(contentStatement.value, 0)),
+          value: wrapBySingleQuote(escapeString(contentStatement.value, 0)),
         }),
       ],
     };
@@ -709,13 +725,14 @@ const compiler = {
    * @param {String} param.content
    * @param {Boolean} [param.isModule] whether generated function is used in module
    * @param {Boolean} [param.withSuffix] whether generated require name with suffix xtpl
-   * @param {Boolean} [param.catchError] whether to try catch generated function to provide good error message
+   * @param {Boolean} [param.catchError] whether to try catch generated function to
+   * provide good error message
    * @param {Boolean} [param.strict] whether to generate strict function
    * @return {Object}
    */
   compileToJson(param) {
     resetGlobal();
-    const name = param.name = param.name || ('xtemplate' + (++anonymousCount));
+    const name = param.name = param.name || (`xtemplate${++anonymousCount}`);
     const content = param.content;
     const root = compiler.parse(content, name);
     return genTopFunction(new AstToJSProcessor(param), root.statements);

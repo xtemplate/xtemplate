@@ -2,8 +2,6 @@
  * scope resolution for xtemplate like function in javascript but keep original data unmodified
  */
 
-'use strict';
-
 function Scope(data, affix, parent) {
   if (data !== undefined) {
     this.data = data;
@@ -47,7 +45,9 @@ Scope.prototype = {
   mix(v) {
     const affix = this.affix;
     for (const name in v) {
-      affix[name] = v[name];
+      if (v.hasOwnProperty(name)) {
+        affix[name] = v[name];
+      }
     }
   },
 
@@ -78,6 +78,7 @@ Scope.prototype = {
       scope = scope.root;
       v = scope.data;
     } else if (part0) {
+      /* eslint no-cond-assign:0 */
       do {
         v = scope.get(part0);
       } while (v === undefined && (scope = scope.parent));

@@ -1,9 +1,6 @@
 /**
  * xtemplate runtime
  */
-
-'use strict';
-
 const util = require('./runtime/util');
 const nativeCommands = require('./runtime/commands');
 const commands = {};
@@ -17,7 +14,7 @@ function TplWrap(name, runtime, root, scope, buffer, originalName, fn, parent) {
   this.runtime = runtime;
   this.root = root;
   // line counter
-  this.pos = {line: 1};
+  this.pos = { line: 1 };
   this.scope = scope;
   this.buffer = buffer;
   this.fn = fn;
@@ -75,7 +72,10 @@ function callFn(tpl, scope, option, buffer, parts, depth) {
     const callerParts = parts.slice(0, -1);
     caller = scope.resolve(callerParts, depth);
     if (caller === null || caller === undefined) {
-      buffer.error('Execute function `' + parts.join('.') + '` Error: ' + callerParts.join('.') + ' is undefined or null');
+      buffer.error(
+        `Execute function \`${parts.join('.')}\` \
+Error: ${callerParts.join('.')} is undefined or null`
+      );
       return buffer;
     }
     fn = caller[parts[parts.length - 1]];
@@ -84,12 +84,12 @@ function callFn(tpl, scope, option, buffer, parts, depth) {
       try {
         return fn.apply(caller, option.params || []);
       } catch (err) {
-        buffer.error('Execute function `' + parts.join('.') + '` Error: ' + err.message);
+        buffer.error(`Execute function \`${parts.join('.')}\` Error: ${err.message}`);
         return buffer;
       }
     }
   }
-  buffer.error('Command Not Found: ' + parts.join('.'));
+  buffer.error(`Command Not Found: ${parts.join('.')}`);
   return buffer;
 }
 
@@ -136,8 +136,14 @@ function XTemplateRuntime(fn, config) {
 }
 
 util.mix(XTemplateRuntime, {
+  Scope,
+
+  LinkedBuffer,
+
+  globalConfig: {},
+
   config(key, v) {
-    const globalConfig = this.globalConfig = this.globalConfig || {};
+    const { globalConfig } = this;
     if (key !== undefined) {
       if (v !== undefined) {
         globalConfig[key] = v;
@@ -184,7 +190,7 @@ function resolve(root, subName_, parentName) {
   if (subName.charAt(0) !== '.') {
     return subName;
   }
-  const key = parentName + '_ks_' + subName;
+  const key = `${parentName}_ks_${subName}`;
   const nameResolveCache = root.subNameResolveCache;
   const cached = nameResolveCache[key];
   if (cached) {
@@ -197,11 +203,12 @@ function resolve(root, subName_, parentName) {
 function loadInternal(root, name, runtime, scope, buffer, originalName, escape, parentTpl) {
   const tpl = new TplWrap(name, runtime, root, scope, buffer, originalName, undefined, parentTpl);
   buffer.tpl = tpl;
-  root.config.loader.load(tpl, function (error, tplFn_) {
+  root.config.loader.load(tpl, (error, tplFn_) => {
     let tplFn = tplFn_;
     if (typeof tplFn === 'function') {
       tpl.fn = tplFn;
       // reduce count of object field for performance
+      /* eslint no-use-before-define:0 */
       renderTpl(tpl);
     } else if (error) {
       buffer.error(error);
@@ -228,7 +235,8 @@ function includeInternal(root, scope, escape, buffer, tpl, originalName) {
 function includeModuleInternal(root, scope, buffer, tpl, tplFn) {
   const newBuffer = buffer.insert();
   const next = newBuffer.next;
-  const newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime, root, scope, newBuffer, undefined, tplFn, buffer.tpl);
+  const newTpl = new TplWrap(tplFn.TPL_NAME, tpl.runtime,
+    root, scope, newBuffer, undefined, tplFn, buffer.tpl);
   newBuffer.tpl = newTpl;
   renderTpl(newTpl);
   return next;
@@ -290,7 +298,7 @@ function getIncludeScope(scope, option, buffer) {
 function checkIncludeOnce(root, option, tpl) {
   const originalName = option.params[0];
   const name = resolve(root, originalName, tpl.name);
-  const {loadedSubTplNames} = root;
+  const { loadedSubTplNames } = root;
   if (loadedSubTplNames[name]) {
     return false;
   }
@@ -301,11 +309,11 @@ function checkIncludeOnce(root, option, tpl) {
 XTemplateRuntime.prototype = {
   constructor: XTemplateRuntime,
 
-  Scope: Scope,
+  Scope,
 
-  nativeCommands: nativeCommands,
+  nativeCommands,
 
-  utils: utils,
+  utils,
 
   /**
    * remove command by name
@@ -330,11 +338,13 @@ XTemplateRuntime.prototype = {
   },
 
   include(scope, option, buffer, tpl) {
-    return includeInternal(this, getIncludeScope(scope, option, buffer), option.escape, buffer, tpl, option.params[0]);
+    return includeInternal(this, getIncludeScope(scope, option, buffer),
+      option.escape, buffer, tpl, option.params[0]);
   },
 
   includeModule(scope, option, buffer, tpl) {
-    return includeModuleInternal(this, getIncludeScope(scope, option, buffer), buffer, tpl, option.params[0]);
+    return includeModuleInternal(this, getIncludeScope(scope, option, buffer),
+      buffer, tpl, option.params[0]);
   },
 
   includeOnce(scope, option, buffer, tpl) {
@@ -366,7 +376,7 @@ XTemplateRuntime.prototype = {
     }
     option = option || {};
     if (!callback) {
-      callback = function (error_, ret) {
+      callback = (error_, ret) => {
         let error = error_;
         if (error) {
           if (!(error instanceof Error)) {
@@ -387,7 +397,7 @@ XTemplateRuntime.prototype = {
     } else {
       scope = new Scope(data);
     }
-    const buffer = new XTemplateRuntime.LinkedBuffer(callback, config).head;
+    const buffer = new LinkedBuffer(callback, config).head;
     const tpl = new TplWrap(name, {
       commands: option.commands,
     }, this, scope, buffer, name, fn);
@@ -407,9 +417,6 @@ XTemplateRuntime.prototype = {
     return html;
   },
 };
-
-XTemplateRuntime.Scope = Scope;
-XTemplateRuntime.LinkedBuffer = LinkedBuffer;
 
 module.exports = XTemplateRuntime;
 

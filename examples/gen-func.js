@@ -6,12 +6,12 @@ const jsBeautify = require('js-beautify');
 
 function jsBeauty(str) {
   const opts = {
-    'indent_size': '4',
-    'indent_char': ' ',
-    'preserve_newlines': true,
-    'brace_style': 'collapse',
-    'keep_array_indentation': false,
-    'space_after_anon_function': true,
+    indent_size: '4',
+    indent_char: ' ',
+    preserve_newlines: true,
+    brace_style: 'collapse',
+    keep_array_indentation: false,
+    space_after_anon_function: true,
   };
   return jsBeautify(str, opts);
 }
@@ -25,8 +25,9 @@ const Test = React.createClass({
       isModule: refs.isModule.checked,
       strict: refs.strict.checked,
     });
-    refs.gen.innerHTML = ('<pre class="brush: js;">' +
-    hijs.highlight('js', jsBeauty(g)).value + '</pre>');
+    refs.gen.innerHTML = (`<pre class="brush: js;">
+${hijs.highlight('js', jsBeauty(g)).value}
+</pre>`);
   },
 
   render() {
@@ -40,7 +41,10 @@ const Test = React.createClass({
             <h2>模板代码</h2>
 
             <div>
-                <textarea style={{width: 350, height: 400}} ref="tpl" defaultValue={`
+                <textarea
+                  style={{ width: 350, height: 400 }}
+                  ref="tpl"
+                  defaultValue={`
                     {{x.y.z.q}}
 
                   my first {{tpl(name ,'0', file=3)}} o
@@ -84,13 +88,18 @@ const Test = React.createClass({
                   z
 
                   {{/if}}
-`}/>
+`}
+                />
             </div>
             <br/>
             <button ref="parse" className="ks-button" onClick={this.parse}>parse</button>
             <span><label >isModule: <input type="checkbox" ref="isModule"/></label></span>
-            <span><label >useNativeRequire: <input type="checkbox"
-                                                   ref="useNativeRequire"/></label></span>
+            <span><label >useNativeRequire:
+              <input
+                type="checkbox"
+                ref="useNativeRequire"
+              />
+            </label></span>
             <span><label >catchError: <input type="checkbox" ref="catchError"/></label></span>
             <span><label >strict: <input type="checkbox" ref="strict"/></label></span>
           </div>

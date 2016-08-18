@@ -1,30 +1,4 @@
-/* eslint no-console:0 */
-
-const XTemplate = require('../');
-XTemplate.config('loader', {
-  load(tpl, callback) {
-    const name = tpl.name;
-    (require.async || require)([name],
-      function (cont) {
-        let content = cont;
-        if (typeof content === 'string') {
-          try {
-            content = tpl.root.compile(content, name);
-          } catch (e) {
-            return callback(e);
-          }
-        }
-        callback(undefined, content);
-      },
-      function () {
-        const error = 'template "' + name + '" does not exist';
-        console.error(error);
-        callback(error);
-      }
-    );
-  },
-});
-
+require('./config');
 require('./browser/specs/whitespace-control');
 require('./browser/specs/data-function');
 require('./browser/specs/data-null');
