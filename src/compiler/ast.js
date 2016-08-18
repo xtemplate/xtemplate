@@ -139,6 +139,17 @@ ast.ConditionalOrExpression = function (op1, op2) {
 
 ast.ConditionalOrExpression.prototype.type = 'conditionalOrExpression';
 
+
+ast.ConditionalExpression = function (op1, op2, op3) {
+  const self = this;
+  self.op1 = op1;
+  self.op2 = op2;
+  self.op3 = op3;
+  self.opType = '?:';
+};
+ast.ConditionalExpression.prototype.type = 'conditionalExpression';
+
+
 ast.String = function (pos, value) {
   const self = this;
   self.pos = pos;

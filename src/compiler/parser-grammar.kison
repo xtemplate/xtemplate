@@ -205,7 +205,7 @@
       // expression start
       {
         symbol: 'expression',
-        rhs: ['conditionalOrExpression']
+        rhs: ['conditionalExpression']
       },
       {
         symbol: 'expression',
@@ -277,6 +277,17 @@
         rhs: ['listExpression', 'COMMA', 'expression'],
         action: function () {
           this.$1.push(this.$3);
+        }
+      },
+      {
+        symbol: 'conditionalExpression',
+        rhs: ['conditionalOrExpression']
+      },
+      {
+        symbol: 'conditionalExpression',
+        rhs: ['conditionalOrExpression','QUERY','conditionalOrExpression','COLON','conditionalExpression'],
+        action: function(){
+            return new this.yy.ConditionalExpression(this.$1,this.$3,this.$5);
         }
       },
       {
@@ -799,6 +810,11 @@
           state: codeSection,
           regexp: /^\:/,
           token: 'COLON'
+        },
+        {
+          state: codeSection,
+          regexp: /^\?/,
+          token: 'QUERY'
         },
         {
           state: codeSection,

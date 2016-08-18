@@ -112,8 +112,11 @@ function opExpression(e) {
   const type = e.opType;
   let exp1;
   let exp2;
+  let exp3;
   let code1Source;
   let code2Source;
+  let code3Source;
+  let code3;
   const code1 = this[e.op1.type](e.op1);
   const code2 = this[e.op2.type](e.op2);
   const exp = guid(this, 'exp');
@@ -121,6 +124,11 @@ function opExpression(e) {
   exp2 = code2.exp;
   code1Source = code1.source;
   code2Source = code2.source;
+  if (e.op3) {
+    code3 = this[e.op3.type](e.op3);
+    exp3 = code3.exp;
+    code3Source = code3.source;
+  }
   pushToArray(source, code1Source);
   source.push('var ' + exp + ' = ' + exp1 + ';');
   if (type === '&&' || type === '||') {
@@ -128,6 +136,10 @@ function opExpression(e) {
     pushToArray(source, code2Source);
     source.push(`${exp} = ${exp2};`);
     source.push('}');
+  } else if (type === '?:') {
+    pushToArray(source, code2Source);
+    pushToArray(source, code3Source);
+    source.push(`${exp} = (${exp1}) ? (${exp2}) : (${exp3});`);
   } else {
     pushToArray(source, code2Source);
     source.push(`${exp} = (${exp1}) ${type} (${exp2});`);
@@ -479,6 +491,8 @@ AstToJSProcessor.prototype = {
       source,
     };
   },
+
+  conditionalExpression: opExpression,
 
   conditionalOrExpression: opExpression,
 
