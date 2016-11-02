@@ -7,13 +7,13 @@ This is an overview of the templating features available in XTemplate.
 
 A variable looks up a value from the template context. If you wanted to simply display a variable, you would do:
 
-```
+```handlebars
 {{ username }}
 ```
 
 This looks up `name` from the context and displays it. Variable names can have dots in them which lookup properties, just like javascript. You can also use the square bracket syntax.
 
-```
+```handlebars
 {{ user.name }}
 {{ user["name"] }}
 ```
@@ -38,7 +38,7 @@ XTemplate support all basic data types in javascript.
 
 Use `{{ foo }}` to display escaped data, and `{{{ foo }}}` to display original unescaped data.
 
-```html
+```handlebars
 escaped: {{ foo }}
 unescaped: {{{ foo }}}
 ```
@@ -52,7 +52,7 @@ unescaped: <script>
 
 If you want to display the original data (with `{{}}`), please use `{{%%}}`:
 
-```
+```handlebars
 {{%
 
 {{x}}
@@ -70,7 +70,7 @@ Render this template, the output will be:
 To add some comments for your template, use `{{! comment }}`:
 
 
-```
+```handlebars
 output before comment
 {{! This is comment }}
 output after comment
@@ -88,7 +88,7 @@ output after comment
 
 You can use `{{~` to remove whitespace before this variable and `~}}` after this variable.
 
-```
+```handlebars
 {{set x='1'}}
 {{set data=[1,2]}}
 {{ x ~}}  end
@@ -110,7 +110,7 @@ Every template has it's own independent scope. In sub template can visit parent'
 
 In parent.xtpl:
 
-```
+```handlebars
 {{ set (a = 1, b = 2) }}
 {{include ("sub.xtpl") }}
 in parent:
@@ -144,7 +144,7 @@ Use `root.foo` can visit the data in root:
 
 Render the follow template with data `{name: "foo", array: [name: "bar"]}`:
 
-```
+```handlebars
 {{#each(arr)}}
 {{root.name}} {{name}}
 {{/each}}
@@ -164,7 +164,7 @@ You can call javascript's methods in variables.
 var x = [1, 2, 3];
 ```
 
-```
+```handlebars
 {{#each(x.slice(1))}}{{this}} {{/each}} // => 2 3
 ```
 
@@ -180,7 +180,7 @@ XTemplate allows you to operate on values. The following operators are available
 
 Examples:
 
-```
+```handlebars
 {{x+y}}
 {{x + "1"}}
 {{ y - 1 }}
@@ -197,7 +197,7 @@ Examples:
 
 Examples:
 
-```
+```handlebars
 {{#if( x===1 )}}
 1
 {{elseif (x===2)}}
@@ -218,7 +218,7 @@ Examples:
 
 Examples:
 
-```
+```handlebars
 {{#if(x>1 && y<2)}}
 {{/if}}
 
@@ -244,7 +244,7 @@ If you have passed a javascript method to your template, you can call it like no
 
 If you need to iterate over a fixed set of numbers, range generates the set for you. The numbers begin at start and incremeny by step (default 1) until it reaches stop, not including it.
 
-```
+```handlebars
 {{#each(range(0,3))}}{{this}}{{/each}}
 {{#each(range(3,0))}}{{this}}{{/each}}
 {{#each(range(3,0,2))}}{{this}}{{/each}}
@@ -262,7 +262,7 @@ Render this template will output:
 
 `set` lets you create/modify a variable.
 
-```
+```handlebars
 {{set(x=1)}}
 {{set(y=3,z=2)}}
 {{x}}
@@ -294,7 +294,7 @@ Commands are special blocks that perform operations on sections of the template.
 
 if tests a condition and lets you selectively display content. It behaves exactly as javascript's `if` behaves.
 
-```
+```handlebars
 {{# if (variable) }}
     It is true
 {{/ if }}
@@ -304,7 +304,7 @@ If variable is defined and evaluates to true, "It is true" will be displayed. Ot
 
 You can specify alternate conditions with elseif and else:
 
-```
+```handlebars
 {{# if (hungry) }}
     I am hungry
 {{ elseif (tired) }}
@@ -324,7 +324,7 @@ var a = {
 }
 ```
 
-```
+```handlebars
 {{#with(a)}}
 {{b}} // 1
 {{/with}}
@@ -336,7 +336,7 @@ var a = {
 
 #### arrays
 
-```
+```handlebars
 {{set (array = [{
     name: "foo"
 }, {
@@ -357,7 +357,7 @@ Render this template, the output will be:
 
 #### dictionaries
 
-```
+```handlebars
 {{set (dictionary = {
     foo: "bar",
     hello: "world"
@@ -379,7 +379,7 @@ hello world
 
 In `with` and `each`, You can use `../` to visit outside variables.
 
-```
+```handlebars
 {{#with(x)}}
     {{#each(b)}}
         {{../a}}{{a}} // 12
@@ -397,7 +397,7 @@ Render this template with data `{a: 1, b: [{a: 2}] }`, the output will be:
 
 macro allows you to define reusable chunks of content. It is similar to a function in a programming language. Here's an example:
 
-```
+```handlebars
 {{#macro("test","param", default=1)}}
     param is {{param}} {{default}}
 {{/macro}}
@@ -405,7 +405,7 @@ macro allows you to define reusable chunks of content. It is similar to a functi
 
 Now you can call this macro like:
 
-```
+```handlebars
 {{macro("test","2")}}
 {{macro("test", "2", default=2)}}
 ```
@@ -423,7 +423,7 @@ Notice: In macro, you can't visit parent's scope, but you can visit root data th
 
 `include` pulls in other templates in place. It's useful when you need to share smaller chunks across several templates that already inherit other templates:
 
-```
+```handlebars
 {{ include ("item.html") }}
 ```
 
@@ -431,14 +431,14 @@ If you want to pull in other templates and set more contexts, you can pass them 
 
 In `parent.html`:
 
-```
+```handlebars
 {{ set (x = "x", y = "y") }}
 {{ include ("sub.html", xx = x, yy = x)}}
 ```
 
 In `sub.html`:
 
-```
+```handlebars
 x: {{x}}
 y: {{y}}
 xx: {{xx}}
@@ -464,14 +464,14 @@ If you want sub templates have an independent scope, please use `parse`.
 
 In `parent.html`:
 
-```
+```handlebars
 {{ set (x = "x", y = "y") }}
 {{ parse ("sub.html", xx = x, yy = x)}}
 ```
 
 In `sub.html` 中:
 
-```
+```handlebars
 x: {{x}}
 y: {{y}}
 xx: {{xx}}
@@ -494,7 +494,7 @@ Template inheritance is a way to make it easy to reuse templates. When writing a
 
 If we have a template parent.xtpl that looks like this:
 
-```html
+```handlebars
 <!doctype html>
 <html>
     <head>
@@ -510,7 +510,7 @@ If we have a template parent.xtpl that looks like this:
 
 And a template child.xtpl that looks like this:
 
-```html
+```handlebars
 {{extend ("./parent")}}
 
 {{#block ("head")}}

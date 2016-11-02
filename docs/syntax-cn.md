@@ -7,13 +7,13 @@
 
 变量会从当前模板的上下文上查找值，如果你想输出一个变量的值，可以使用：
 
-```
+```handlebars
 {{ username }}
 ```
 
 这样模板引擎将会从上下文上去查找变量 `username` 然后打印出来。变量可以使用 `.` 来访问属性，和 javascript 一样，也可以用 `[]`。
 
-```
+```handlebars
 {{ user.name }}
 {{ user["name"] }}
 ```
@@ -70,7 +70,7 @@ unescaped: <script>
 如果想要给模板增加一些注释，请使用 `{{! comment }}`：
 
 
-```
+```handlebars
 output before comment
 {{! This is comment }}
 output after comment
@@ -88,7 +88,7 @@ output after comment
 
 `{{~` 删除空格前缀 `~}}` 删除空格后缀
 
-```
+```handlebars
 {{set x='1'}}
 {{set data=[1,2]}}
 {{ x ~}}  end
@@ -110,7 +110,7 @@ output after comment
 
 parent.xtpl:
 
-```
+```handlebars
 {{ set (a = 1, b = 2) }}
 {{include ("sub.xtpl") }}
 in parent:
@@ -120,7 +120,7 @@ b = {{ b }}
 
 sub.xtpl:
 
-```
+```handlebars
 in sub:
 {{ set b = 3 }}
 a = {{ a }}
@@ -144,7 +144,7 @@ b: 2
 
 用数据 `{name: "foo", array: [{name: "bar"}]}` 渲染下面的模板:
 
-```
+```handlebars
 {{#each(arr)}}
 {{root.name}} {{name}}
 {{/each}}
@@ -164,7 +164,7 @@ foo bar
 var x = [1, 2, 3];
 ```
 
-```
+```handlebars
 {{#each(x.slice(1))}}{{this}} {{/each}} // => 2 3
 ```
 
@@ -197,7 +197,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 例子:
 
-```
+```handlebars
 {{#if( x===1 )}}
 1
 {{elseif (x===2)}}
@@ -218,7 +218,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 例子:
 
-```
+```handlebars
 {{#if(x>1 && y<2)}}
 {{/if}}
 
@@ -228,7 +228,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 ### 条件表达式
 
-```
+```handlebars
 {{1 > 2 ? 1 : 2}}
 ```
 
@@ -236,7 +236,9 @@ XTemplate 支持在数据上使用一些操作符：
 
 如果你传递了 javascript 的方法到模板中，你可以像在 javascript 中一样使用它.
 
+```handlebars
 {{ foo(1, 2, 3) }}
+```
 
 ### 内置函数
 
@@ -244,7 +246,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 如果需要迭代一些固定的数字，`range` 可以很方便的生成一个数字集合给你。这些数字从 `start` 开始，然后按照 `step` (默认为1) 的数量进行递增或者递减，直到数字到达了 `stop`（不会包括 `stop`）。
 
-```
+```handlebars
 {{#each(range(0,3))}}{{this}}{{/each}}
 {{#each(range(3,0))}}{{this}}{{/each}}
 {{#each(range(3,0,2))}}{{this}}{{/each}}
@@ -262,7 +264,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 `set` 让你定义或者修改一个变量。
 
-```
+```handlebars
 {{set(x=1)}}
 {{set(y=3,z=2)}}
 {{x}}
@@ -279,7 +281,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 `void` 允许你忽略模版渲染
 
-```
+```handlebars
 {{set(x=1)}}
 {{void(x)}}
 ```
@@ -294,7 +296,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 `if` 检查一个条件，让你可以选择性的输出内容，它和 javascript 中的 `if` 完全一致。
 
-```
+```handlebars
 {{# if (variable) }}
     It is true
 {{/ if }}
@@ -304,7 +306,7 @@ XTemplate 支持在数据上使用一些操作符：
 
 同样，可以通过 `elseif` 和 `else` 增加判断中的其他条件：
 
-```
+```handlebars
 {{# if (hungry) }}
     I am hungry
 {{ elseif (tired) }}
@@ -324,7 +326,7 @@ var a = {
 }
 ```
 
-```
+```handlebars
 {{#with(a)}}
 {{b}} // 1
 {{/with}}
@@ -336,7 +338,7 @@ var a = {
 
 #### arrays
 
-```
+```handlebars
 {{set (array = [{
     name: "foo"
 }, {
@@ -357,7 +359,7 @@ var a = {
 
 #### dictionaries
 
-```
+```handlebars
 {{set (dictionary = {
     foo: "bar",
     hello: "world"
@@ -379,7 +381,7 @@ hello world
 
 在 `with` 和 `each` 中，可以通过 `../` 来访问外层的同名变量.
 
-```
+```handlebars
 {{#with(x)}}
     {{#each(b)}}
         {{../a}}{{a}} // 12
@@ -397,7 +399,7 @@ hello world
 
 宏允许你定义一个可复用的代码片段，和 javascript 中的函数有点类似，下面是一个例子：
 
-```
+```handlebars
 {{#macro("test","param", default=1)}}
     param is {{param}} {{default}}
 {{/macro}}
@@ -405,7 +407,7 @@ hello world
 
 Now you can call this macro like:
 
-```
+```handlebars
 {{macro("test","2")}}
 {{macro("test", "2", default=2)}}
 ```
@@ -423,7 +425,7 @@ param is 2 2
 
 include 引入其他的模板。它在你想要共享不同的小的区块时非常有用。
 
-```
+```handlebars
 {{ include ("item.html") }}
 ```
 
@@ -431,14 +433,14 @@ include 引入其他的模板。它在你想要共享不同的小的区块时非
 
 在 `parent.html` 中：
 
-```
+```handlebars
 {{ set (x = "x", y = "y") }}
 {{ include ("sub.html", xx = x, yy = x)}}
 ```
 
 在 `sub.html` 中：
 
-```
+```handlebars
 x: {{x}}
 y: {{y}}
 xx: {{xx}}
@@ -464,14 +466,14 @@ yy: x
 
 在 `parent.html` 中：
 
-```
+```handlebars
 {{ set (x = "x", y = "y") }}
 {{ parse ("sub.html", xx = x, yy = x)}}
 ```
 
 在 `sub.html` 中：
 
-```
+```handlebars
 x: {{x}}
 y: {{y}}
 xx: {{xx}}
@@ -509,7 +511,7 @@ yy: x
 
 和一个子模板 `child.xtpl`:
 
-```html
+```handlebars
 {{extend ("./parent")}}
 
 {{#block ("head")}}
@@ -519,7 +521,6 @@ yy: x
 {{#block ("body")}}
     <h2>{{title}}</h2>
 {{/block}}
-```
 ```
 
 然后我们使用数据 `{title: 'XTemplate'}` 渲染 `child.xtpl`，将会得到下面的结果：
