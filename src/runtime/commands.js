@@ -163,7 +163,7 @@ const commands = {
         const last = scope.resolve(parts.slice(0, -1), depth);
         if (last) {
           const index = parts[parts.length - 1];
-          if (index === 'length' && !(Number.isInteger(value) && value > 0)) {
+          if (index === 'length' && !(util.isInteger(value) && value > 0)) {
             buffer.error('RangeError: Invalid array length');
           }
           last[index] = value;
