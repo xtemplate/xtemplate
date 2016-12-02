@@ -162,7 +162,11 @@ const commands = {
       } else {
         const last = scope.resolve(parts.slice(0, -1), depth);
         if (last) {
-          last[parts[parts.length - 1]] = value;
+          const index = parts[parts.length - 1];
+          if (util.isArray(last) && index === 'length' && !(util.isInteger(value) && value > 0)) {
+            buffer.error('RangeError: Invalid array length');
+          }
+          last[index] = value;
         }
       }
     }

@@ -245,4 +245,12 @@ describe('error detection', () => {
       done();
     });
   });
+
+  it('error when set undefined to array length', () => {
+    try {
+      new XTemplate(`{{set(data = [])}}{{set(data['length'] = undefined)}}`).render();
+    } catch (e) {
+      expect(e.message).contain(`in file: undefined at line 1: RangeError: Invalid array length`);
+    }
+  });
 });

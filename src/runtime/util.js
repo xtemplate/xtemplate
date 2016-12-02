@@ -13,6 +13,12 @@ module.exports = util = {
     return toString.call(obj) === '[object Array]';
   },
 
+  isInteger: Number.isInteger || function isInteger(value) {
+    return typeof value === 'number' &&
+      isFinite(value) &&
+      Math.floor(value) === value;
+  },
+
   keys: Object.keys || function keys(o) {
     const result = [];
     let p;
