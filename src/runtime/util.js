@@ -13,6 +13,13 @@ module.exports = util = {
     return toString.call(obj) === '[object Array]';
   },
 
+  toNumber(num) {
+    if (typeof num === 'number') {
+      return num;
+    }
+    return Number(num) || 0;
+  },
+
   keys: Object.keys || function keys(o) {
     const result = [];
     let p;

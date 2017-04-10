@@ -1,48 +1,46 @@
 /**
  * native commands for xtemplate.
+ * @author yiminghe@gmail.com
+ * @ignore
  */
 
-const Scope = require('./scope');
-const util = require('./util');
-const commands = {
+var Scope = require('./scope');
+var util = require('./util');
+var commands = {
   // range(start, stop, [step])
-  range(scope, option) {
-    const params = option.params;
-    const start = params[0];
-    const end = params[1];
-    let step = params[2];
+  range: function (scope, option) {
+    var params = option.params;
+    var start = util.toNumber(params[0]);
+    var end = util.toNumber(params[1]);
+    var step = util.toNumber(params[2]);
     if (!step) {
       step = start > end ? -1 : 1;
     } else if (start > end && step > 0 || start < end && step < 0) {
       step = -step;
     }
-    const ret = [];
-    for (let i = start; start < end ? i < end : i > end; i += step) {
+    var ret = [];
+    for (var i = start; start < end ? i < end : i > end; i += step) {
       ret.push(i);
     }
     return ret;
   },
 
-  void() {
+  'void': function () {
     return undefined;
   },
 
-  foreach(scope, option, buffer_) {
-    let buffer = buffer_;
-    const params = option.params;
-    const param0 = params[0];
-    const xindexName = params[2] || 'xindex';
-    const valueName = params[1];
-    let xcount;
-    let opScope;
-    let affix;
-    let xindex;
+  foreach: function (scope, option, buffer) {
+    var params = option.params;
+    var param0 = params[0];
+    var xindexName = params[2] || 'xindex';
+    var valueName = params[1];
+    var xcount, opScope, affix, xindex;
     if (param0) {
       xcount = param0.length;
       for (xindex = 0; xindex < xcount; xindex++) {
         opScope = new Scope(param0[xindex], {
-          xcount,
-          xindex,
+          xcount: xcount,
+          xindex: xindex
         }, scope);
         affix = opScope.affix;
         if (xindexName !== 'xindex') {
@@ -58,77 +56,71 @@ const commands = {
     return buffer;
   },
 
-  forin(scope, option, buffer_) {
-    let buffer = buffer_;
-    const params = option.params;
-    const param0 = params[0];
-    const xindexName = params[2] || 'xindex';
-    const valueName = params[1];
-    let opScope;
-    let affix;
-    let name;
+  forin: function (scope, option, buffer) {
+    var params = option.params;
+    var param0 = params[0];
+    var xindexName = params[2] || 'xindex';
+    var valueName = params[1];
+    var opScope, affix, name;
     // if undefined, will emit warning by compiler
     if (param0) {
       for (name in param0) {
-        if (param0.hasOwnProperty(name)) {
-          opScope = new Scope(param0[name], {
-            xindex: name,
-          }, scope);
-          affix = opScope.affix;
-          if (xindexName !== 'xindex') {
-            affix[xindexName] = name;
-            affix.xindex = undefined;
-          }
-          if (valueName) {
-            affix[valueName] = param0[name];
-          }
-          buffer = option.fn(opScope, buffer);
+        opScope = new Scope(param0[name], {
+          xindex: name
+        }, scope);
+        affix = opScope.affix;
+        if (xindexName !== 'xindex') {
+          affix[xindexName] = name;
+          affix.xindex = undefined;
         }
+        if (valueName) {
+          affix[valueName] = param0[name];
+        }
+        buffer = option.fn(opScope, buffer);
       }
     }
     return buffer;
   },
 
-  each(scope, option, buffer) {
-    const params = option.params;
-    const param0 = params[0];
+  each: function (scope, option, buffer) {
+    var params = option.params;
+    var param0 = params[0];
     if (param0) {
       if (util.isArray(param0)) {
         return commands.foreach(scope, option, buffer);
+      } else {
+        return commands.forin(scope, option, buffer);
       }
-      return commands.forin(scope, option, buffer);
     }
     return buffer;
   },
 
-  'with'(scope, option, buffer_) {
-    let buffer = buffer_;
-    const params = option.params;
-    const param0 = params[0];
+  'with': function (scope, option, buffer) {
+    var params = option.params;
+    var param0 = params[0];
     if (param0) {
       // skip object check for performance
-      const opScope = new Scope(param0, undefined, scope);
+      var opScope = new Scope(param0, undefined, scope);
       buffer = option.fn(opScope, buffer);
     }
     return buffer;
   },
 
-  'if'(scope, option, buffer_) {
-    let buffer = buffer_;
-    const params = option.params;
-    const param0 = params[0];
+  'if': function (scope, option, buffer) {
+    var params = option.params;
+    var param0 = params[0];
     if (param0) {
-      const fn = option.fn;
+      var fn = option.fn;
       if (fn) {
         buffer = fn(scope, buffer);
       }
     } else {
-      let matchElseIf = false;
-      const elseIfs = option.elseIfs;
-      const inverse = option.inverse;
+      var matchElseIf = false;
+      var elseIfs = option.elseIfs;
+      var inverse = option.inverse;
       if (elseIfs) {
-        for (let i = 0, len = elseIfs.length; i < len; i++) {
-          const elseIf = elseIfs[i];
+        for (var i = 0, len = elseIfs.length; i < len; i++) {
+          var elseIf = elseIfs[i];
           matchElseIf = elseIf.test(scope);
           if (matchElseIf) {
             buffer = elseIf.fn(scope, buffer);
@@ -143,24 +135,23 @@ const commands = {
     return buffer;
   },
 
-  set(scope_, option, buffer) {
-    let scope = scope_;
-    const hash = option.hash;
-    const len = hash.length;
-    for (let i = 0; i < len; i++) {
-      const h = hash[i];
-      const parts = h.key;
-      let depth = h.depth;
-      const value = h.value;
+  set: function (scope, option, buffer) {
+    var hash = option.hash;
+    var len = hash.length;
+    for (var i = 0; i < len; i++) {
+      var h = hash[i];
+      var parts = h.key;
+      var depth = h.depth;
+      var value = h.value;
       if (parts.length === 1) {
-        const root = scope.root;
+        var root = scope.root;
         while (depth && root !== scope) {
           scope = scope.parent;
           --depth;
         }
         scope.set(parts[0], value);
       } else {
-        const last = scope.resolve(parts.slice(0, -1), depth);
+        var last = scope.resolve(parts.slice(0, -1), depth);
         if (last) {
           last[parts[parts.length - 1]] = value;
         }
@@ -171,29 +162,26 @@ const commands = {
 
   include: 1,
 
-  includeOnce: 1,
-
   parse: 1,
 
   extend: 1,
 
-  block(scope, option, buffer_) {
-    let buffer = buffer_;
-    const self = this;
-    const runtime = self.runtime;
-    const params = option.params;
-    let blockName = params[0];
-    let type;
+  block: function (scope, option, buffer) {
+    var self = this;
+    var runtime = self.runtime;
+    var params = option.params;
+    var blockName = params[0];
+    var type;
     if (params.length === 2) {
       type = params[0];
       blockName = params[1];
     }
-    const blocks = runtime.blocks = runtime.blocks || {};
-    const head = blocks[blockName];
-    let cursor;
-    const current = {
+    var blocks = runtime.blocks = runtime.blocks || {};
+    var head = blocks[blockName],
+      cursor;
+    var current = {
       fn: option.fn,
-      type,
+      type: type
     };
     if (!head) {
       blocks[blockName] = current;
@@ -202,7 +190,7 @@ const commands = {
         current.next = head;
         blocks[blockName] = current;
       } else if (head.type === 'prepend') {
-        let prev;
+        var prev;
         cursor = head;
         while (cursor && cursor.type === 'prepend') {
           prev = cursor;
@@ -226,54 +214,53 @@ const commands = {
     return buffer;
   },
 
-  macro(scope, option, buffer_) {
-    let buffer = buffer_;
-    const hash = option.hash;
-    const params = option.params;
-    const macroName = params[0];
-    const params1 = params.slice(1);
-    const self = this;
-    const runtime = self.runtime;
-    const macros = runtime.macros = runtime.macros || {};
-    const macro = macros[macroName];
+  macro: function (scope, option, buffer) {
+    var hash = option.hash;
+    var params = option.params;
+    var macroName = params[0];
+    var params1 = params.slice(1);
+    var self = this;
+    var runtime = self.runtime;
+    var macros = runtime.macros = runtime.macros || {};
+    var macro = macros[macroName];
     // definition
     if (option.fn) {
       macros[macroName] = {
         paramNames: params1,
-        hash,
-        fn: option.fn,
+        hash: hash,
+        fn: option.fn
       };
     } else if (macro) {
-      const paramValues = macro.hash || {};
-      const paramNames = macro.paramNames;
-      if (paramNames) {
-        for (let i = 0, len = paramNames.length; i < len; i++) {
-          const p = paramNames[i];
+      var paramValues = macro.hash || {};
+      var paramNames;
+      if ((paramNames = macro.paramNames)) {
+        for (var i = 0, len = paramNames.length; i < len; i++) {
+          var p = paramNames[i];
           paramValues[p] = params1[i];
         }
       }
       if (hash) {
-        for (const h in hash) {
-          if (hash.hasOwnProperty(h)) {
-            paramValues[h] = hash[h];
-          }
+        for (var h in hash) {
+          paramValues[h] = hash[h];
         }
       }
-      const newScope = new Scope(paramValues);
+      var newScope = new Scope(paramValues);
       // https://github.com/xtemplate/xtemplate/issues/29
       newScope.root = scope.root;
       // no caller Scope
       buffer = macro.fn.call(self, newScope, buffer);
     } else {
-      const error = `can not find macro: ${macroName}`;
+      var error = 'can not find macro: ' + macroName;
       buffer.error(error);
     }
     return buffer;
-  },
+  }
 };
 
-commands.debugger = function debuggerFn() {
-  util.globalEval('debugger');
+commands['debugger'] = function () {
+  if ('@DEBUG@') {
+    util.globalEval('debugger');
+  }
 };
 
 module.exports = commands;
