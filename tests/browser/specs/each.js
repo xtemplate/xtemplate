@@ -248,16 +248,16 @@ describe('each', () => {
       expect(render).to.equal('024');
     });
 
-    it('can specify string type step ', function () {
-        var tpl = '{{#each(range(0,5,"2"))}}{{this}}{{/each}}';
-        var render = new XTemplate(tpl).render({});
-        expect(render).to.equal('024');
+    it('can specify string type step ', () => {
+      const tpl = '{{#each(range(0,5,"2"))}}{{this}}{{/each}}';
+      const render = new XTemplate(tpl).render({});
+      expect(render).to.equal('024');
     });
 
-    it('should not throw error', function () {
-        var tpl = '{{#each(range("a", "b"))}}{{this}}{{/each}}';
-        var render = new XTemplate(tpl).render({});
-        expect(render).to.equal('');
+    it('should not throw error', () => {
+      const tpl = '{{#each(range("a", "b"))}}{{this}}{{/each}}';
+      const render = new XTemplate(tpl).render({});
+      expect(render).to.equal('');
     });
   });
 });
