@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "4.7.0",
+  "version": "4.7.1",
   "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
