@@ -224,6 +224,12 @@ describe('each', () => {
   });
 
   describe('range', () => {
+    it('check error', () => {
+      const tpl = '{{#each(range(0,"3"))}}{{this}}{{/each}}';
+      expect(() => {
+        const render = new XTemplate(tpl).render({});
+      }).to.throwException(/start\/end\/step of range must be type number!/);
+    });
     it('support ascending order', () => {
       const tpl = '{{#each(range(0,3))}}{{this}}{{/each}}';
       const render = new XTemplate(tpl).render({});
