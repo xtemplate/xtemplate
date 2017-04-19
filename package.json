@@ -23,7 +23,8 @@
     "dist"
   ],
   "dependencies": {
-    "escape-html": "~1.0.3"
+    "escape-html": "~1.0.3",
+    "xtpl": "^3.0.0"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
