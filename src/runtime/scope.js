@@ -56,7 +56,7 @@ Scope.prototype = {
     let v;
     const affix = this.affix;
 
-    if (data !== null && data !== undefined) {
+    if (data !== null && data !== undefined && affix[name] === undefined) {
       v = data[name];
     }
 
