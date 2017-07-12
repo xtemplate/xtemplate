@@ -5,7 +5,13 @@ const doubleReg = /\\*"/g;
 const singleReg = /\\*'/g;
 const arrayPush = [].push;
 const globals = {};
-globals.undefined = globals.null = globals.true = globals.false = 1;
+
+(() => {
+  const globalKeys = ['undefined', 'null', 'true', 'false'];
+  for (let i = 0; i < globalKeys.length; i++) {
+    globals[globalKeys[i]] = 1;
+  }
+})();
 
 function genStackJudge(parts, data, count = 0, lastVariable_) {
   if (!parts.length) {

@@ -22,7 +22,8 @@ node_modules
 .cache
 dist
 assets/**/*.css
-build
-lib
+/build
+/lib
 coverage
 yarn.lock
+/es

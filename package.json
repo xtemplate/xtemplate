@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "4.6.0",
+  "version": "4.6.1",
   "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
   "engines": {
@@ -39,11 +39,11 @@
     "modulex-promise": "^1.1.3",
     "modulex-util": "^1.1.5",
     "pre-commit": "1.x",
-    "rc-tools": "5.x",
+    "rc-tools": "6.x",
+    "rc-test": "6.x",
     "react": "15.x",
     "react-dom": "15.x",
     "uuid": "~2.0.1",
-    "webpack": "~1.12.9",
     "xtpl": "^3.0.0"
   },
   "pre-commit": [
@@ -53,16 +53,18 @@
     "port": 8002
   },
   "scripts": {
+    "dist": "rm -rf dist && node ./node_modules/webpack/bin/webpack --config scripts/webpack.runtime.config.js && node ./node_modules/webpack/bin/webpack --config scripts/webpack.xtemplate.config.js",
     "build": "rc-tools run build",
+    "compile": "rc-tools run compile",
     "gh-pages": "rc-tools run gh-pages",
     "start": "rc-tools run server",
-    "pub": "rm -rf dist && webpack --config scripts/webpack.runtime.config.js && webpack --config scripts/webpack.xtemplate.config.js && rc-tools run pub",
+    "pub": "npm run dist && rc-tools run pub",
     "lint": "rc-tools run lint",
-    "karma": "rc-tools run karma",
+    "karma": "rc-test run karma",
     "watch": "rc-tools run watch",
-    "saucelabs": "rc-tools run saucelabs",
-    "test": "rc-tools run test",
-    "chrome-test": "rc-tools run chrome-test",
-    "coverage": "rc-tools run coverage"
+    "saucelabs": "rc-test run saucelabs",
+    "test": "rc-test run test",
+    "chrome-test": "rc-test run chrome-test",
+    "coverage": "rc-test run coverage"
   }
 }

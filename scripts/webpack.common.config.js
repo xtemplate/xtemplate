@@ -1,4 +1,3 @@
-var webpack = require('webpack');
 var path = require('path');
 
 var entry = {};
@@ -7,7 +6,7 @@ module.exports = {
   entry: entry,
 
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['.js', '.jsx']
   },
 
   output: {
@@ -20,7 +19,7 @@ module.exports = {
     loaders: [{
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'babel'
+      loader: 'babel-loader'
     }]
   },
 };

@@ -12,7 +12,9 @@ const commands = {
     const end = params[1];
     let step = params[2];
     if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
-      if (typeof start !== 'number' || typeof end !== 'number' || step && typeof step !== 'number') {
+      if (typeof start !== 'number' ||
+        typeof end !== 'number' ||
+        step && typeof step !== 'number') {
         throw new Error('start/end/step of range must be type number!');
       }
     }
