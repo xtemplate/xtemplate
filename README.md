@@ -44,7 +44,7 @@ support async control, inheritance, include, logic expression, custom function a
 support [requirejs](https://github.com/jrburke/requirejs) [modulex](https://github.com/modulex/modulex)
 [kissy](http://docs.kissyui.com) [kissy gallery](http://gallery.kissyui.com)
 
-- [中文教程](https://github.com/xtemplate/xtemplate/blob/master/docs/use-on-browser.md)
+- [中文教程](https://github.com/xtemplate/xtemplate/blob/master/docs/tutorial/use-on-browser.md)
 - [demo](https://github.com/xtemplate/xtemplate-on-browser)
 
 ## use on node
