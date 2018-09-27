@@ -52,7 +52,7 @@ api： https://github.com/xtemplate/xtemplate/blob/master/docs/api.md
 
 nodejs 端使用： https://github.com/xtemplate/xtpl
 
-浏览器服务器共享模板方案： https://github.com/xtemplate/xtemplate/blob/master/docs/use-on-browser.md
+浏览器服务器共享模板方案： https://github.com/xtemplate/xtemplate/blob/master/docs/tutorial/use-on-browser.md
 
 benchmark: https://github.com/xtemplate/xtemplate/blob/master/benchmark/result/2014-08-21-benchmark.md
 
