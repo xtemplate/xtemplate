@@ -33,6 +33,7 @@
     "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "devDependencies": {
+    "@pika/plugin-build-umd": "0.5.x",
     "kison": "^0.3.3",
     "gulp": "^3.8.7",
     "gulp-xtemplate": "3.x",

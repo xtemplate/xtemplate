@@ -3,10 +3,10 @@
  */
 
 import XTemplateRuntime from 'xtemplate-runtime';
-import Compiler from 'xtemplate-compiler';
+import XTemplateCompiler from 'xtemplate-compiler';
 
 const { util } = XTemplateRuntime;
-const { compile } = Compiler;
+const { compile } = XTemplateCompiler;
 
 /**
  * xtemplate engine
@@ -74,7 +74,7 @@ export default util.mix(XTemplate, {
 
   compile,
 
-  Compiler,
+  Compiler: XTemplateCompiler,
 
   Scope: XTemplateRuntime.Scope,
 

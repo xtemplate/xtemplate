@@ -18,6 +18,12 @@
         "@pika/plugin-standard-pkg"
       ],
       [
+        "@pika/plugin-build-umd",
+        {
+          "name": "XTemplateRuntime"
+        }
+      ],
+      [
         "@pika/plugin-build-node"
       ],
       [

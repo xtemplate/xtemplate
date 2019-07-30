@@ -30,6 +30,12 @@
         "@pika/plugin-standard-pkg"
       ],
       [
+        "@pika/plugin-build-umd",
+        {
+          "name": "XTemplate"
+        }
+      ],
+      [
         "@pika/plugin-build-node"
       ],
       [

@@ -21,6 +21,12 @@
         "@pika/plugin-standard-pkg"
       ],
       [
+        "@pika/plugin-build-umd",
+        {
+          "name": "XTemplateCompiler"
+        }
+      ],
+      [
         "@pika/plugin-build-node"
       ],
       [
