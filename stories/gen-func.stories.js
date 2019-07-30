@@ -24,7 +24,7 @@ class Test extends React.Component {
 
   parse() {
     const refs = this.refs;
-    const g = XTemplate.Compiler.compileToStr({
+    const {func} = XTemplate.Compiler.compileToCode({
       content: refs.tpl.value,
       catchError: refs.catchError.checked,
       useNativeRequire: refs.useNativeRequire.checked,
@@ -32,7 +32,7 @@ class Test extends React.Component {
       strict: refs.strict.checked,
     });
     refs.gen.innerHTML = `<pre class="brush: js;">
-${hijs.highlight('js', jsBeauty(g)).value}
+${hijs.highlight('js', jsBeauty(func)).value}
 </pre>`;
   }
 
