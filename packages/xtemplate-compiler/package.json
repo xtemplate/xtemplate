@@ -1,6 +1,6 @@
 {
   "name": "xtemplate-compiler",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "author": "yiminghe <yiminghe@gmail.com>",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   "module": "src/index.js",
   "main": "src/index.js",
   "dependencies": {
-    "xtemplate-runtime": "^5.0.1"
+    "xtemplate-runtime": "^5.0.3"
   },
   "@pika/pack": {
     "pipeline": [
