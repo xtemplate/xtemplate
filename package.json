@@ -1,11 +1,8 @@
 {
-  "name": "xtemplate",
-  "version": "4.6.1",
+  "name": "xtemplate-root",
+  "private": true,
   "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
-  "engines": {
-    "node": ">=0.10"
-  },
   "keywords": [
     "template",
     "template engine",
@@ -17,54 +14,52 @@
     "type": "git",
     "url": "http://github.com/xtemplate/xtemplate.git"
   },
-  "main": "lib/index",
-  "files": [
-    "lib",
-    "dist"
+  "workspaces": [
+    "packages/*"
   ],
-  "dependencies": {
-    "escape-html": "~1.0.3"
+  "scripts": {
+    "precompile-test": "BABEL_ENV=test babel-node node_modules/.bin/gulp precompile-test",
+    "lint-staged": "lint-staged",
+    "prettier": "prettier --write \"{src,__tests__}/**/*.{js,tsx}\"",
+    "bootstrap": "yarn workspaces run install",
+    "clean": "lerna clean",
+    "test": "jest",
+    "test:watch": "yarn test -- --watch",
+    "build": "lerna run build",
+    "pub": "git push && npm run publish",
+    "publish": "npm run build && lerna publish",
+    "start": "start-storybook -p 6006",
+    "deploy": "storybook-to-ghpages",
+    "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "devDependencies": {
-    "expect.js": "^0.3.1",
-    "gulp": "^3.8.7",
-    "gulp-xtemplate": "^1.2.2",
-    "highlight.js": "~8.9.1",
-    "jquery": "~1.11.3",
-    "js-beautify": "~1.5.10",
     "kison": "^0.3.3",
-    "koa": "~1.1.2",
-    "koa-router": "~5.3.0",
-    "modulex": "^1.7.4",
-    "modulex-promise": "^1.1.3",
-    "modulex-util": "^1.1.5",
-    "pre-commit": "1.x",
-    "rc-tools": "6.x",
-    "rc-test": "6.x",
-    "react": "15.x",
-    "react-dom": "15.x",
-    "uuid": "~2.0.1",
-    "xtpl": "^3.0.0"
+    "gulp": "^3.8.7",
+    "gulp-xtemplate": "3.x",
+    "@babel/preset-react": "^7.0.0",
+    "@pika/plugin-build-node": "^0.5.1",
+    "@pika/plugin-build-web": "^0.5.1",
+    "@pika/plugin-standard-pkg": "^0.5.1",
+    "@pika/types": "^0.5.1",
+    "@storybook/react": "^5.1.9",
+    "@storybook/storybook-deployer": "^2.8.1",
+    "babel-jest": "^24.8.0",
+    "babel-loader": "^8.0.6",
+    "coveralls": "^2.13.1",
+    "highlight.js": "~8.9.1",
+    "jest": "^24.8.0",
+    "js-beautify": "~1.5.10",
+    "lint-staged": "^7.2.0",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.11.1"
+  },
+  "lint-staged": {
+    "*.{tsx,js,jsx,ts}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "pre-commit": [
-    "lint"
-  ],
-  "config": {
-    "port": 8002
-  },
-  "scripts": {
-    "dist": "rm -rf dist && node ./node_modules/webpack/bin/webpack --config scripts/webpack.runtime.config.js && node ./node_modules/webpack/bin/webpack --config scripts/webpack.xtemplate.config.js",
-    "build": "rc-tools run build",
-    "compile": "rc-tools run compile",
-    "gh-pages": "rc-tools run gh-pages",
-    "start": "rc-tools run server",
-    "pub": "npm run dist && rc-tools run pub",
-    "lint": "rc-tools run lint",
-    "karma": "rc-test run karma",
-    "watch": "rc-tools run watch",
-    "saucelabs": "rc-test run saucelabs",
-    "test": "rc-test run test",
-    "chrome-test": "rc-test run chrome-test",
-    "coverage": "rc-test run coverage"
-  }
+    "lint-staged"
+  ]
 }

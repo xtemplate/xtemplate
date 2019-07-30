@@ -1,0 +1,32 @@
+{
+  "name": "xtemplate-compiler",
+  "version": "5.0.0",
+  "author": "yiminghe <yiminghe@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/xtemplate/xtemplate.git"
+  },
+  "scripts": {
+    "clean": "rm -rf pkg",
+    "build": "pack build",
+    "publish": "npm publish pkg && npm run clean"
+  },
+  "module": "src/index.js",
+  "main": "src/index.js",
+  "dependencies": {
+    "xtemplate-runtime": "5.x"
+  },
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg"
+      ],
+      [
+        "@pika/plugin-build-node"
+      ],
+      [
+        "@pika/plugin-build-web"
+      ]
+    ]
+  }
+}

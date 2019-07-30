@@ -206,15 +206,15 @@ xtemplate 通过 gulp-xtemplate 支持将模板代码离线编译为模板函数
 ### xtemplate 模块需要拆分
 
     当选择离线编译，实际上 xtemplate 的编译代码可以不用下载，
-    可拆分为两个模块: xtemplate/runtime 以及 xtemplate/compiler
+    可拆分为两个模块: xtemplate-runtime 以及 xtemplate-compiler
 
-    这样当选择离线编译时直接use xtemplate/runtime 载入模板的功能基础设施即可。
+    这样当选择离线编译时直接use xtemplate-runtime 载入模板的功能基础设施即可。
 
 ## xtemplate 文档
 
 [api](../api.md)
 
-[demo](../../examples)
+[demo](../../stories)
 
 
 ## 推荐书籍

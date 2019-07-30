@@ -1,5 +1,11 @@
 # History
 ----
+
+## 5.0.0 (2019-07-30)
+
+- use pack and storybook
+- remove compileToStr and add compileToCode
+
 ## 4.6.0 (2016-08-18)
 
 `new` [#83](https://github.com/xtemplate/xtemplate/pull/83/files) support conditional expression

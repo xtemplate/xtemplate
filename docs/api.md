@@ -351,7 +351,7 @@ Object compile(content, name): get compiled function of template whose content i
 Object parse(content, name): get compiled ast of template whose content is content and name is name
 ```
 
-#### compileToStr
+#### compileToCode
 ```
 String compileToStr(param:Object): get function string of template whose content is content and name is name
 ```
@@ -386,5 +386,11 @@ param 包含:
         <td>false</td>
         <td>whether generate module require</td>
     </tr>
+    <tr>
+        <td>esmodule</td>
+        <td>Boolean</td>
+        <td>false</td>
+        <td>whether generate module import if isModule is true</td>
+    </tr>    
     </tbody>
 </table>
