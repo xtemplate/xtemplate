@@ -42,8 +42,8 @@ function findCommand(runtimeCommands, instanceCommands, parts) {
 }
 
 function getSubNameFromParentName(parentName, subName) {
-  const parts = parentName.split('/');
-  const subParts = subName.split('/');
+  const parts = parentName.replace(/\\/g, '/').split('/');
+  const subParts = subName.replace(/\\/g, '/').split('/');
   parts.pop();
   for (let i = 0, l = subParts.length; i < l; i++) {
     const subPart = subParts[i];
