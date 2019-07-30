@@ -26,8 +26,8 @@
     "test": "jest",
     "test:watch": "yarn test -- --watch",
     "build": "lerna run build",
-    "pub": "git push && npm run publish",
-    "publish": "npm run build && lerna publish --contents pkg",
+    "pub": "git push && npm run npm-pub",
+    "npm-pub": "npm run build && lerna publish --contents pkg && npm run clean",
     "start": "start-storybook -p 6006",
     "deploy": "storybook-to-ghpages",
     "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"

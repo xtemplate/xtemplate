@@ -1,6 +1,6 @@
 {
   "name": "xtemplate-runtime",
-  "version": "5.0.2",
+  "version": "5.0.4",
   "author": "yiminghe <yiminghe@gmail.com>",
   "repository": {
     "type": "git",
@@ -8,8 +8,7 @@
   },
   "scripts": {
     "clean": "rm -rf pkg",
-    "build": "pack build",
-    "publish": "npm publish pkg && npm run clean"
+    "build": "pack build"
   },
   "module": "src/index.js",
   "main": "src/index.js",
@@ -25,5 +24,6 @@
         "@pika/plugin-build-web"
       ]
     ]
-  }
+  },
+  "gitHead": "674134eeb7e78365d60c3230b898bcb32fd71052"
 }

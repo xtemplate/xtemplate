@@ -1,6 +1,6 @@
 {
   "name": "xtemplate",
-  "version": "5.0.2",
+  "version": "5.0.4",
   "description": "High Speed, eXtensible Template Engine lib on browser and nodejs",
   "author": "yiminghe <yiminghe@gmail.com>",
   "keywords": [
@@ -16,14 +16,13 @@
   },
   "scripts": {
     "clean": "rm -rf pkg",
-    "build": "pack build",
-    "publish": "npm publish pkg && npm run clean"
+    "build": "pack build"
   },
   "module": "src/index.js",
   "main": "src/index.js",
   "dependencies": {
-    "xtemplate-compiler": "^5.0.1",
-    "xtemplate-runtime": "^5.0.1"
+    "xtemplate-compiler": "^5.0.3",
+    "xtemplate-runtime": "^5.0.3"
   },
   "@pika/pack": {
     "pipeline": [
@@ -37,5 +36,6 @@
         "@pika/plugin-build-web"
       ]
     ]
-  }
+  },
+  "gitHead": "674134eeb7e78365d60c3230b898bcb32fd71052"
 }
