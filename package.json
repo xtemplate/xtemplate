@@ -22,7 +22,7 @@
     "lint-staged": "lint-staged",
     "prettier": "prettier --write \"{src,__tests__}/**/*.{js,tsx}\"",
     "bootstrap": "yarn workspaces run install",
-    "clean": "lerna clean",
+    "clean": "lerna run clean",
     "test": "jest",
     "test:watch": "yarn test -- --watch",
     "build": "lerna run build",
