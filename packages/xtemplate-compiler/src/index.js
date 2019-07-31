@@ -2,13 +2,13 @@
  * translate ast to js function code
  */
 
-import XTemplateRuntime from 'xtemplate-runtime';
 import parser from './parser';
 import ast from './ast';
 import compilerTools from './tools';
+import nativeCommands from './commands';
+import nativeUtils from './utils';
 
 parser.yy = ast;
-const { util, nativeCommands, utils: nativeUtils } = XTemplateRuntime;
 const {
   pushToArray,
   wrapByDoubleQuote,
@@ -35,54 +35,86 @@ const TOP_DECLARATION = TMP_DECLARATION.concat([
   var nativeCommands = root.nativeCommands;
   var utils = root.utils;`,
 ]).join('\n');
-const CALL_NATIVE_COMMAND =
-  '{lhs} = {name}Command.call(tpl, scope, {option}, buffer);';
-const CALL_CUSTOM_COMMAND =
-  'buffer = callCommandUtil(tpl, scope, {option}, buffer, {idParts});';
-const CALL_FUNCTION =
-  '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts});';
-const CALL_DATA_FUNCTION = '{lhs} = callDataFnUtil([{params}], {idParts});';
-const CALL_FUNCTION_DEPTH =
-  '{lhs} = callFnUtil(tpl, scope, {option}, buffer, {idParts}, {depth});';
-const ASSIGN_STATEMENT = 'var {lhs} = {value};';
-const SCOPE_RESOLVE_DEPTH = 'var {lhs} = scope.resolve({idParts},{depth});';
-const SCOPE_RESOLVE_LOOSE_DEPTH =
-  'var {lhs} = scope.resolveLoose({idParts},{depth});';
-const FUNC = `function {functionName}({params}){
-  {body}
+const CALL_NATIVE_COMMAND = ({ lhs, name, option }) =>
+  `${lhs} = ${name}Command.call(tpl, scope, ${option}, buffer);`;
+const CALL_CUSTOM_COMMAND = ({ option, idParts }) =>
+  `buffer = callCommandUtil(tpl, scope, ${option}, buffer, ${idParts});`;
+const CALL_FUNCTION = ({ lhs, option, idParts }) =>
+  `${lhs} = callFnUtil(tpl, scope, ${option}, buffer, ${idParts});`;
+const CALL_DATA_FUNCTION = ({ lhs, idParts, params }) =>
+  `${lhs} = callDataFnUtil([${params}], ${idParts});`;
+const CALL_FUNCTION_DEPTH = ({ lhs, option, idParts, depth }) =>
+  `${lhs} = callFnUtil(tpl, scope, ${option}, buffer, ${idParts}, ${depth});`;
+const ASSIGN_STATEMENT = ({ lhs, value }) => `var ${lhs} = ${value};`;
+const SCOPE_RESOLVE_DEPTH = ({ lhs, idParts, depth }) =>
+  `var ${lhs} = scope.resolve(${idParts},${depth});`;
+const SCOPE_RESOLVE_LOOSE_DEPTH = ({ lhs, idParts, depth }) =>
+  `var ${lhs} = scope.resolveLoose(${idParts},${depth});`;
+const FUNC = ({
+  functionName,
+  params,
+  body,
+}) => `function ${functionName}(${params}){
+  ${body}
 }`;
-const SOURCE_URL = `
-  //# sourceURL = {name}.js
+const SOURCE_URL = ({ name }) => `
+  //# sourceURL = ${name}.js
 `;
-const DECLARE_NATIVE_COMMANDS = 'var {name}Command = nativeCommands["{name}"];';
-const DECLARE_UTILS = 'var {name}Util = utils["{name}"];';
-const BUFFER_WRITE = 'buffer = buffer.write({value});';
-const BUFFER_APPEND = 'buffer.data += {value};';
-const BUFFER_WRITE_ESCAPED = 'buffer = buffer.writeEscaped({value});';
+const DECLARE_NATIVE_COMMANDS = name =>
+  `var ${name}Command = nativeCommands["${name}"];`;
+const DECLARE_UTILS = name => `var ${name}Util = utils["${name}"];`;
+const BUFFER_WRITE = ({ value }) => `buffer = buffer.write(${value});`;
+const BUFFER_APPEND = ({ value }) => `buffer.data += ${value};`;
+const BUFFER_WRITE_ESCAPED = ({ value }) =>
+  `buffer = buffer.writeEscaped(${value});`;
 const RETURN_BUFFER = 'return buffer;';
 // codeTemplates ---------------------------- end
 
 let nativeCode = [];
-const { substitute, each } = util;
-each(nativeUtils, (v, name) => {
-  nativeCode.push(
-    substitute(DECLARE_UTILS, {
-      name,
-    }),
-  );
+
+each(nativeUtils, (_, name) => {
+  nativeCode.push(DECLARE_UTILS(name));
 });
 
-each(nativeCommands, (v, name) => {
-  nativeCode.push(
-    substitute(DECLARE_NATIVE_COMMANDS, {
-      name,
-    }),
-  );
+each(nativeCommands, (_, name) => {
+  nativeCode.push(DECLARE_NATIVE_COMMANDS(name));
 });
 
 nativeCode = nativeCode.join('\n');
 
 let lastLine = 1;
+
+function each(object, fn, context = null) {
+  if (object) {
+    let key;
+    let val;
+    let keys;
+    let i = 0;
+    const length = object && object.length;
+    // do not use typeof obj == 'function': bug in phantomjs
+    const isObj =
+      length === undefined ||
+      Object.prototype.toString.call(object) === '[object Function]';
+
+    if (isObj) {
+      keys = Object.keys(object);
+      for (; i < keys.length; i++) {
+        key = keys[i];
+        // can not use hasOwnProperty
+        if (fn.call(context, object[key], key, object) === false) {
+          break;
+        }
+      }
+    } else {
+      for (val = object[0]; i < length; val = object[++i]) {
+        if (fn.call(context, val, i, object) === false) {
+          break;
+        }
+      }
+    }
+  }
+  return object;
+}
 
 function markLine(pos, source) {
   if (lastLine === pos.line) {
@@ -302,7 +334,7 @@ function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
     if (funcHash.length) {
       const hashStr = [];
       if (isSetFunction) {
-        util.each(funcHash, h => {
+        each(funcHash, h => {
           hashStr.push(
             `{ key: [${h.key.join(',')}], value: ${h.value}, depth: ${
               h.depth
@@ -311,7 +343,7 @@ function genOptionFromFunction(self, func, escape, fn, elseIfs, inverse) {
         });
         exp += `,hash: [ ${hashStr.join(',')} ]`;
       } else {
-        util.each(funcHash, h => {
+        each(funcHash, h => {
           hashStr.push(`${h[0]}:${h[1]}`);
         });
         exp += `,hash: { ${hashStr.join(',')} }`;
@@ -504,7 +536,7 @@ function generateFunction(self, func, block, escape_) {
       );
     } else {
       source.push(
-        substitute(CALL_NATIVE_COMMAND, {
+        CALL_NATIVE_COMMAND({
           lhs: block ? 'buffer' : idName,
           name: idString,
           option: functionConfigCode.exp,
@@ -513,7 +545,7 @@ function generateFunction(self, func, block, escape_) {
     }
   } else if (block) {
     source.push(
-      substitute(CALL_CUSTOM_COMMAND, {
+      CALL_CUSTOM_COMMAND({
         option: functionConfigCode.exp,
         idParts: convertIdPartsToRawAccessor(self, source, idParts).arr,
       }),
@@ -524,7 +556,7 @@ function generateFunction(self, func, block, escape_) {
     // do not need scope resolution, call data function directly
     if (resolveParts.funcRet) {
       source.push(
-        substitute(CALL_DATA_FUNCTION, {
+        CALL_DATA_FUNCTION({
           lhs: idName,
           params: functionConfigCode.funcParams.join(','),
           idParts: resolveParts.arr,
@@ -533,7 +565,7 @@ function generateFunction(self, func, block, escape_) {
       );
     } else {
       source.push(
-        substitute(id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION, {
+        (id.depth ? CALL_FUNCTION_DEPTH : CALL_FUNCTION)({
           lhs: idName,
           option: functionConfigCode.exp,
           idParts: resolveParts.arr,
@@ -652,7 +684,7 @@ AstToJSProcessor.prototype = {
     const idName = guid(self, 'id');
     if (depth) {
       source.push(
-        substitute(loose ? SCOPE_RESOLVE_LOOSE_DEPTH : SCOPE_RESOLVE_DEPTH, {
+        (loose ? SCOPE_RESOLVE_LOOSE_DEPTH : SCOPE_RESOLVE_DEPTH)({
           lhs: idName,
           idParts: convertIdPartsToRawAccessor(self, source, idParts).arr,
           depth,
@@ -669,7 +701,7 @@ AstToJSProcessor.prototype = {
     if (part0 === 'this') {
       remainParts = idParts.slice(1);
       source.push(
-        substitute(ASSIGN_STATEMENT, {
+        ASSIGN_STATEMENT({
           lhs: idName,
           value: remainParts.length
             ? chainedVariableRead(
@@ -694,7 +726,7 @@ AstToJSProcessor.prototype = {
         remain = `.${remain}`;
       }
       source.push(
-        substitute(ASSIGN_STATEMENT, {
+        ASSIGN_STATEMENT({
           lhs: idName,
           value: remain
             ? chainedVariableRead(
@@ -734,14 +766,14 @@ AstToJSProcessor.prototype = {
         }
       }
       source.push(
-        substitute(ASSIGN_STATEMENT, {
+        ASSIGN_STATEMENT({
           lhs: idName,
           value,
         }),
       );
     } else {
       source.push(
-        substitute(ASSIGN_STATEMENT, {
+        ASSIGN_STATEMENT({
           lhs: idName,
           value: chainedVariableRead(self, source, idParts, false, true, loose),
         }),
@@ -772,7 +804,7 @@ AstToJSProcessor.prototype = {
     pushToArray(source, code.source);
     expressionOrVariable = code.exp;
     source.push(
-      substitute(escape ? BUFFER_WRITE_ESCAPED : BUFFER_WRITE, {
+      (escape ? BUFFER_WRITE_ESCAPED : BUFFER_WRITE)({
         value: expressionOrVariable,
       }),
     );
@@ -786,7 +818,7 @@ AstToJSProcessor.prototype = {
     return {
       exp: '',
       source: [
-        substitute(BUFFER_APPEND, {
+        BUFFER_APPEND({
           value: wrapBySingleQuote(escapeString(contentStatement.value, 0)),
         }),
       ],
@@ -840,7 +872,7 @@ const compiler = {
   compileToCode(param) {
     const func = compiler.compileToJson(param);
     return {
-      func: substitute(FUNC, {
+      func: FUNC({
         functionName: param.functionName || '',
         params: func.params.join(','),
         body: func.source,
@@ -875,13 +907,13 @@ const compiler = {
    */
   compile(tplContent, name, config) {
     const code = compiler.compileToJson(
-      util.merge(config, {
+      Object.assign(config, {
         content: tplContent,
         name,
       }),
     );
     let source = code.source;
-    source += substitute(SOURCE_URL, {
+    source += SOURCE_URL({
       name,
     });
     const args = code.params.concat(source);

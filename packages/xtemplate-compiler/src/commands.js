@@ -1,0 +1,17 @@
+export default {
+  range: 1,
+  void: 1,
+  foreach: 1,
+  forin: 1,
+  each: 1,
+  with: 1,
+  if: 1,
+  set: 1,
+  include: 1,
+  includeOnce: 1,
+  parse: 1,
+  extend: 1,
+  block: 1,
+  macro: 1,
+  debugger: 1,
+};
