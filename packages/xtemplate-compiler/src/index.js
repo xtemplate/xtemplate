@@ -907,7 +907,7 @@ const compiler = {
    */
   compile(tplContent, name, config) {
     const code = compiler.compileToJson(
-      Object.assign(config, {
+      Object.assign({}, config, {
         content: tplContent,
         name,
       }),
