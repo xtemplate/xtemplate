@@ -39,7 +39,7 @@
         "@pika/plugin-build-node"
       ],
       [
-        "@pika/plugin-build-web"
+        "pika-plugin-build-web-babel"
       ]
     ]
   },

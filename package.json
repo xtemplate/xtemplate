@@ -39,7 +39,7 @@
     "gulp-xtemplate": "3.x",
     "@babel/preset-react": "^7.0.0",
     "@pika/plugin-build-node": "^0.5.1",
-    "@pika/plugin-build-web": "^0.5.1",
+    "pika-plugin-build-web-babel": "^0.6.0",
     "@pika/plugin-standard-pkg": "^0.5.1",
     "@pika/types": "^0.5.1",
     "@storybook/react": "^5.1.9",
