@@ -1,6 +1,6 @@
 {
   "name": "xtemplate-compiler",
-  "version": "5.0.9",
+  "version": "5.0.10",
   "author": "yiminghe <yiminghe@gmail.com>",
   "repository": {
     "type": "git",
@@ -29,7 +29,9 @@
       [
         "pika-plugin-build-web-babel"
       ],
-      ["pika-plugin-clean-dist-src"]
+      [
+        "pika-plugin-clean-dist-src"
+      ]
     ]
   },
   "gitHead": "674134eeb7e78365d60c3230b898bcb32fd71052"
