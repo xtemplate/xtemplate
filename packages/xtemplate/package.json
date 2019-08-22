@@ -40,7 +40,8 @@
       ],
       [
         "pika-plugin-build-web-babel"
-      ]
+      ],
+      ["pika-plugin-clean-dist-src"]
     ]
   },
   "gitHead": "674134eeb7e78365d60c3230b898bcb32fd71052"
