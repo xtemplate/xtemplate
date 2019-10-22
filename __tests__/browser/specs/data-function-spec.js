@@ -1,4 +1,4 @@
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 import util from './util';
 
 describe('support call function in data', () => {

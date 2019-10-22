@@ -1,4 +1,4 @@
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 
 describe('whitespace control', () => {
   it('ltrim works', () => {

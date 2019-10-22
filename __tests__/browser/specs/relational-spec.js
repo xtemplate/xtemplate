@@ -1,4 +1,4 @@
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 
 describe('relational expression', () => {
   it('support relational expression', () => {

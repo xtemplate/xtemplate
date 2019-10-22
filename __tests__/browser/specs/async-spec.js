@@ -2,7 +2,7 @@
  * test async command
  * @author yiminghe@gmail.com
  */
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 
 describe('async', () => {
   it('can report error', done => {

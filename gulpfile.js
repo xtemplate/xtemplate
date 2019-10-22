@@ -9,10 +9,10 @@ gulp.task('precompile-test', function() {
     .pipe(
       gulpXTemplate({
         esmodule: true,
-        runtime: '../../../packages/xtemplate-runtime',
+        runtime: 'xtemplate-runtime',
         truncatePrefixLen: process.cwd().length,
         wrap: false,
-        XTemplate: require('./packages/xtemplate/').default,
+        XTemplate: require('./packages/xtemplate').default,
         compileConfig: {
           esmodule: true,
         },

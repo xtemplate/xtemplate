@@ -21,5 +21,4 @@ Thumbs.db
 node_modules
 .cache
 coverage
-yarn.lock
 pkg/

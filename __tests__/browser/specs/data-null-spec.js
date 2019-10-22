@@ -1,4 +1,4 @@
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 
 describe('support when data is null', () => {
   describe('when non-strict mod', () => {

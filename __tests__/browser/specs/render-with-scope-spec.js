@@ -3,7 +3,7 @@
  * @author LiZn <zinc_li@163.com>
  */
 
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 
 describe('render method', () => {
   it('render with data', () => {

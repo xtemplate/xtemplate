@@ -1,7 +1,7 @@
 /* eslint-disable */
 /*compiled by xtemplate#*/
 import tpl from './b';
-import XTemplateRuntime from '../../../packages/xtemplate-runtime';
+import XTemplateRuntime from 'xtemplate-runtime';
 var instance = new XTemplateRuntime(tpl);
 export default function() {
   return instance.render.apply(instance, arguments);

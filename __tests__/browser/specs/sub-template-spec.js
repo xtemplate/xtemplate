@@ -1,6 +1,6 @@
 /* eslint no-console:0 */
 
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 
 import util from './util';
 const { registerTemplate, loadTemplate, clearTemplates } = require('../helper');

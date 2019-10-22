@@ -1,9 +1,9 @@
 /* eslint no-console:0, strict:0 */
 'use strict';
 
-const Xtemplate = require('../../../');
-const path = require('path');
-const fs = require('fs');
+import Xtemplate from 'xtemplate';
+import path from 'path';
+import fs from 'fs';
 
 function compile(name) {
   let p = path.join(__dirname, '../fixture', name);

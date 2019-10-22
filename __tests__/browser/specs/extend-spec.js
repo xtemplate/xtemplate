@@ -3,7 +3,7 @@
  * @author yiminghe@gmail.com
  */
 
-import XTemplate from '../../../packages/xtemplate';
+import XTemplate from 'xtemplate';
 import util from './util';
 import { registerTemplate, clearTemplates } from '../helper';
 
