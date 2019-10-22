@@ -7,7 +7,6 @@ support async control, inheritance, include, logic expression, custom function a
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
-[![gemnasium deps][gemnasium-image]][gemnasium-url]
 [![node version][node-image]][node-url]
 [![npm download][download-image]][download-url]
 
@@ -18,9 +17,7 @@ support async control, inheritance, include, logic expression, custom function a
 [travis-url]: https://travis-ci.org/xtemplate/xtemplate
 [coveralls-image]: https://img.shields.io/coveralls/xtemplate/xtemplate.svg?style=flat-square
 [coveralls-url]: https://coveralls.io/r/xtemplate/xtemplate?branch=master
-[gemnasium-image]: http://img.shields.io/gemnasium/xtemplate/xtemplate.svg?style=flat-square
-[gemnasium-url]: https://gemnasium.com/xtemplate/xtemplate
-[node-image]: https://img.shields.io/badge/node.js-%3E=_0.10-green.svg?style=flat-square
+[node-image]: https://img.shields.io/badge/node.js-%3E=8.0.0-green.svg?style=flat-square
 [node-url]: http://nodejs.org/download/
 [download-image]: https://img.shields.io/npm/dm/xtemplate.svg?style=flat-square
 [download-url]: https://npmjs.org/package/xtemplate

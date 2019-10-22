@@ -16,6 +16,11 @@ before_install:
       echo "Only docs were updated, stopping build process."
       exit
     fi
+- npm install -g yarn
+
+install:
+- yarn
+
 script:
 - |
     if [ "$TEST_TYPE" = test ]; then
