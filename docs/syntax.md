@@ -242,7 +242,7 @@ If you have passed a javascript method to your template, you can call it like no
 
 #### range(start, end, [step])
 
-If you need to iterate over a fixed set of numbers, range generates the set for you. The numbers begin at start and incremeny by step (default 1) until it reaches stop, not including it.
+If you need to iterate over a fixed set of numbers, range generates the set for you. The numbers begin at start and increment by step (default 1) until it reaches stop, not including it.
 
 ```handlebars
 {{#each(range(0,3))}}{{this}}{{/each}}
