@@ -33,6 +33,7 @@
     "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "devDependencies": {
+    "lerna": "6.x",
     "@babel/preset-react": "^7.0.0",
     "@pika/plugin-build-node": "^0.5.1",
     "@pika/plugin-build-umd": "0.5.x",
